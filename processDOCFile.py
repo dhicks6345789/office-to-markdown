@@ -24,15 +24,15 @@ if docType in ["DOCX", "DOC"]:
   outputPath = outputFolder + os.sep + outputFile
   
   # Log the name of the file we are going to write to.
-  docsToMarkdownLib.addToWriteLog(outputPath)
+  officeToMarkdownLib.addToWriteLog(outputPath)
   
   # Check and see if we already have an output file that matches the modification times of the input, if so, skip - no
   # point processing the same file for the same output.
-  if not docsToMarkdownLib.checkModDatesMatch(inputFile, outputPath):
+  if not officeToMarkdownLib.checkModDatesMatch(inputFile, outputPath):
     print("Processing " + docType + " file: " + inputFile + " to " + outputPath, flush=True)
 
     # Our library "function" here calls Pandoc to do the conversion.
-    docMarkdown, docFrontmatter = docsToMarkdownLib.docToMarkdown(inputFile)
+    docMarkdown, docFrontmatter = officeToMarkdownLib.docToMarkdown(inputFile)
 
     # If we don't already have a "title" front matter variable, go through the Markdown line by line,
     # checking for the first defined title string that we can use as a title.
@@ -44,5 +44,5 @@ if docType in ["DOCX", "DOC"]:
         trimmedMarkdown = trimmedMarkdown + markdownLine + "\n"
 
     # Write out the Markdown file, matching the modification date with the original input document so we can skip next time if the input is unmodified.
-    docsToMarkdownLib.putFile(outputPath, docsToMarkdownLib.frontMatterToString(docFrontmatter) + trimmedMarkdown.strip())
-    docsToMarkdownLib.makeModDatesMatch(inputFile, outputPath)
+    officeToMarkdownLib.putFile(outputPath, officeToMarkdownLib.frontMatterToString(docFrontmatter) + trimmedMarkdown.strip())
+    officeToMarkdownLib.makeModDatesMatch(inputFile, outputPath)
