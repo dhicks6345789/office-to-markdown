@@ -1,5 +1,5 @@
 # Core CLI and Data Manipulation
-click==8.1.8
+#click==8.1.8
 pandas==2.2.3
 
 # Office Document Generation & Parsing
