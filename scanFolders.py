@@ -104,7 +104,7 @@ def scanFolder(theInput, theOutput):
                 inputTimestamp = "0"
                 if inputItem in previousInputChanges:
                     inputTimestamp = previousInputChanges[inputItem]
-                commandLine = [scriptExec, scriptPath, "--verbose", args["verbose"], "--scriptTimestamp", scriptTimestamp, "--inputPath", inputItem, "--inputTimestamp", inputTimestamp, "--outputPath", outputItem]
+                commandLine = [scriptExec, scriptPath, "--verbose", args["verbose"], "--scriptTimestamp", str(scriptTimestamp), "--inputPath", inputItem, "--inputTimestamp", str(inputTimestamp), "--outputPath", outputItem]
                 officeToMarkdownLib.ifVerbose(args["verbose"], "OfficeToMarkdown - running: " + " ".join(commandLine))
                 
                 commandLineResult = subprocess.run(commandLine, capture_output=True, text=True)
