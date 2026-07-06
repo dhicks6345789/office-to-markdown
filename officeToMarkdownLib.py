@@ -96,8 +96,8 @@ def checkModDatesMatch(theInputItem, theOutputItem):
     return False
 
 def makeModDatesMatch(theInputItem, theOutputItem):
-    inputItemDetails = os.stat(theInputItem)
-    os.utime(theOutputItem, (inputItemDetails.st_atime, inputItemDetails.st_mtime))
+    inputItemDetails = os.stat(str(theInputItem))
+    os.utime(str(theOutputItem), (inputItemDetails.st_atime, inputItemDetails.st_mtime))
 
 # Given an integer and a length, returns the int converted to a string, with the string length made up to the given
 # length with "0"s appended to the front of the string as needed.
