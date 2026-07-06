@@ -6,7 +6,7 @@ import os
 import sys
 
 # Our own Docs To Markdown library.
-import docsToMarkdownLib
+import officeToMarkdownLib
 
 
 # Usage: processDOCFile.py inputFile outputFolder
