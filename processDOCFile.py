@@ -16,7 +16,7 @@ outputPath = pathlib.Path(args["outputPath"])
 # Check we are trying to convert a DOCX / DOC file.
 if inputPath.suffix.lower() in [".docx", ".doc"]:
   # We are passed the output /folder/, so we have to figure out the output file name from the input file name.
-  outputFilePath = outputPath / inputPath.stem + inputPath.suffix
+  outputFilePath = outputPath / pathlib.Path(inputPath.stem + inputPath.suffix)
   
   # Report the output filename back to the calling script.
   print(outputFilePath, flush=True, file=sys.stdout)
