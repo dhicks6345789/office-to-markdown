@@ -140,7 +140,7 @@ def deleteExtraFiles(theFolder):
         if os.path.isfile(fileItem):
             if not fileItem in outputFiles:
                 print("Removing extra file: " + fileItem, flush=True)
-                #os.remove(fileItem)
+                os.remove(fileItem)
         else:
             deleteExtraFiles(fileItem)
 
