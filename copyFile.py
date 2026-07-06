@@ -6,8 +6,8 @@ import os
 import sys
 import shutil
 
-# Our own Docs To Markdown library.
-import docsToMarkdownLib
+# Our own Office To Markdown library.
+import officeToMarkdownLib
 
 # Usage: copyFile.py inputFile outputFolder
 inputFile = sys.argv[1]
@@ -20,11 +20,11 @@ if os.sep in outputFile:
 outputPath = outputFolder + os.sep + outputFile
 
 # Log the name of the file we are going to write to.
-docsToMarkdownLib.addToWriteLog(outputPath)
+officeToMarkdownLib.addToWriteLog(outputPath)
   
 # Check and see if we already have an output file that matches the modification
 # times of the input, if so, skip - no point copying the same file.
-if not docsToMarkdownLib.checkModDatesMatch(inputFile, outputPath):
+if not officeToMarkdownLib.checkModDatesMatch(inputFile, outputPath):
   print("Copying file: " + inputFile + " to " + outputPath, flush=True)
   shutil.copyfile(inputFile, outputPath)
-  docsToMarkdownLib.makeModDatesMatch(inputFile, outputPath)
+  officeToMarkdownLib.makeModDatesMatch(inputFile, outputPath)
