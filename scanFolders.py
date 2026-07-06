@@ -95,11 +95,18 @@ def scanFolder(theInput, theOutput):
                 if args["verbose"] == "true":
                     print("OfficeToMarkdown - matched: " + inputItem + " with " + match, flush=True)
 
-                #if scriptPath in changedMatchPaths or inputItem in changedInputPaths:
-                commandLine = [scriptExec, scriptPath, inputItem, outputItem]
-                if args["verbose"] == "true":
-                    print("OfficeToMarkdown - running: " + " ".join(commandLine), flush=True)
+                scriptTimestamp = "0"
+                if scriptPath in previousMatchChanges:
+                    scriptTimestamp = previousMatchChanges[scriptPath]
+                inputTimestamp = "0"
+                if inputItem in previousInputChanges:
+                    inputTimestamp = previousInputChanges[inputItem]
+                commandLine = [scriptExec, scriptPath, "--verbose", args["verbose"], "--scriptTimestamp", scriptTimestamp, "--inputPath", inputItem, "--inputTimestamp", inputTimestamp, "--outputPath", outputItem]
+                officeToMarkdownLib.ifVerbose(args["verbose"], "OfficeToMarkdown - running: " + " ".join(commandLine))
+                
                 subprocess.run(commandLine)
+                #(defaultArgs={"scriptRoot":str(pathlib.Path.cwd()), "verbose":"false", "validFrontMatterFields":""}, requiredArgs=["scriptTimestamp","inputPath","inputTimestamp","outputPath"], optionalArgs=["scriptRoot", "verbose"])
+        
         if (matched == False) and (folderMatched == False) and (not item == ""):
             unmatchedItems.append(item)
     for item in unmatchedItems:
