@@ -9,9 +9,14 @@ import shutil
 # Our own Office To Markdown library.
 import officeToMarkdownLib
 
-# Usage: copyFile.py inputFile outputFolder
-inputFile = sys.argv[1]
-outputFolder = sys.argv[2]
+# Parse and normalise the command-line arguments.
+args = officeToMarkdownLib.processCommandLineArgs(defaultArgs={"scriptRoot":str(pathlib.Path.cwd()), "verbose":"false", "validFrontMatterFields":""}, requiredArgs=["scriptTimestamp","inputPath","inputTimestamp","outputPath"], optionalArgs=["scriptRoot", "verbose"])
+args["dataRoot"] = officeToMarkdownLib.normalisePath(args["dataRoot"])
+args["verbose"] = args["verbose"].lower()
+inputPath = pathlib.Path(args["inputPath"])
+outputPath = pathlib.Path(args["outputPath"])
+
+
 
 # We are passed the output /folder/, so we have to figure out the output file name from the input file name.
 outputFile = inputFile
