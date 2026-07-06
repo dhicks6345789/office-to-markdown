@@ -1,36 +1,38 @@
 # Convert a DOCX / DOC (Word, Google Docs, etc) file to Markdown.
-# Designed to be called from the scanFolders script, so takes a very simple command line parameter list.
 
-# Standard libraries.
-#import os
+# Standard Python libraries.
 import sys
 import pathlib
 
-# Our own Docs To Markdown library.
+# Our own Office To Markdown library.
 import officeToMarkdownLib
 
-
 # Parse and normalise the command-line arguments.
-args = officeToMarkdownLib.processCommandLineArgs(defaultArgs={"scriptRoot":str(pathlib.Path.cwd()), "dataRoot":str(pathlib.Path.cwd()), "verbose":"false", "validFrontMatterFields":""}, requiredArgs=["inputPath","inputTimestamp","outputPath","outputTimestamp"], optionalArgs=["scriptRoot", "dataRoot", "verbose"])
+args = officeToMarkdownLib.processCommandLineArgs(defaultArgs={"scriptRoot":str(pathlib.Path.cwd()), "verbose":"false", "validFrontMatterFields":""}, requiredArgs=["scriptTimestamp","inputPath","inputTimestamp","outputPath"], optionalArgs=["scriptRoot", "verbose"])
 args["dataRoot"] = officeToMarkdownLib.normalisePath(args["dataRoot"])
 args["verbose"] = args["verbose"].lower()
-inputPath = pathlib.Path(args["input"])
-outputPath = pathlib.Path(args["output"])
+inputPath = pathlib.Path(args["inputPath"])
+outputPath = pathlib.Path(args["outputPath"])
 
 # Check we are trying to convert a DOCX / DOC file.
 if inputPath.suffix() in ["DOCX", "DOC"]:
   # We are passed the output /folder/, so we have to figure out the output file name from the input file name.
   outputFilePath = outputPath / outputPath.name
   
-  # Report the output filename to the calling script.
+  # Report the output filename back to the calling script.
   print(outputFilePath, flush=True, file=sys.stdout))
-  
-  # Check and see if we already have an output file that matches the modification times of the input, if so, skip - no
-  # point processing the same file for the same output.
-  if not officeToMarkdownLib.checkModDatesMatch(inputFile, outputPath):
-    print("Processing " + docType + " file: " + inputFile + " to " + outputPath, flush=True, file=sys.stderr)
 
-    # Our library "function" here calls Pandoc to do the conversion.
+  # Check and see if either the input file or the script itself have changed since the last
+  # run - there's no point doing any work if neither have changed.
+  doTransform = False
+  if not officeToMarkdownLib.checkTimestampsMatch(scriptTimestamp, pathlib.Path(__file__)):
+    doTransform = True
+  elif not officeToMarkdownLib.checkTimestampsMatch(inputTimestamp, inputPath):
+    doTransform = True
+  if doTransform:
+    officeToMarkdownLib.ifVerbose(args["verbose"], "Processing " + docType + " file: " + inputFile + " to " + outputPath)
+
+    # Our library function here calls Pandoc to do the conversion.
     docMarkdown, docFrontmatter = officeToMarkdownLib.docToMarkdown(inputFile)
 
     # If we don't already have a "title" front matter variable, go through the Markdown line by line,
@@ -43,5 +45,5 @@ if inputPath.suffix() in ["DOCX", "DOC"]:
         trimmedMarkdown = trimmedMarkdown + markdownLine + "\n"
 
     # Write out the Markdown file, matching the modification date with the original input document so we can skip next time if the input is unmodified.
-    officeToMarkdownLib.putFile(outputPath, officeToMarkdownLib.frontMatterToString(docFrontmatter) + trimmedMarkdown.strip())
+    officeToMarkdownLib.putFile(outputFilePath, officeToMarkdownLib.frontMatterToString(docFrontmatter) + trimmedMarkdown.strip())
     officeToMarkdownLib.makeModDatesMatch(inputFile, outputPath)
