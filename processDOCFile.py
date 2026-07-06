@@ -2,34 +2,33 @@
 # Designed to be called from the scanFolders script, so takes a very simple command line parameter list.
 
 # Standard libraries.
-import os
+#import os
 import sys
+import pathlib
 
 # Our own Docs To Markdown library.
 import officeToMarkdownLib
 
 
-# Usage: processDOCFile.py inputFile outputFolder
-inputFile = sys.argv[1]
-outputFolder = sys.argv[2]
+# Parse and normalise the command-line arguments.
+args = officeToMarkdownLib.processCommandLineArgs(defaultArgs={"scriptRoot":str(pathlib.Path.cwd()), "dataRoot":str(pathlib.Path.cwd()), "verbose":"false", "validFrontMatterFields":""}, requiredArgs=["inputPath","inputTimestamp","outputPath","outputTimestamp"], optionalArgs=["scriptRoot", "dataRoot", "verbose"])
+args["dataRoot"] = officeToMarkdownLib.normalisePath(args["dataRoot"])
+args["verbose"] = args["verbose"].lower()
+inputPath = pathlib.Path(args["input"])
+outputPath = pathlib.Path(args["output"])
 
 # Check we are trying to convert a DOCX / DOC file.
-docType = inputFile.rsplit(".", 1)[1].upper()
-if docType in ["DOCX", "DOC"]:
+if inputPath.suffix() in ["DOCX", "DOC"]:
   # We are passed the output /folder/, so we have to figure out the output file name from the input file name.
-  outputFile = inputFile
-  if os.sep in outputFile:
-    outputFile = outputFile.rsplit(os.sep, 1)[1]
-  outputFile = outputFile.rsplit(".", 1)[0] + ".md"
-  outputPath = outputFolder + os.sep + outputFile
+  outputFilePath = outputPath / outputPath.name
   
-  # Log the name of the file we are going to write to.
-  officeToMarkdownLib.addToWriteLog(outputPath)
+  # Report the output filename to the calling script.
+  print(outputFilePath, flush=True, file=sys.stdout))
   
   # Check and see if we already have an output file that matches the modification times of the input, if so, skip - no
   # point processing the same file for the same output.
   if not officeToMarkdownLib.checkModDatesMatch(inputFile, outputPath):
-    print("Processing " + docType + " file: " + inputFile + " to " + outputPath, flush=True)
+    print("Processing " + docType + " file: " + inputFile + " to " + outputPath, flush=True, file=sys.stderr)
 
     # Our library "function" here calls Pandoc to do the conversion.
     docMarkdown, docFrontmatter = officeToMarkdownLib.docToMarkdown(inputFile)
