@@ -16,7 +16,7 @@ outputPath = pathlib.Path(args["outputPath"])
 # Check we are trying to convert a DOCX / DOC file.
 if inputPath.suffix.lower() in [".docx", ".doc"]:
   # We are passed the output /folder/, so we have to figure out the output file name from the input file name.
-  outputFilePath = outputPath / inputPath.name
+  outputFilePath = outputPath / inputPath.stem + inputPath.suffix
   
   # Report the output filename back to the calling script.
   print(outputFilePath, flush=True, file=sys.stdout)
@@ -45,4 +45,4 @@ if inputPath.suffix.lower() in [".docx", ".doc"]:
 
     # Write out the Markdown file, matching the modification date with the original input document so we can skip next time if the input is unmodified.
     officeToMarkdownLib.putFile(outputFilePath, officeToMarkdownLib.frontMatterToString(docFrontmatter) + trimmedMarkdown.strip())
-    officeToMarkdownLib.makeModDatesMatch(inputFile, outputPath)
+    officeToMarkdownLib.makeModDatesMatch(inputPath, outputFilePath)
