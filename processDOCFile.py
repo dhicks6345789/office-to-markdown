@@ -20,7 +20,7 @@ if inputPath.suffix() in ["DOCX", "DOC"]:
   outputFilePath = outputPath / outputPath.name
   
   # Report the output filename back to the calling script.
-  print(outputFilePath, flush=True, file=sys.stdout))
+  print(outputFilePath, flush=True, file=sys.stdout)
 
   # Check and see if either the input file or the script itself have changed since the last
   # run - there's no point doing any work if neither have changed.
