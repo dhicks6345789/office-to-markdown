@@ -16,7 +16,7 @@ inputPath = pathlib.Path(args["inputPath"])
 outputPath = pathlib.Path(args["outputPath"])
 
 # We are passed the output /folder/, so we have to figure out the output file name from the input file name.
-outputFilePath = outputPath / outputPath.name
+outputFilePath = outputPath / inputPath.name
 
 # Report the output filename back to the calling script.
 print(outputFilePath, flush=True, file=sys.stdout)
