@@ -144,4 +144,4 @@ if args["deleteExtraFiles"] == "true" and os.path.isfile("/tmp/officeToMarkdownW
         deleteExtraFiles(officeToMarkdownLib.normalisePath(args["output"]), writeLogFile.readlines())
 
 # Clear out the write log file.
-os.remove("/tmp/officeToMarkdownWriteLog.txt")
+#os.remove("/tmp/officeToMarkdownWriteLog.txt")
