@@ -396,7 +396,11 @@ def addToWriteLog(theFilename, theLogLocation="/tmp/docsToMarkdownWriteLog.txt")
     with open(theLogLocation, "a", encoding="utf-8") as file:
         file.write(theFilename + "\n")
 
-def officeToMarkdownLib.checkTimestampsMatch(theTimestamp, thePath):
+def checkTimestampsMatch(theTimestamp, thePath):
     if thePath.stat().st_mtime == theTimestamp:
         return True
     return False
+
+def ifVerbose(theVerboseString, theOutput):
+    if theVerboseString.lower() == "true":
+        print(theOutput, flush=True, file=sys.stderr)
