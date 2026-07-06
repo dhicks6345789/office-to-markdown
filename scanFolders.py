@@ -142,7 +142,7 @@ def deleteExtraFiles(theFolder):
                 print("Removing extra file: " + fileItem, flush=True)
                 #os.remove(fileItem)
         else:
-            deleteExtraFiles(fileItem, theFilenames)
+            deleteExtraFiles(fileItem)
 
 # Start the scanFolders process.
 scanFolder("", "")
