@@ -112,6 +112,8 @@ def scanFolder(theInput, theOutput):
                     outputFile = outputFile.strip()
                     if not outputFile == "":
                         outputFiles.append(outputFile)
+                if args["verbose"] == "true":
+                    print(commandLineResult.stderr)
         if (matched == False) and (folderMatched == False) and (not item == ""):
             unmatchedItems.append(item)
     for item in unmatchedItems:
