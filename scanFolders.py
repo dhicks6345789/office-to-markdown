@@ -11,6 +11,9 @@ import officeToMarkdownLib
 
 
 
+# A global list to store output file names. Any files not appearing in this list cut still present in the output destination when all scripts are done will be deleted if the "deleteExtraFiles" option is true.
+outputFiles = []
+
 # Parse and normalise the command-line arguments.
 args = officeToMarkdownLib.processCommandLineArgs(defaultArgs={"scriptRoot":str(pathlib.Path.cwd()), "dataRoot":str(pathlib.Path.cwd()), "verbose":"false", "produceFolderIndexes":"false", "deleteExtraFiles":"false", "validFrontMatterFields":""}, requiredArgs=["input","output"], optionalArgs=["scriptRoot", "verbose", "deleteExtraFiles", "copyIn", "data", "produceFolderIndexes", "baseURL", "validFrontMatterFields"])
 args["dataRoot"] = officeToMarkdownLib.normalisePath(args["dataRoot"])
@@ -104,8 +107,11 @@ def scanFolder(theInput, theOutput):
                 commandLine = [scriptExec, scriptPath, "--verbose", args["verbose"], "--scriptTimestamp", scriptTimestamp, "--inputPath", inputItem, "--inputTimestamp", inputTimestamp, "--outputPath", outputItem]
                 officeToMarkdownLib.ifVerbose(args["verbose"], "OfficeToMarkdown - running: " + " ".join(commandLine))
                 
-                subprocess.run(commandLine)
-                #(defaultArgs={"scriptRoot":str(pathlib.Path.cwd()), "verbose":"false", "validFrontMatterFields":""}, requiredArgs=["scriptTimestamp","inputPath","inputTimestamp","outputPath"], optionalArgs=["scriptRoot", "verbose"])
+                commandLineResult = subprocess.run(commandLine, capture_output=True, text=True)
+                outputFiles.append(commandLineResult.stdout.split("\n"))
+
+
+        
         
         if (matched == False) and (folderMatched == False) and (not item == ""):
             unmatchedItems.append(item)
@@ -118,7 +124,7 @@ def copyFolder(inputFolder, outputFolder):
     for item in os.listdir(inputFolder):
         inputItem = inputFolder + "/" + item
         outputItem = outputFolder + "/" + item
-        officeToMarkdownLib.addToWriteLog(outputItem)
+        outputFiles.append(outputItem)
         if os.path.isfile(inputItem):
             if not officeToMarkdownLib.checkModDatesMatch(inputItem, outputItem):
                 print("Copying file: " + inputItem + " to " + outputItem, flush=True)
@@ -128,13 +134,13 @@ def copyFolder(inputFolder, outputFolder):
             os.mkdir(outputItem)
             copyFolder(inputItem, outputItem)
 
-def deleteExtraFiles(theFolder, theFilenames):
+def deleteExtraFiles(theFolder):
     for item in os.listdir(theFolder):
         fileItem = theFolder + "/" + item
         if os.path.isfile(fileItem):
-            if not fileItem in theFilenames:
+            if not fileItem in outputFiles:
                 print("Removing extra file: " + fileItem, flush=True)
-                os.remove(fileItem)
+                #os.remove(fileItem)
         else:
             deleteExtraFiles(fileItem, theFilenames)
 
@@ -146,9 +152,5 @@ scanFolder("", "")
 if "copyIn" in args and not args["copyIn"] == "":
     copyFolder(officeToMarkdownLib.normalisePath(args["copyIn"]), officeToMarkdownLib.normalisePath(args["output"]))
 
-if args["deleteExtraFiles"] == "true" and os.path.isfile("/tmp/officeToMarkdownWriteLog.txt"):
-    with open("/tmp/officeToMarkdownWriteLog.txt", "r", encoding="utf-8") as writeLogFile:
-        deleteExtraFiles(officeToMarkdownLib.normalisePath(args["output"]), writeLogFile.readlines())
-
-# Clear out the write log file.
-#os.remove("/tmp/officeToMarkdownWriteLog.txt")
+if args["deleteExtraFiles"] == "true":
+    deleteExtraFiles(officeToMarkdownLib.normalisePath(args["output"]))
