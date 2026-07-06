@@ -4,6 +4,7 @@ import io
 import sys
 import yaml
 import base64
+import shutil
 import pathlib
 import subprocess
 
@@ -173,7 +174,9 @@ def docToMarkdown(inputFile, baseURL="", markdownType="gfm", validFrontMatterFie
     frontMatter = {}
     
     with open(inputFile, "rb") as inputDOCXFile:
-        result = mammoth.convert_to_html(inputDOCXFile)
+        shutil.copy(inputDOCXFile, "tmp/officeToMarkdown.docx")
+        result = mammoth.convert_to_html("tmp/officeToMarkdown.docx")
+        os.remove("tmp/officeToMarkdown.docx")
         html = result.value
         return(markdownify.markdownify(html), frontMatter)
         
