@@ -2,7 +2,6 @@
 # Designed to be called from the scanFolders script, so takes a very simple command line parameter list.
 
 # Standard libraries.
-import os
 import sys
 import shutil
 
@@ -30,6 +29,6 @@ if not officeToMarkdownLib.checkTimestampsMatch(scriptTimestamp, pathlib.Path(__
 elif not officeToMarkdownLib.checkTimestampsMatch(inputTimestamp, inputPath):
   doTransform = True
 if doTransform:
-  print("Copying file: " + inputFile + " to " + outputPath, flush=True)
-  shutil.copyfile(inputFile, outputPath)
-  officeToMarkdownLib.makeModDatesMatch(inputFile, outputPath)
+  officeToMarkdownLib.ifVerbose(args["verbose"], "Copying file: " + inputPath + " to " + outputPath)
+  shutil.copyfile(inputPath, outputPath)
+  officeToMarkdownLib.makeModDatesMatch(inputPath, outputPath)
