@@ -10,10 +10,13 @@ import subprocess
 # The Pillow image-handling library.
 import PIL.Image
 
+# Mammoth converts .DOCX file to HTML...
+import mammoth
+# ...and Markdownify can convert HTML to Markdown.
+import markdownify
+
 # We use the Pandas library, which in turn uses the XLRD library, to read Excel data.
 import pandas
-
-import markdownify
 
 
 
