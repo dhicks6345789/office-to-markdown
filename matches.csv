@@ -1,0 +1,8 @@
+^.*/faq/$,python,FAQ/processFAQ.py
+^.*/mailmerge/,python,mailmerge/processMailmerge.py
+^.*\.docx$,python,processDOCFile.py
+^.*\.svg$,python,copyFile.py
+^.*\.webp$,python,copyFile.py
+^.*\.png$,python,copyFile.py
+^.*\.jpg$,python,copyFile.py
+^.*\.gif$,python,copyFile.py
