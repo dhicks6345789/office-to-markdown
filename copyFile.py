@@ -16,20 +16,20 @@ args["verbose"] = args["verbose"].lower()
 inputPath = pathlib.Path(args["inputPath"])
 outputPath = pathlib.Path(args["outputPath"])
 
-
-
 # We are passed the output /folder/, so we have to figure out the output file name from the input file name.
-outputFile = inputFile
-if os.sep in outputFile:
-  outputFile = outputFile.rsplit(os.sep, 1)[1]
-outputPath = outputFolder + os.sep + outputFile
+outputFilePath = outputPath / outputPath.name
 
-# Log the name of the file we are going to write to.
-officeToMarkdownLib.addToWriteLog(outputPath)
-  
-# Check and see if we already have an output file that matches the modification
-# times of the input, if so, skip - no point copying the same file.
-if not officeToMarkdownLib.checkModDatesMatch(inputFile, outputPath):
+# Report the output filename back to the calling script.
+print(outputFilePath, flush=True, file=sys.stdout))
+
+# Check and see if either the input file or the script itself have changed since the last
+# run - there's no point doing any work if neither have changed.
+doTransform = False
+if not officeToMarkdownLib.checkTimestampsMatch(scriptTimestamp, pathlib.Path(__file__)):
+  doTransform = True
+elif not officeToMarkdownLib.checkTimestampsMatch(inputTimestamp, inputPath):
+  doTransform = True
+if doTransform:
   print("Copying file: " + inputFile + " to " + outputPath, flush=True)
   shutil.copyfile(inputFile, outputPath)
   officeToMarkdownLib.makeModDatesMatch(inputFile, outputPath)
