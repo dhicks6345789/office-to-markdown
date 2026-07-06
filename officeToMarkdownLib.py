@@ -4,6 +4,7 @@ import io
 import sys
 import yaml
 import base64
+import pathlib
 import subprocess
 
 # The Pillow image-handling library.
@@ -136,7 +137,7 @@ def docToMarkdown(inputFile, baseURL="", markdownType="gfm", validFrontMatterFie
 
     parsingFrontMatter = True
     blankLineCount = 0
-    pandocProcess = subprocess.Popen("pandoc --wrap=none -s \"" + inputFile + "\" -t " + markdownType + " -o -", shell=True, stdout=subprocess.PIPE)
+    pandocProcess = subprocess.Popen("pandoc --wrap=none -s \"" + str(inputFile) + "\" -t " + markdownType + " -o -", shell=True, stdout=subprocess.PIPE)
     for markdownLine in pandocProcess.communicate()[0].decode("utf-8").split("\n"):
         markdownLine = markdownLine.strip()
         # Un-escape Markdown control characters embedded in Word documents.
