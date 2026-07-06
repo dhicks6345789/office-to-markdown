@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+
+<!-- The main HTML element - set margins to 0 and size to 100% so it fills the whole page (or whole screen in full-screen mode). Also, we want to disable
+pinch-to-zoom functionality - this page is intended to be used as a kiosk application, possibly on a touch screen, where it turns out to be too easy to
+accidently pinch-to-zoom rather than just press the screen to advance the slide. The "touch-action:none" instruction might not work on normal browsers, only
+on browsers in kiosk mode. -->
+<html lang="en" style="margin:0; padding:0; height:100%; touch-action:none;">
+    <head>
+        <!-- Set this page (hopefully) to not be cached, so it gets reloaded each time the browser refreshes / reloads / reboots.
+        Seems to be of particular importance for ChromeOS kisok-mode devices, which seem to cache content between reboots. -->
+        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+        <meta http-equiv="Pragma" content="no-cache"/>
+        <meta http-equiv="Expires" content="0"/>
+        
+        <!-- Another setting to disable pinch-to-zoom functionality. Not actually sure which setting is taking effect, suspect it's the first one at the HTML element level. -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+        
+        <script>
+            // The minimum refresh period, in milliseconds.
+            const minimumRefreshPeriod = 4000;
+            // The default slide transition time, in milliseconds.
+            const defaultSlideTransitionTime = 20000;
+            
+            // A variable to store the ID of the "next slide" interval function.
+            var nextSlideInterval = 1;
+            
+            // The current slide number. Starts at -1, the special slide only shown once at the start to tell the user some setup information.
+            var currentSlide = -1;
+            // User-definable parameters, default values.
+            var slideTransitionTime = defaultSlideTransitionTime;
+            var slideFadeStep = 0.05;
+            var slideFadeInterval = 200;
+            var clickRequired = false;
+            // By default, as a stand-alone application, the "resources" array will be empty. The server-side script replaces this line with a list
+            // of resources, or some later code will try to find resources.
+            var resources = [];
+
+            // A function to check if a given file / URL exists (server-side). See:
+            // https://www.kirupa.com/html5/checking_if_a_file_exists.htm
+            function doesFileExist(urlToFile) {
+                var xhr = new XMLHttpRequest();
+                xhr.open('HEAD', urlToFile, false);
+                xhr.send();
+                
+                if (xhr.status == "404") {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+            
+            // A function, used as an interval function along with some global variables, to fade between slides.
+            var opacity = 1;
+            var fadeStartSlide = 1;
+            var fadeEndSlide = 1;
+            var fadeInterval = 1;
+            function fadeSlides() {
+                fadeStartSlide.style.opacity = opacity;
+                fadeEndSlide.style.opacity = 1 - opacity;
+                opacity = opacity - slideFadeStep;
+                if (opacity <= 0) {
+                    clearInterval(fadeInterval);
+                    fadeStartSlide.style.opacity = 0;
+                    fadeStartSlide.style.display = "none";
+                    fadeEndSlide.style.opacity = 1;
+                }
+            }
+            
+            // Display the next slide.
+            function showNextSlide() {
+                // Clear the current next-slide transition time...
+                clearInterval(nextSlideInterval);
+                // ...and set up the next one. If the "clickRequired" parameter is set, we don't set up
+                // the next slide transition yet, we wait until the user clicks on the current slide.
+                if (!clickRequired) {
+                    nextSlideInterval = setInterval(showNextSlide, slideTransitionTime);
+                }
+                
+                nextSlide = currentSlide + 1;
+                if (nextSlide == resources.length) {
+                    nextSlide = 0;
+                }
+
+                // If the next slide is a video, and "clickRequired" is set, make sure the video is
+                // stopped and ready to play from the start.
+                if (resources[nextSlide].endsWith(".mp4") && clickRequired) {
+                    nextVideoElement = document.getElementById("slide-" + nextSlide).childNodes[0];
+                    nextVideoElement.pause();
+                    nextVideoElement.currentTime = 0;
+                }
+
+                // Set up the fade effect between the current slide and the next - skip if there's only one slide and we're already showing it.
+                if (!(resources.length == 1 && currentSlide == 0)) {
+                    opacity = 1;
+                    fadeStartSlide = document.getElementById("slide-" + currentSlide);
+                    fadeEndSlide = document.getElementById("slide-" + nextSlide);
+                    fadeEndSlide.style.opacity = 0;
+                    fadeEndSlide.style.display = "block";
+                    fadeInterval = setInterval(fadeSlides, 200);
+                }
+                
+                currentSlide = nextSlide;
+            }
+
+            // If the "clickRequired" parameter is set to true, the user has to click the mouse or a button (or press the screen if on a touch-screen device) to advance to the next slide.
+            function handleClickOrPress(theEvent) {
+                // To do: add an option for the user to be able to go both back and forward through the slides.
+                //if (event.clientX < Math.floor(window.innerWidth / 2)) {
+                    // Left!
+                //} else {
+                    // Right!
+                //}
+                nextSlideInterval = setInterval(showNextSlide, slideTransitionTime);
+                if (resources[currentSlide].endsWith(".mp4")) {
+                    currentVideoElement = document.getElementById("slide-" + currentSlide).childNodes[0];
+                    videoPlaying = !!(currentVideoElement.currentTime > 0 && !currentVideoElement.paused && !currentVideoElement.ended && currentVideoElement.readyState > 2);
+                    if (videoPlaying) {
+                        currentVideoElement.pause();
+                        currentVideoElement.currentTime = 0;
+                    } else {
+                        currentVideoElement.play();
+                    }
+                }
+            }
+
+            // Do a page reload. According to all the documentation I can find, this /should/ be the same as the user hitting the "refresh" button in the browser, so cached files should be reloaded.
+            function doReload() {
+                location.reload();
+            }
+            
+            // The page load function - execution starts here.
+            function startSlides() {
+                // Page refresh / caching: Chrome web browser, particuarly on ChromeOS in kiosk mode, caches the page, sometimes making it difficult to update content. We attempt here to force a page
+                // refresh. This also functions as a mechanism where we can specify a time period when the content should be refreshed, by default once a day.
+                pageNeedsRefresh = true;
+                
+                // We set a default refresh time of a few seconds into the future - if no refresh time is set as a parameter, the page will be refreshed.
+                refreshAt = [];
+                currentDate = new Date();
+                currentDate.setSeconds(currentDate.getSeconds() + 1 + (minimumRefreshPeriod / 1000));
+                refreshAt[0] = currentDate.getHours();
+                refreshAt[1] = currentDate.getMinutes();
+                refreshAt[2] = currentDate.getSeconds();
+                
+                // Extract any optional parameters from the URL. This page is usable as a self-contained stand-alone component - see documentation for more details on each parameter.
+                const searchParams = new URLSearchParams(window.location.search);
+                for (const searchParam of searchParams) {
+                    paramName = searchParam[0].toLowerCase()
+                    if (paramName == "transition") {
+                        slideTransitionTime = parseInt(searchParam[1]) * 1000;
+                    } else if (paramName == "fadesteps") {
+                        slideFadeStep = 1 / parseInt(searchParam[1]);
+                    } else if (paramName == "fadeinterval") {
+                        slideFadeInterval = Number(searchParam[1]) * 1000;
+                    } else if (paramName == "refreshat") {
+                        // To do: add ability to have "*" as an option for any hour/minute/second.
+                        splitTime = searchParam[1].split(":");
+                        refreshAt[0] = parseInt(splitTime[0]);
+                        refreshAt[1] = parseInt(splitTime[1]);
+                        refreshAt[2] = parseInt(splitTime[2]);
+                        pageNeedsRefresh = false;
+                    } else if (paramName == "clickrequired") {
+                        if (searchParam[1].toLowerCase() == "true") {
+                            clickRequired = true;
+                        }
+                    }
+                }
+                
+                // We refresh the page, explicity including any defined parameters in the new URL.
+                if (pageNeedsRefresh) {
+                    location.replace(window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + window.location.pathname.replace(/\/$/, "") + "?transition=" + (slideTransitionTime/1000) + "&fadesteps=" + (1/slideFadeStep) + "&fadeinterval=" + (slideFadeInterval/1000) + "&clickRequired=" + clickRequired.toString() + "&refreshAt=" + refreshAt[0] + ":" + refreshAt[1] + ":" + refreshAt[2]);
+                }
+                
+                // Set the time to refresh. If the user didn't explicitly set a refresh time as a parameter, the refresh time will be in a few seconds.
+                // If the refresh time is now (i.e. within a second or so), simply set the refresh time as the same time tomorrow.
+                nextDate = new Date();
+                nextDate.setHours(refreshAt[0]);
+                nextDate.setMinutes(refreshAt[1]);
+                nextDate.setSeconds(refreshAt[2]);
+                currentDate = new Date();
+                timeoutTime = nextDate.getTime() - currentDate.getTime();
+                if (timeoutTime <= minimumRefreshPeriod) {
+                    nextDate.setTime(nextDate.getTime() + (86400000 - minimumRefreshPeriod));
+                    timeoutTime = nextDate.getTime() - currentDate.getTime();
+                }
+                document.getElementById("willRefreshIn").innerHTML = "Will refresh in " + (timeoutTime / 1000) + " seconds.";
+                setTimeout(doReload, timeoutTime);
+
+
+                
+                // We want to disable pinch-to-zoom as we're a kiosk app - disable the "gesturestart" action...
+                document.addEventListener("gesturestart", function (e) {
+                    e.preventDefault();
+                    document.body.style.zoom = 0.99;
+                });
+
+                // ...the "gesturechange" action...
+                document.addEventListener("gesturechange", function (e) {
+                    e.preventDefault();
+                    document.body.style.zoom = 0.99;
+                });
+
+                // ...and the "gestureend" action.
+                document.addEventListener("gestureend", function (e) {
+                    e.preventDefault();
+                    document.body.style.zoom = 1;
+                });
+
+
+                
+                // Load resources - if we don't already have a defined list of resources to load, try the default "content.mp4".
+                if (resources.length == 0) {
+                    if (doesFileExist("content.mp4")) {
+                        resources = ["content.mp4"];
+                    }
+                }
+
+                // If we still haven't managed to find any resources to display, report an error.
+                if (resources.length == 0) {
+                    document.getElementById("errorMessage").innerHTML = "Error: Unable to find any resources to load.";
+                }
+                
+                // We want to tell the user what resources we're loading.
+                resourceList = document.getElementById("resourceList");
+                resource0 = document.getElementById("resource-0");
+
+                
+                
+                // Clone a "slide" DIV for each slide and set the content, this should get the content pre-loaded so there's no wait for
+                // content to load when switching from one slide to another.
+                slidesDiv = document.getElementById("slides");
+                slideDiv = document.getElementById("slide");
+                for (slideNum = 0; slideNum < resources.length; slideNum = slideNum + 1) {
+                    newResourceListItem = resource0.cloneNode();
+                    newResourceListItem.id = "resource-" + slideNum;
+                    newResourceListItem.innerHTML = resources[slideNum];
+                    resourceList.appendChild(newResourceListItem);
+                    
+                    cacheBustString = "?t=" + new Date().getTime();
+                    newSlideDiv = slideDiv.cloneNode();
+                    newSlideDiv.id = "slide-" + slideNum;
+                    newSlideDiv.style.display = "none";
+                    if (resources[slideNum].endsWith(".png") || resources[slideNum].endsWith(".jpg")) {
+                        newSlideDiv.innerHTML = "<div style=\"display:flex; justify-content:center; align-items:center; height: 100vh; width: 100vw;\"><img style=\"max-width:100%; max-height:100%; object-fit:contain;\" src=\"" + resources[slideNum] + "\"/></div>";
+                    } else if (resources[slideNum].endsWith(".svg")) {
+                        newSlideDiv.innerHTML = "<img src=\"" + resources[slideNum] + cacheBustString + "\" width=\"100%\"/>";
+                    } else if (resources[slideNum].endsWith(".mp4")) {
+                        if (clickRequired) {
+                            newSlideDiv.innerHTML = "<video width=\"100%\" height=\"100%\"><source src=\"" + resources[slideNum] + cacheBustString + "\" type=\"video/mp4\"></video>";
+                        } else {
+                            newSlideDiv.innerHTML = "<video width=\"100%\" height=\"100%\" autoplay loop><source src=\"" + resources[slideNum] + cacheBustString + "\" type=\"video/mp4\"></video>";
+                        }
+                    } else {
+                        newSlideDiv.innerHTML = "<iframe src=\"" + resources[slideNum] + cacheBustString + "\" style=\"width:100vw; height:100vh; overflow-y:hidden; overflow-x:hidden;\"></iframe>";
+                    }
+                    slidesDiv.appendChild(newSlideDiv);
+                    if (resources[slideNum].endsWith(".mp4") && clickRequired) {
+                        document.getElementById("slide-" + slideNum).childNodes[0].addEventListener("click", handleClickOrPress);
+                    }
+                }
+                resource0.style.display = "none";
+                // Make sure the intial slide is visible - we show the initial "-1" slide just once.
+                document.getElementById("slide--1").style.display = "block";
+                // Set up the first slide transition - we use the default value intially.
+                nextSlideInterval = setInterval(showNextSlide, defaultSlideTransitionTime);
+            }
+        </script>
+    </head>
+    <!-- The main BODY element - again, we set width and height to fit the whole page / screen, and we hide any scrollbars. -->
+    <body onload="startSlides()" style="margin:0; padding:0; height:100vh; max-height:100vh; float:left; width:100vw; overflow-y:hidden; overflow-x:hidden;">
+        <!-- A DIV to hold the slides. The "cursor:url" property is setting the mouse cursor to a blank so it can't be seen - this is a kiosk application designed for digital signage type screens. -->
+        <div id="slides" style="width:100px; height:100px; background-color:rgb(255,255,255); cursor:url(data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7), auto;">
+            <!-- Slide -1, used to show the user some admin / debugging information before we start the main slide show. -->
+            <div id="slide--1" style="position:absolute; top:0; left:0; width:100vw; height:100vh; overflow-y:hidden; overflow-x:hidden;">
+                <p><h1>Slideshow</h1></p>
+                <p><h2>Open source software - see: https://github.com/dhicks6345789/docs-to-markdown</h2></p>
+                <p>Timestamp: <<TIMESTAMP>></p>
+                <p>Date / Time: <<DATETIMEFORMATTED>></p>
+                <p id="willRefreshIn">Will refresh in:</p>
+                <p>
+                    Resources:
+                    <ul id="resourceList">
+                        <li id="resource-0"></li>
+                    </ul>
+                </p>
+                <p id="errorMessage" style="color:red;"></p>
+            </div>
+            <!-- The DIV that gets cloned for each slide. -->
+            <div id="slide" style="position:absolute; top:0; left:0; width:100vw; height:100vh; overflow-y:hidden; overflow-x:hidden;">
+            </div>
+        </div>
+    </body>
+</html>

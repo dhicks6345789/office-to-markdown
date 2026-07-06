@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {{ partial "header.html" . }}
+        
+        <!-- Include Video.js, for video playback support. -->
+        <link href="https://vjs.zencdn.net/7.17.0/video-js.css" rel="stylesheet"/>
+        
+        <script>
+            function expandQuestionsFromURL() {
+                // If we have a "#" as part of the URL, use that part of the URL to expand any suitibly named Collapse element.
+                if (window.location.hash != "") {
+                    hashedLocation = window.location.hash.substring(1);
+                    if (hashedLocation == "all") {
+                        allCollapses = [];
+                        allCollapsesCollection = document.getElementsByClassName("collapse");
+                        for (pl = 0; pl < allCollapsesCollection.length; pl = pl + 1) {
+                            allCollapses.push(allCollapsesCollection[pl]);
+                        }
+                        for (pl = 0; pl < allCollapses.length; pl = pl + 1) {
+                            if (!["navbarSupportedContent"].includes(allCollapses[pl].id)) {
+                                bootstrapCollapse = new bootstrap.Collapse(allCollapses[pl]);
+                                bootstrapCollapse.show();
+                            }
+                        }
+                        aTags = document.getElementsByTagName("a");
+                        for (pl = 0; pl < aTags.length; pl = pl + 1) {
+                            if (aTags[pl].innerHTML == "expand all") {
+                                aTags[pl].innerHTML = "hide all";
+                                aTags[pl].href = "/faq";
+                            }
+                        }
+                    } else {
+                        new bootstrap.Collapse(document.getElementById(hashedLocation));
+                    }
+                }
+            }
+        </script>
+    </head>
+    <body onload="navbarPageLoad(); expandQuestionsFromURL()" style="height:100vh; padding-top:70px;">
+        {{ partial "navbar.html" . }}
+        
+        <h1 class="display-5 fw-bold text-center">{{ .Title }}</h1>
+        
+        <p class="text-center">{{ .Description }}</p>
+        
+        <div class="text-center">
+            {{ .Content }}
+        </div>
+        
+        <div class="container" id="all">
+            {{ range sort (where .Site.Pages "Section" "faq") ".Path" }}
+            {{ if and (and (hasPrefix .Path "faq/") (not (strings.HasSuffix .Path "_index.md")) (strings.HasSuffix .Path ".md")) }}
+            {{ $questionNumber := (index (split .File.TranslationBaseName " ") 0) }}
+            {{ $questionName := (index (split .File.TranslationBaseName " ") 1) }}
+            {{ $mp4Name := ".mp4" | printf "%s%s" $questionNumber }}
+            {{ $webmName := ".webm" | printf "%s%s" $questionNumber }}
+            {{ $mp4Path := $mp4Name | printf "%s%s" "/content/faq/" }}
+            {{ $webmPath := $webmName | printf "%s%s" "/content/faq/" }}
+            <p>
+                <button class="btn btn-link text-decoration-none text-dark" style="font-size:x-large" type="button" data-bs-toggle="collapse" data-bs-target="#{{ $questionName }}" aria-expanded="false" aria-controls="{{ $questionName }}">
+                    {{ .Title }}
+                </button>
+            </p>
+            <div class="collapse" id="{{ $questionName }}">
+                <div class="card card-body border-0">
+                    <div class="container">
+                        <div class="row">
+                            {{ if or (os.FileExists $mp4Path) (os.FileExists $webmPath) }}
+                            <div class="col-9">
+                            {{ else }}
+                            <div class="col-12">
+                            {{ end }}
+                                {{ .Content }}
+                            </div>
+                            {{ if or (os.FileExists $mp4Path) (os.FileExists $webmPath) }}
+                            <div class="col-3">
+                                <video id="{{ $questionName }}Video" class="video-js" controls preload="auto" width="240" height="240" poster="play.png" data-setup="{}">
+                                    <source src="{{ $webmName }}" type="video/webm"/>
+                                    <p class="vjs-no-js">Video version of this FAQ answer.</p>
+                                </video>
+                            </div>
+                            {{ end }}
+                        </div>
+                    </div>
+                    <div>
+                        <a href="/faq#{{ $questionName }}" onClick="window.location.href='/faq/#{{ $questionName }}'; window.location.reload();"><img src="/bootstrap-icons/1.7.1/link.svg" alt="Permalink" width="32" height="32">Permalink</a>
+                    </div>
+                </div>
+            </div>
+            {{ end }}
+            {{ end }}
+        </div>
+        
+        <!-- Initilise Video.js. -->
+        <script src="https://vjs.zencdn.net/7.17.0/video.min.js"></script>
+    </body>
+</html>

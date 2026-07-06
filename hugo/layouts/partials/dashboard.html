@@ -1,0 +1,36 @@
+        <div class="container-fluid">
+            {{ $rowNum := 1 }}
+            {{ range where .Site.Pages "Section" "rows" }}
+            {{ $rowPage := . }}
+            {{ if isset .Params "height" }}
+            {{ if and (isset .Params "title") (ne .Params.title "-") }}
+            <div class="p-3 row">
+                <div class="col-sm-12">
+                    <h2 class="p-3 mt-2 mb-2 bg-secondary text-white text-center">{{ .Params.title }}</h2>
+                </div>
+            </div>
+            {{ end }}
+            <div class="p-3 row" style="height:{{ mul (int .Params.height) 9 }}vw">
+                {{ range $colNum := (seq 12) }}
+                {{ $colNumWidth := index $rowPage.Params (print "col" $colNum "Width") }}
+                {{ if $colNumWidth }}
+                {{ $colNumType := index $rowPage.Params (print "col" $colNum "Type") }}
+                {{ $colNumURL := index $rowPage.Params (print "col" $colNum "URL") }}
+                {{ $colNumLabel := index $rowPage.Params (print "col" $colNum "Label") }}
+                <div class="col-sm-{{ $colNumWidth }}">
+                    {{ if (eq $colNumType "link") }}
+                    <a href="{{ $colNumURL }}" target="_blank"><img src="icons/{{ $rowNum }}-{{ $colNum }}-icon.svg" width="100%"/></a>
+                    <a href="{{ $colNumURL }}" target="_blank"><div class="p-0 mt-2 mb-2 text-white text-center" style="background-color:CornflowerBlue">{{ $colNumLabel }}</div></a>
+                    {{ else if (eq $colNumType "iframe") }}
+                    <iframe src="{{ $colNumURL }}" style="margin:0; padding:0; width:100%; height:100%;" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
+                    {{ else if (eq $colNumType "image") }}
+                    <img src="icons/{{ $rowNum }}-{{ $colNum }}-icon.svg" width="100%"/>
+                    {{ end }}
+                </div>
+                {{ end }}
+                {{ end }}
+            </div>
+            {{ end }}
+            {{ $rowNum := add $rowNum 1 }}
+            {{ end }}
+        </div>

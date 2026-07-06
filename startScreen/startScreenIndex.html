@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+
+<!-- The main HTML element - set margins to 0 and size to 100% so it fills the whole page (or whole screen in full-screen mode). -->
+<html lang="en" style="margin:0; padding:0; height:100%;">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        
+        <title>Start Screen</title>
+            
+        <!-- Our user interface is constructed with Bootstrap 5, including Popper 2. -->
+        <link rel="stylesheet" href="/bootstrap/5.1.3/css/bootstrap.min.css">
+        <script src="/popper/2.11.5/popper.min.js"></script>
+        <script src="/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+        
+        <script>
+            // By default, as a stand-alone application, the "resources" array will be empty. If running with the server-side script
+            // then this line gets replaced with a list of resources. If this array is empty, some later code will try to find resources.
+            var resources = [];
+
+            // A function to check if a given file / URL exists (server-side). See:
+            // https://www.kirupa.com/html5/checking_if_a_file_exists.htm
+            function doesFileExist(urlToFile) {
+                var xhr = new XMLHttpRequest();
+                xhr.open('HEAD', urlToFile, false);
+                xhr.send();
+                
+                if (xhr.status == "404") {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+            
+            // Generate a simple "cyrb53" hash from a given string. Non-cryptographic, we're just using
+            // this hash to generate a random icon image if there's no other site icon available.
+            // See: https://stackoverflow.com/a/52171480/20530257
+            function cyrb53 (str, seed = 0) {
+                let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
+                for(let i = 0, ch; i < str.length; i++) {
+                    ch = str.charCodeAt(i);
+                    h1 = Math.imul(h1 ^ ch, 2654435761);
+                    h2 = Math.imul(h2 ^ ch, 1597334677);
+                }
+                h1  = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
+                h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+                h2  = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
+                h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+                
+                return 4294967296 * (2097151 & h2) + (h1 >>> 0);
+            }
+            
+            // Generate an icon image for the given URL. We use a simple hash function to turn a URL into a 32-character string of digits,
+            // then use those digits to pick a drawing colour (black, red, green or blue) and to draw squares on a canvas element, which
+            // we return as a data URL that we can use as an image in the page. The image is "random", but consistant for a given URL, so
+            // the icon for any given URL should always look the same.
+            function generateIcon(theURL) {
+                // The hash function produces 16-digit results, we want 32, so we just reverse the input string and get a hash of that
+                // as well, then stick the two strings together.
+                URLHash = cyrb53(theURL).toString() + cyrb53(theURL.split("").reverse().join("")).toString();
+                fillCol = "black";
+                if (["2", "3"].includes(URLHash[0])) {
+                    fillCol = "red";
+                } else if (["4", "5"].includes(URLHash[0])) {
+                    fillCol = "green";
+                } else if (["6", "7"].includes(URLHash[0])) {
+                    fillCol = "blue";
+                }
+                iconCanvas = document.createElement("canvas");
+                iconCanvas.width = 256;
+                iconCanvas.height = 256;
+                iconContext = iconCanvas.getContext("2d");
+                for (py = 0; py < 8; py = py + 1) {
+                    for (px = 0; px < 4; px = px + 1) {
+                        if (["0", "1", "2", "3", "4"].includes(URLHash[(py*4)+px])) {
+                            iconContext.fillStyle = "white";
+                        } else {
+                            iconContext.fillStyle = fillCol;
+                        }
+                        iconContext.fillRect(px * 32, py * 32, 32, 32);
+                        iconContext.fillRect((7-px) * 32, py * 32, 32, 32);
+                    }
+                }
+                return iconCanvas.toDataURL("image/png");
+            }
+
+            // The page load function - execution starts here.
+            function startApp() {
+                // If we don't already have resources defined (which we might have, if this file is being used as a template from a server-side script), try and find some.
+                if (resources.length == 0) {
+                    // Load resources.
+                    if (doesFileExist("index.csv")) {
+                        resources = ["content.mp4"];
+                    }
+                }
+                
+                if (resources.length == 0) {
+                    // If we still haven't managed to find any resources to display, report an error.
+                    document.getElementById("errorMessage").innerHTML = "Error: Unable to find any resources to load.";
+                } else {
+                    // Step through the resources, setting up a start item tile on the page for each one.
+                    itemCount = 0;
+                    for (section = 0; section < resources.length; section = section + 1) {
+                        if (section != 0) {
+                            itemCount = itemCount + (6 - (itemCount % 6))
+                        }
+                        newRow = document.getElementById("heading-0").cloneNode(true);
+                        newRow.id = "heading-" + section;
+                        newRow.innerHTML = newRow.innerHTML.replaceAll("{{HEADING}}", resources[section][0]);
+                        document.getElementById("itemRows").appendChild(newRow);
+                        newRow.style.display = "";
+                        
+                        for (resource = 0; resource < resources[section][1].length; resource = resource + 1) {
+                            if (resources[section][1][resource][0] != "URL") {
+                                itemCount = itemCount + 1;
+                                if (itemCount == 1 || itemCount % 6 == 1) {
+                                    newRow = document.getElementById("row-0").cloneNode(true);
+                                    newRow.id = "row-" + (Math.floor(itemCount / 6) + 1);
+                                    newRow.childNodes[1].id = "resource-" + itemCount;
+                                    newRow.childNodes[3].id = "resource-" + (itemCount+1);
+                                    newRow.childNodes[5].id = "resource-" + (itemCount+2);
+                                    newRow.childNodes[7].id = "resource-" + (itemCount+3);
+                                    newRow.childNodes[9].id = "resource-" + (itemCount+4);
+                                    newRow.childNodes[11].id = "resource-" + (itemCount+5);
+                                    document.getElementById("itemRows").appendChild(newRow);
+                                    newRow.style.display = "";
+                                }
+                                newTile = document.getElementById("itemTile-0").cloneNode(true);
+                                newTile.id = "itemTile-" + itemCount;
+                                newTileDIV = newTile.firstElementChild;
+                                newTileDIV.id = "itemTileDIV-" + itemCount;
+
+                                tileURL = resources[section][1][resource][0];
+                                tileTitle = resources[section][1][resource][1];
+                                tileDescription = resources[section][1][resource][2];
+                                tileIcon = resources[section][1][resource][3];
+                                
+                                newTile.setAttribute("href", tileURL);
+                                newTileDIV.firstElementChild.firstElementChild.innerHTML = tileTitle;
+                                document.getElementById("resource-" + itemCount).appendChild(newTile);
+                                if (tileIcon != "") {
+                                    newTileDIV.style.backgroundImage = "url(\'" + tileIcon + "\')";
+                                } else {
+                                    newTileDIV.style.backgroundImage = "url(\'" + generateIcon(tileURL) + "\')";
+                                }
+                                newTileDIV.style.backgroundPosition = "center center";
+                                newTileDIV.style.backgroundSize = "auto 100%";
+                                newTileDIV.style.backgroundRepeat = "no-repeat";
+                                newTile.style.display = "";
+                                console.log(newTileDIV);
+                            }
+                        }
+                    }
+                }
+            }
+        </script>
+    </head>
+    <!-- The main body element - again, we set width and height to fit the whole page / screen, and we hide the horizontal scrollbar. -->
+    <body onload="startApp()" style="margin:0; padding:0; height:100vh; max-height:100vh; width:100vw; overflow-x:hidden;">
+        <!-- A heading row. -->
+        <div id="heading-0" class="row" style="display:none;">
+            <h1>{{HEADING}}</h1>
+        </div>
+
+        <!-- A row of (6) tiles. -->
+        <div id="row-0" class="row" style="margin:0; padding:3; height:16.6vw; display:none;">
+            <div id="resource-01" class="col-sm-2" style="height:100%;"></div>
+            <div id="resource-02" class="col-sm-2" style="height:100%;"></div>
+            <div id="resource-03" class="col-sm-2" style="height:100%;"></div>
+            <div id="resource-04" class="col-sm-2" style="height:100%;"></div>
+            <div id="resource-05" class="col-sm-2" style="height:100%;"></div>
+            <div id="resource-06" class="col-sm-2" style="height:100%;"></div>
+        </div>
+
+        <!-- A single item tile. -->
+        <a id="itemTile-0" href="{{URL}}" target="_blank" style="display:none;">
+            <div class="bg text-center" style="margin:0; padding:0; height:100%; width:100%;">
+                <div style="height:5.8vw;"><h2 style="background-color:rgb(255 255 255 / 0.3); color:#000;">{{TITLE}}</h2></div>
+            </div>
+        </a>
+
+        <!-- The main DIV for the page. -->
+        <div id="itemRows" style="margin:0; padding:0; width:100%;">
+        </div>
+    </body>
+</html>

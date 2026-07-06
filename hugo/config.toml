@@ -1,0 +1,5 @@
+baseURL = "https://mystart.online/"
+languageCode = "en-gb"
+title = "Dashboard"
+disableKinds = ["taxonomy", "taxonomyTerm", "sitemap"]
+ignoreErrors = ["error-disable-taxonomy"]
