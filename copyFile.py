@@ -4,6 +4,7 @@
 # Standard libraries.
 import sys
 import shutil
+import pathlib
 
 # Our own Office To Markdown library.
 import officeToMarkdownLib
