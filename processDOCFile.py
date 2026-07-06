@@ -24,9 +24,9 @@ if inputPath.suffix in ["DOCX", "DOC"]:
   # Check and see if either the input file or the script itself have changed since the last
   # run - there's no point doing any work if neither have changed.
   doTransform = False
-  if not officeToMarkdownLib.checkTimestampsMatch(scriptTimestamp, pathlib.Path(__file__)):
+  if not officeToMarkdownLib.checkTimestampsMatch(arg["scriptTimestamp"], pathlib.Path(__file__)):
     doTransform = True
-  elif not officeToMarkdownLib.checkTimestampsMatch(inputTimestamp, inputPath):
+  elif not officeToMarkdownLib.checkTimestampsMatch(args["inputTimestamp"], inputPath):
     doTransform = True
   if doTransform:
     officeToMarkdownLib.ifVerbose(args["verbose"], "Processing " + docType + " file: " + inputFile + " to " + outputPath)
