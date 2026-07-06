@@ -13,6 +13,8 @@ import PIL.Image
 # We use the Pandas library, which in turn uses the XLRD library, to read Excel data.
 import pandas
 
+import markdownify
+
 
 
 # Pandoc escapes Markdown control characters embedded in Word documents, but we want to let people embed chunks of Markdown in
@@ -132,38 +134,46 @@ def frontMatterToString(theFrontMatter):
 # Note: previously, a bug prevented Pandoc correctly parsing DOCX files produced by Word Online. As of around Monday, 4th March 2019, Pandoc 2.7 now seems to work.
 # The Debian 11 (Bullseye) Pandoc package version is 2.9, previous versions are 2.5 or earlier, so you either need to make sure Debian is up-to-date or install
 # Pandoc via the .deb file provided on their website.
+#def docToMarkdown(inputFile, baseURL="", markdownType="gfm", validFrontMatterFields=[]):
+#    markdown = ""
+#    frontMatter = {}
+#
+#    parsingFrontMatter = True
+#    blankLineCount = 0
+#    pandocProcess = subprocess.Popen("pandoc --wrap=none -s \"" + str(inputFile) + "\" -t " + markdownType + " -o -", shell=True, stdout=subprocess.PIPE)
+#    for markdownLine in pandocProcess.communicate()[0].decode("utf-8").split("\n"):
+#        markdownLine = markdownLine.strip()
+#        # Un-escape Markdown control characters embedded in Word documents.
+#        for markdownReplaceKey in markdownReplace.keys():
+#            markdownLine = markdownLine.replace(markdownReplaceKey, markdownReplace[markdownReplaceKey])
+#        if parsingFrontMatter:
+#            if markdownLine == "":
+#                blankLineCount = blankLineCount + 1
+#            else:
+#                if blankLineCount < 2:
+#                    parsingFrontMatter = False
+#                    if ":" in markdownLine:
+#                        markdownSplit = markdownLine.split(":", 1)
+#                        frontMatterName = markdownSplit[0].strip()
+#                        if not " " in frontMatterName:
+#                            parsingFrontMatter = True
+#                            if (frontMatterName in validFrontMatterFields) or (validFrontMatterFields == []):
+#                                frontMatter[markdownSplit[0].strip()] = markdownSplit[1].strip()
+#                    else:
+#                        markdown = markdown + markdownLine.replace(baseURL, "") + "\n"
+#                blankLineCount = 0
+#        else:
+#            markdown = markdown + markdownLine.replace(baseURL, "") + "\n"
+#    return(markdown, frontMatter)
+    
 def docToMarkdown(inputFile, baseURL="", markdownType="gfm", validFrontMatterFields=[]):
-    markdown = ""
     frontMatter = {}
-
-    parsingFrontMatter = True
-    blankLineCount = 0
-    pandocProcess = subprocess.Popen("pandoc --wrap=none -s \"" + str(inputFile) + "\" -t " + markdownType + " -o -", shell=True, stdout=subprocess.PIPE)
-    for markdownLine in pandocProcess.communicate()[0].decode("utf-8").split("\n"):
-        markdownLine = markdownLine.strip()
-        # Un-escape Markdown control characters embedded in Word documents.
-        for markdownReplaceKey in markdownReplace.keys():
-            markdownLine = markdownLine.replace(markdownReplaceKey, markdownReplace[markdownReplaceKey])
-        if parsingFrontMatter:
-            if markdownLine == "":
-                blankLineCount = blankLineCount + 1
-            else:
-                if blankLineCount < 2:
-                    parsingFrontMatter = False
-                    if ":" in markdownLine:
-                        markdownSplit = markdownLine.split(":", 1)
-                        frontMatterName = markdownSplit[0].strip()
-                        if not " " in frontMatterName:
-                            parsingFrontMatter = True
-                            if (frontMatterName in validFrontMatterFields) or (validFrontMatterFields == []):
-                                frontMatter[markdownSplit[0].strip()] = markdownSplit[1].strip()
-                    else:
-                        markdown = markdown + markdownLine.replace(baseURL, "") + "\n"
-                blankLineCount = 0
-        else:
-            markdown = markdown + markdownLine.replace(baseURL, "") + "\n"
-    return(markdown, frontMatter)
-
+    
+    with open(inputFile, "rb") as inputDOCXFile:
+        result = mammoth.convert_to_html(inputDOCXFile)
+        html = result.value
+        return(markdownify.markdownify(html), frontMatter)
+        
 # Takes an input file and coverts it to Markdown, writing that Markdown to the given output file.
 def docToMarkdownFile(inputFile, outputFile, baseURL="", markdownType="gfm", validFrontMatterFields=["title"]):
     outputMarkdown, outputFrontmatter = docToMarkdown(inputFile, baseURL=baseURL, markdownType=markdownType, validFrontMatterFields=validFrontMatterFields)
