@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+
+<!-- The main HTML element - set margins to 0 and size to 100% so it fills the whole page (or whole screen in full-screen mode). -->
+<html lang="en" style="margin:0; padding:0; height:100%;">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Set this page (hopefully) to not be cached, so it gets reloaded each time the browser refreshes / reloads / reboots.
+        Seems to be of particular importance for ChromeOS kisok-mode devices, which seem to cache content between reboots. -->
+        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+        <meta http-equiv="Pragma" content="no-cache"/>
+        <meta http-equiv="Expires" content="0"/>
+        
+        <title>Audio Cues</title>
+            
+        <!-- Our user interface is constructed with Bootstrap 5, including Popper 2. -->
+        <link rel="stylesheet" href="/bootstrap/5.1.3/css/bootstrap.min.css">
+        <script src="/popper/2.11.5/popper.min.js"></script>
+        <script src="/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+        
+        <script>
+            // By default, as a stand-alone application, the "resources" array will be empty. The server-side script replaces this line with a list
+            // of resources, or some later code will try to find resources.
+            var resources = [];
+            var audioObjects = [];
+            var awakeInterval = 0;
+
+            // A function to check if a given file / URL exists (server-side). See:
+            // https://www.kirupa.com/html5/checking_if_a_file_exists.htm
+            function doesFileExist(urlToFile) {
+                var xhr = new XMLHttpRequest();
+                xhr.open('HEAD', urlToFile, false);
+                xhr.send();
+                
+                if (xhr.status == "404") {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+
+            function updatePlayer(theResource) {
+                audioObjects[theResource-1]["playerProgress"].style.width = Math.ceil((parseFloat(audioObjects[theResource-1]["audioObject"].currentTime) / parseFloat(audioObjects[theResource-1]["audioObject"].duration)) * 100) + "%";
+            }
+
+            // Toggle an audio element - if it's currently paused then have it play, otherwise pause it.
+			function playPauseAudio(theResource) {
+                audioPlayer = audioObjects[theResource-1]["audioPlayer"];
+                playerButton = audioObjects[theResource-1]["playerButton"];
+                playerIcon = audioObjects[theResource-1]["playerIcon"];
+                playerBar = audioObjects[theResource-1]["playerBar"];
+                audioObject = audioObjects[theResource-1]["audioObject"];
+                
+                if (playerIcon.getAttribute("src") == "/bootstrap-icons/1.8.1/play.svg") {
+                    playerButton.className = "btn btn-warning";
+                    playerIcon.setAttribute("src", "/bootstrap-icons/1.8.1/pause.svg");
+                    audioObject.play();
+                    audioObjects[theResource-1]["playerInterval"] = setInterval(Function("updatePlayer(" + theResource + ");"), 200);
+                    playerBar.style.display = "";
+                    updatePlayer(theResource);
+                } else {
+                    clearInterval(audioObjects[theResource-1]["playerInterval"]);
+                    playerButton.className = "btn btn-success";
+                    playerIcon.setAttribute("src", "/bootstrap-icons/1.8.1/play.svg");
+                    audioObject.pause();
+                }
+            }
+            
+            // Stop an audio element playing and rewind it back to the start.
+			function rewindAudio(theResource) {
+                audioPlayer = audioObjects[theResource-1]["audioPlayer"];
+                playerButton = audioObjects[theResource-1]["playerButton"];
+                playerIcon = audioObjects[theResource-1]["playerIcon"];
+                playerBar = audioObjects[theResource-1]["playerBar"];
+                audioObject = audioObjects[theResource-1]["audioObject"];
+
+                clearInterval(audioObjects[theResource-1]["playerInterval"]);
+                playerButton.className = "btn btn-success";
+                playerIcon.setAttribute("src", "/bootstrap-icons/1.8.1/play.svg");
+                audioObject.pause();
+                audioObject.currentTime = 0;
+                playerBar.style.display = "none";
+            }
+
+			// To do: handle the "further options" button on each audio element.
+            function showOptions(theResource) {
+                console.log("Show: " + theResource);
+            }
+
+            // Copy the shortcut URL for this page to the clipboard for the user.
+            function copyShortcutURL() {
+                copyText = document.getElementById("shortcutURL");
+                copyText.select();
+                document.execCommand("copy");
+            }
+
+            // Periodically (every 50 seconds), play a short silent audio element. This, hopefully, keeps Bluetooth and similar speakers from disconnecting / shutting off due to inactivity.
+            function keepSpeakerAwake() {
+                awakeButton = document.getElementById("speakerAwakeButton");
+                awakeIcon = awakeButton.childNodes[1];
+                if (awakeIcon.getAttribute("src") == "/bootstrap-icons/1.8.1/play.svg") {
+                    awakeButton.className = "btn btn-danger";
+                    awakeIcon.setAttribute("src", "/bootstrap-icons/1.8.1/pause.svg");
+                    awakeInterval = setInterval(playSilence, 5000);
+                } else {
+                    awakeButton.className = "btn btn-success";
+                    awakeIcon.setAttribute("src", "/bootstrap-icons/1.8.1/play.svg");
+                    clearInterval(awakeInterval);
+                }
+            }
+
+			// Plays the silent audio item. Used by "keepSpeakerAwake" as an interval function stop the speaker going to sleep.
+			function playSilence() {
+                document.getElementById("silence").play();
+            }
+
+			function populateData() {
+				dataTableStr = "<tr><th>MD5</th><th>Filename</th><th>Title</th><th>Description</th><th>Icon</th><th>Start</th><th>End</th><th>Volume</th><th>Key</th></tr>"
+				for (resourceRow = 1; resourceRow < resources.length; resourceRow = resourceRow + 1) {
+					dataRowStr = "\n<tr>";
+					for (resourceCol = 0; resourceCol < resources[resourceRow].length; resourceCol = resourceCol + 1) {
+						heading = resources[0][resourceCol]
+						item = resources[resourceRow][resourceCol]
+						if ((heading == "Start" || heading == "End") && item == "") {
+							item = "0";
+						}
+						if (heading == "Volume" && item == "") {
+							item = "100";
+						}
+						dataRowStr = dataRowStr + "<td>" + item + "</td>";
+					}
+					dataRowStr = dataRowStr + "</tr>";
+					dataTableStr = dataTableStr + dataRowStr;
+				}
+				document.getElementById("dataTable").innerHTML = dataTableStr;
+				console.log(dataTableStr);
+			}
+            
+            // The page load function - execution starts here.
+            function startApp() {
+                // Hide the "download this page" message if we're already running on a local file system.
+                if (window.location.protocol == "file:") {
+                    document.getElementById("downloadMessage").style.display = "none";
+                }
+
+                document.getElementById("shortcutURL").value = window.location;
+                
+                // If we don't already have resources defined (which we might have, if this file is being used as a template from a server-side script), try and find some.
+                if (resources.length == 0) {
+                    // Load resources.
+                    if (doesFileExist("index.csv")) {
+                        resources = ["content.mp4"];
+                    }
+                }
+                
+                // If we still haven't managed to find any resources to display, report an error.
+                if (resources.length == 0) {
+                    document.getElementById("errorMessage").innerHTML = "Error: Unable to find any resources to load.";
+                } else {
+                    // Step through the resources, setting up an audio player on the page for each one.
+					// Fields: 0:Input file MD5 Hash, 1:Audio file name, 2:Title, 3:Description, 4:Icon File name, 5:Start, 6:End, 7:Volume, 8:Key
+                    itemCount = 0;
+                    for (resource = 0; resource < resources.length; resource = resource + 1) {
+                        if (resources[resource][1] != "Filename") {
+                            itemCount = itemCount + 1;
+                            if (itemCount == 1 || itemCount % 6 == 1) {
+                                newRow = document.getElementById("row-0").cloneNode(true);
+                                newRow.id = "row-" + (Math.floor(itemCount / 6) + 1);
+                                newRow.childNodes[1].id = "resource-" + itemCount;
+                                newRow.childNodes[3].id = "resource-" + (itemCount+1);
+                                newRow.childNodes[5].id = "resource-" + (itemCount+2);
+                                newRow.childNodes[7].id = "resource-" + (itemCount+3);
+                                newRow.childNodes[9].id = "resource-" + (itemCount+4);
+                                newRow.childNodes[11].id = "resource-" + (itemCount+5);
+                                document.getElementById("playerRows").appendChild(newRow);
+                                newRow.style.display = "";
+                            }
+                            newPlayer = document.getElementById("audioPlayer-0").cloneNode(true);
+                            newPlayer.id = "audioPlayer-" + itemCount;
+                            newPlayer.innerHTML = newPlayer.innerHTML.replaceAll("{{TITLE}}", resources[resource][2]).replaceAll("(0)","(" + resource + ")");
+                            document.getElementById("resource-" + itemCount).appendChild(newPlayer);
+                            newPlayer.style.display = "";
+                            if (resources[resource][4] != "") {
+                                newPlayer.style.backgroundImage = "url(\'" + resources[resource][4] + "\')";
+                            } else {
+                                newPlayer.style.backgroundImage = "url(\'/bootstrap-icons/1.8.1/soundwave.svg\')";
+                            }
+                            newPlayer.style.backgroundPosition = "center center";
+                            newPlayer.style.backgroundSize = "100% 100%";
+                            newPlayer.style.backgroundRepeat = "no-repeat";
+
+                            // Now, add the HTML audio element to the player.
+                            newAudioObject = document.createElement("AUDIO");
+                            // Set the URL of the audio resource, but include a "fake" paramater to convince the browser to reload a non-cached version of the resource.
+                            // Otherwise, changes to the audio files processed on the server side don't tend to turn up in the browser when the user is expecting them to.
+                            // See: https://stackoverflow.com/questions/25821915/how-to-force-the-html5-audio-tag-to-reload-a-changing-file
+                            newAudioObject.src = resources[resource][1] + "?cb=" + new Date().getTime();
+                            newAudioObject.load();
+                            newAudioObject.onended = Function("rewindAudio(" + resource + ")");
+                            newPlayer.appendChild(newAudioObject);
+                            
+                            // Once the new audio player is set up on the page, save references to the object for control later on.
+                            audioObjects.push({"audioPlayer":newPlayer, "playerButton":newPlayer.childNodes[3].childNodes[1], "playerIcon":newPlayer.childNodes[3].childNodes[1].childNodes[0], "playerBar":newPlayer.childNodes[5].childNodes[3].childNodes[1], "playerProgress":newPlayer.childNodes[5].childNodes[3].childNodes[1].childNodes[1], "playerInterval":0, "audioObject":newAudioObject});
+                        }
+                    }
+                }
+				populateData();
+
+				// Set up an event handler to listen for keypresses, so we can trigger sound effects by keypress if wanted.
+				document.body.onkeydown = function(theEvent) {
+					chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+					keypressed = String.fromCharCode(theEvent.keyCode).toUpperCase();
+					// Handle the Escape key - stop all audio.
+					if (theEvent.keyCode == 27) {
+						 for (pl = 0; pl < audioObjects.length; pl = pl + 1) {
+							 rewindAudio(pl+1);
+						 }
+					} else if (theEvent.keyCode == 122) {
+						// F11 pressed - do nothing. For some reason, triggers "Z" otherwise, which is odd.
+					} else {
+						for (pl = 0; pl < chars.length; pl = pl + 1) {
+							if (keypressed == chars[pl]) {
+								rewindAudio(pl+1);
+								playPauseAudio(pl+1);
+							}
+						}
+					}
+				};
+            }
+        </script>
+    </head>
+    <!-- The main body element - again, we set width and height to fit the whole page / screen, and we hide the horizontal scrollbar. -->
+    <body onload="startApp()" style="margin:0; padding:0; height:100vh; max-height:100vh; width:100vw; overflow-x:hidden;">
+	<div style="display:none;"><audio id="silence"><source src="silence.mp3" type="audio/mp3"></audio></div>
+        <div id="audioPlayer-0" class="bg text-center" style="margin:0; padding:0; height:100%; width:100%; display:none;">
+            <div style="height:5.8vw;"><h2 style="background-color:rgb(255 255 255 / 0.3); color:#000;">{{TITLE}}</h2></div>
+            <div style="height:5.8vw">
+                <button type="button" class="btn btn-success" style="opacity:0.9; width:5vw; height:5vw;" onclick="playPauseAudio(0);"><img src="/bootstrap-icons/1.8.1/play.svg" height="100%" width="100%"></button>
+            </div>
+            <div class="row" style="height:1vw; width:100%;">
+                <div class="col-1" style="width:10%"></div>
+                <div class="col-10 text-center">
+                    <div class="progress" style="margin:0; padding:0; display:none;">
+                        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+                <div class="col-1" style="width:10%"></div>
+            </div>
+            <div style="height:1vw;"></div>
+            <div style="height:3vw;">
+                <div class="row" style="margin:0; padding:0; width:100%;">
+                    <div class="col text-center">
+                        <button type="button" class="btn btn-success" style="opacity:0.9; width:3vw; height:3vw;"><img src="/bootstrap-icons/1.8.1/repeat.svg" height="100%" width="100%" onclick="rewindAudio(0);"></button>
+                    </div>
+                    <div class="col text-center">
+                        <button type="button" class="btn btn-success" style="opacity:0.9; width:3vw; height:3vw;"><img src="/bootstrap-icons/1.8.1/three-dots.svg" height="100%" width="100%" onclick="showOptions(0);"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="playerRows" style="margin:0; padding:0; width:100%;">
+            <!-- <div id="row-0" class="row g-0" style="margin:0; padding:3; height:16.6vw; width:100%; display:none;">
+                <div id="resource-01" class="col" style="width:16.7vw; height:100%;"></div>
+                <div id="resource-02" class="col" style="width:16.7vw; height:100%;"></div>
+                <div id="resource-03" class="col" style="width:16.6vw; height:100%;"></div>
+                <div id="resource-04" class="col" style="width:16.6vw; height:100%;"></div>
+                <div id="resource-05" class="col" style="width:16.7vw; height:100%;"></div>
+                <div id="resource-06" class="col" style="width:16.7vw; height:100%;"></div>
+            </div> -->
+            <div id="row-0" class="row" style="margin:0; padding:3; height:16.6vw; display:none;">
+                <div id="resource-01" class="col-sm-2" style="height:100%;"></div>
+                <div id="resource-02" class="col-sm-2" style="height:100%;"></div>
+                <div id="resource-03" class="col-sm-2" style="height:100%;"></div>
+                <div id="resource-04" class="col-sm-2" style="height:100%;"></div>
+                <div id="resource-05" class="col-sm-2" style="height:100%;"></div>
+                <div id="resource-06" class="col-sm-2" style="height:100%;"></div>
+            </div>
+        </div>
+        <div class="row" style="margin:0; padding:0; width:100%;">
+            <div class="col text-start">
+				<!-- Button to Open the Modal -->
+				<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#viewDataModal">
+					View Data
+				</button>
+            </div>
+            <div class="col text-center">
+                Shortcut to save: <input type="text" id="shortcutURL" value="" readonly/>
+                <button type="button" class="btn btn-default" aria-label="Copy shortcut URL" onclick="copyShortcutURL()">
+                    <img src="/bootstrap-icons/1.8.1/stickies.svg" alt="Copy shortcut URL" width="32" height="32">
+                </button>
+            </div>
+            <div class="col text-end">
+                Keep speaker awake:
+                <button id="speakerAwakeButton" type="button" class="btn btn-success" aria-label="Keep speaker awake" onclick="keepSpeakerAwake()">
+                    <img src="/bootstrap-icons/1.8.1/play.svg" alt="Keep speaker awake" width="32" height="32">
+                </button>
+            </div>
+        </div>
+        <div id="downloadMessage" class="text-center">You can <a href="audioCues.zip">download this page</a> to use offline.</div>
+		<!-- A modal (pop-up) window to show a copy-and-past-able table of data for the user. -->
+		<div class="modal" id="viewDataModal">
+			<div class="modal-dialog" style="max-width:95%; max-height:95%;" role="document">
+				<div class="modal-content">
+					<!-- Modal Header -->
+					<div class="modal-header">
+						<h4 class="modal-title">Data</h4>
+						<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+					</div>
+					
+					<!-- Modal body -->
+					<div class="modal-body">
+						<table id="dataTable">
+						</table>
+					</div>
+					
+					<!-- Modal footer -->
+					<div class="modal-footer">
+						<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+    </body>
+</html>
