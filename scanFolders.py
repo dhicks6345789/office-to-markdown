@@ -7,7 +7,7 @@ import pathlib
 import subprocess
 
 # Our own Docs To Markdown library.
-import docsToMarkdownLib
+import officeToMarkdownLib
 
 
 
@@ -93,13 +93,13 @@ def scanFolder(theInput, theOutput):
                 outputItem = docsToMarkdownLib.platformPath(outputItem)
                 
                 if args["verbose"] == "true":
-                    print("DocsToMarkdown - matched: " + inputItem + " with " + match, flush=True)
+                    print("OfficeToMarkdown - matched: " + inputItem + " with " + match, flush=True)
 
-                if scriptPath in changedMatchPaths or inputItem in changedInputPaths:
-                    commandLine = [scriptExec, scriptPath, inputItem, outputItem]
-                    if args["verbose"] == "true":
-                        print("DocsToMarkdown - running: " + " ".join(commandLine), flush=True)
-                    subprocess.run(commandLine)
+                #if scriptPath in changedMatchPaths or inputItem in changedInputPaths:
+                commandLine = [scriptExec, scriptPath, inputItem, outputItem]
+                if args["verbose"] == "true":
+                    print("DocsToMarkdown - running: " + " ".join(commandLine), flush=True)
+                subprocess.run(commandLine)
         if (matched == False) and (folderMatched == False) and (not item == ""):
             unmatchedItems.append(item)
     for item in unmatchedItems:
