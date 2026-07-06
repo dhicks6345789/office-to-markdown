@@ -29,10 +29,10 @@ if inputPath.suffix.lower() in [".docx", ".doc"]:
   elif not officeToMarkdownLib.checkTimestampsMatch(args["inputTimestamp"], inputPath):
     doTransform = True
   if doTransform:
-    officeToMarkdownLib.ifVerbose(args["verbose"], "processDOCFile - Processing " + inputPath.suffix + " file: " + str(inputFile) + " to " + str(outputPath))
+    officeToMarkdownLib.ifVerbose(args["verbose"], "processDOCFile - Processing " + inputPath.suffix + " file: " + str(inputPath) + " to " + str(outputPath))
 
     # Our library function here calls Pandoc to do the conversion.
-    docMarkdown, docFrontmatter = officeToMarkdownLib.docToMarkdown(inputFile)
+    docMarkdown, docFrontmatter = officeToMarkdownLib.docToMarkdown(inputPath)
 
     # If we don't already have a "title" front matter variable, go through the Markdown line by line,
     # checking for the first defined title string that we can use as a title.
