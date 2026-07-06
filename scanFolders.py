@@ -153,4 +153,7 @@ if "copyIn" in args and not args["copyIn"] == "":
     copyFolder(officeToMarkdownLib.normalisePath(args["copyIn"]), officeToMarkdownLib.normalisePath(args["output"]))
 
 if args["deleteExtraFiles"] == "true":
+    if args["verbose"] == "true":
+        print("outputFiles:")
+        print(outputFiles)
     deleteExtraFiles(officeToMarkdownLib.normalisePath(args["output"]))
