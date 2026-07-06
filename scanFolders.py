@@ -108,11 +108,10 @@ def scanFolder(theInput, theOutput):
                 officeToMarkdownLib.ifVerbose(args["verbose"], "OfficeToMarkdown - running: " + " ".join(commandLine))
                 
                 commandLineResult = subprocess.run(commandLine, capture_output=True, text=True)
-                outputFiles.append(commandLineResult.stdout.split("\n"))
-
-
-        
-        
+                for outputFile in commandLineResult.stdout.split("\n"):
+                    outputFile = outputFile.strip()
+                    if not outputFile == "":
+                        outputFiles.append(outputFile)
         if (matched == False) and (folderMatched == False) and (not item == ""):
             unmatchedItems.append(item)
     for item in unmatchedItems:
