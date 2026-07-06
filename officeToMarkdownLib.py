@@ -173,14 +173,13 @@ def frontMatterToString(theFrontMatter):
 def docToMarkdown(inputFile, baseURL="", markdownType="gfm", validFrontMatterFields=[]):
     frontMatter = {}
     
-    with open(inputFile, "rb") as inputDOCXFile:
-        #shutil.copy(str(inputDOCXFile), "tmp/officeToMarkdown.docx")
-        #result = mammoth.convert_to_html("tmp/officeToMarkdown.docx")
-        #str(inputDOCXFile)
-        #os.remove("tmp/officeToMarkdown.docx")
-        result = mammoth.convert_to_html(str(inputDOCXFile))
-        html = result.value
-        return(markdownify.markdownify(html), frontMatter)
+    shutil.copy(str(inputDOCXFile), "tmp/officeToMarkdown.docx")
+    inputDOCXFile = open("tmp/officeToMarkdown.docx", "rb")
+    result = mammoth.convert_to_html(inputDOCXFile)
+    inputDOCXFile.close()
+    os.remove("tmp/officeToMarkdown.docx")
+    html = result.value
+    return(markdownify.markdownify(html), frontMatter)
         
 # Takes an input file and coverts it to Markdown, writing that Markdown to the given output file.
 def docToMarkdownFile(inputFile, outputFile, baseURL="", markdownType="gfm", validFrontMatterFields=["title"]):
