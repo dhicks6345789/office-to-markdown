@@ -9,7 +9,8 @@ import officeToMarkdownLib
 inputFolder = sys.argv[1]
 outputFolder = sys.argv[2]
 
-print("Processing FAQ folder: " + inputFolder + " to " + outputFolder, flush=True)
+print("Processing FAQ folder: " + inputFolder + " to " + outputFolder, flush=True, file=sys.stderr)
+exit(0)
 for inputItem in os.listdir(inputFolder):
     fileType = inputItem.rsplit(".", 1)[1].upper()
     if fileType in ["DOCX", "DOC"]:
