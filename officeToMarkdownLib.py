@@ -174,7 +174,7 @@ def docToMarkdown(inputFile, baseURL="", markdownType="gfm", validFrontMatterFie
     frontMatter = {}
     
     shutil.copy(str(inputFile), "/tmp/officeToMarkdown.docx")
-    inputDOCXFile = open("tmp/officeToMarkdown.docx", "rb")
+    inputDOCXFile = open("/tmp/officeToMarkdown.docx", "rb")
     result = mammoth.convert_to_html(inputDOCXFile)
     inputDOCXFile.close()
     os.remove("/tmp/officeToMarkdown.docx")
