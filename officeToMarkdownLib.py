@@ -419,7 +419,7 @@ def checkTimestampsMatch(theTimestamp, thePath):
     return False
 
 def ifVerbose(theVerbose, theOutput):
-    if type(theVerbose).__name__) == "str":
+    if type(theVerbose).__name__ == "str":
         if theVerbose.lower() == "true":
             print(theOutput, flush=True, file=sys.stderr)
     elif theVerbose == True:
