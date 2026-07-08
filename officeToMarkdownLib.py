@@ -428,15 +428,16 @@ def ifVerbose(theVerbose, theOutput):
 # Looks through the contents of the input folder, applying a transform script to each file or folder found.
 # A cache of file paths with checksum details is maintained, this is used to avoid processing a file if it (and the associated processing script) hasn't been changed since the last run.
 # Folders are recursed into. Some matches might match whole sub-folders, in which case that sub-folder's processing will be handled by the transform script.
-def scanFolder(verbose, theMatches, theMatchTimestamps, theInputTimestamps, theInputFolder, theOutputTimestamps, theOutputFolder):
+def scanFolder(verbose, theMatches, theMatchTimestamps, theInputTimestamps, theInputFolder, theOutputFolder):
     ifVerbose(verbose, "OfficeToMarkdown - scanning folder: " + str(theInputFolder))
+    outputFiles = []
     unmatchedItems = []
     for item in theInputFolder.iterdir():
         matched = False
         for match in theMatches:
             if (matched == False) and (not re.match(match, str(item)) == None):
                 matched = True
-                ifVerbose(vwerbose, "OfficeToMarkdown - matched: " + str(item) + " with " + match)
+                ifVerbose(verbose, "OfficeToMarkdown - matched: " + str(item) + " with " + match)
                 scriptExec = theMatches[match][0])
                 scriptPath = pathlib.Path(theMatches[match][1])
                 outputItem = theOutputFolder / pathlib.Path(item.name))
@@ -461,4 +462,5 @@ def scanFolder(verbose, theMatches, theMatchTimestamps, theInputTimestamps, theI
             unmatchedItems.append(item)
     for item in unmatchedItems:
         if item.is_dir():
-            scanFolder(verbose, theMatches, theMatchTimestamps, theInputTimestamps, item, theOutputTimestamps, theOutputFolder / pathlib.Path(item.name))
+            outputFiles.append(scanFolder(verbose, theMatches, theMatchTimestamps, theInputTimestamps, item, theOutputFolder / pathlib.Path(item.name)))
+    return outputFiles
