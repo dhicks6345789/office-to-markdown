@@ -64,65 +64,8 @@ if args["verbose"] == "true":
     print(changedInputPaths)
 officeToMarkdownLib.writeDataFile(args["dataRoot"] + os.sep + "inputChanges.csv", currentInputChanges)
 
-
-
-### The start-point of the document-processing process. Looks through the contents of the input folder, applying a transform script to each file or folder found.
-## A cache of file paths with checksum details is maintained, this is used to avoid processing a file if it (and the associated processing script) hasn't been changed since the last run.
-## Folders are recursed into. Some matches might match whole sub-folders, in which case that sub-folder's processing will be handled by the transform script.
-#def scanFolder(theInput, theOutput):
-#    inputFolder = officeToMarkdownLib.normalisePath(args["input"] + "/" + theInput)
-#    if args["verbose"] == "true":
-#        print("OfficeToMarkdown - scanning folder: " + inputFolder, flush=True)
-#    unmatchedItems = []
-#
-#    items = os.listdir(inputFolder)
-#    items.insert(0, "")
-#    folderMatched = False
-#    for item in items:
-#        matched = False
-#        for match in matches:
-#            inputItem = inputFolder + "/" + item
-#            if (matched == False) and (folderMatched == False) and (not re.match(match, inputItem) == None):
-#                matched = True
-#                scriptExec = officeToMarkdownLib.platformPath(matches[match][0])
-#                scriptPath = officeToMarkdownLib.platformPath(args["scriptRoot"] + "/" + matches[match][1])
-#                inputItem = officeToMarkdownLib.platformPath(inputItem)
-#                if item == "":
-#                    folderMatched = True
-#                outputItem = officeToMarkdownLib.normalisePath(args["output"] + "/" + theOutput + "/" + item)
-#                if os.path.isfile(inputItem):
-#                    outputItem = outputItem.rsplit("/", 1)[0]
-#                outputItem = officeToMarkdownLib.platformPath(outputItem)
-#                
-#                if args["verbose"] == "true":
-#                    print("OfficeToMarkdown - matched: " + inputItem + " with " + match, flush=True)
-#
-#                scriptTimestamp = "0"
-#                if scriptPath in previousMatchChanges:
-#                    scriptTimestamp = previousMatchChanges[scriptPath]
-#                inputTimestamp = "0"
-#                if inputItem in previousInputChanges:
-#                    inputTimestamp = previousInputChanges[inputItem]
-#                commandLine = [scriptExec, scriptPath, "--verbose", args["verbose"], "--scriptTimestamp", str(scriptTimestamp), "--inputPath", inputItem, "--inputTimestamp", str(inputTimestamp), "--outputPath", outputItem]
-#                officeToMarkdownLib.ifVerbose(args["verbose"], "OfficeToMarkdown - running: " + " ".join(commandLine))
-#                
-#                commandLineResult = subprocess.run(commandLine, capture_output=True, text=True)
-#                for outputFile in commandLineResult.stdout.split("\n"):
-#                    outputFile = outputFile.strip()
-#                    if not outputFile == "":
-#                        outputFiles.append(outputFile)
-#                if args["verbose"] == "true":
-#                    stderrOutput = commandLineResult.stderr.strip()
-#                    if not stderrOutput == "":
-#                        print(stderrOutput)
-#        if (matched == False) and (folderMatched == False) and (not item == ""):
-#            unmatchedItems.append(item)
-#    for item in unmatchedItems:
-#        if os.path.isdir(inputFolder + os.sep + item):
-#            scanFolder(officeToMarkdownLib.normalisePath(theInput + os.sep + item), officeToMarkdownLib.normalisePath(theOutput + os.sep + item))
-
 # Start the scanFolders process.
-outputFiles = officeToMarkdownLib.scanFolder(verbose, matches, previousMatchChanges, previousInputChanges, pathlib.Path(args["input"]), pathlib.Path(args["output"]))
+newInputChanges, outputFiles = officeToMarkdownLib.scanFolder(verbose, matches, previousMatchChanges, previousInputChanges, pathlib.Path(args["input"]), pathlib.Path(args["output"]))
 
 def copyFolder(inputFolder, outputFolder):
     for inputItem in inputFolder.iterdir():
