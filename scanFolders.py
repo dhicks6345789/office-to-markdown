@@ -125,37 +125,35 @@ officeToMarkdownLib.writeDataFile(args["dataRoot"] + os.sep + "inputChanges.csv"
 outputFiles = officeToMarkdownLib.scanFolder(verbose, matches, previousMatchChanges, previousInputChanges, pathlib.Path(args["input"]), pathlib.Path(args["output"]))
 
 def copyFolder(inputFolder, outputFolder):
-    print("copyFolder: " + inputFolder + " -> " + outputFolder)
-    for item in os.listdir(inputFolder):
-        inputItem = inputFolder + "/" + item
-        outputItem = outputFolder + "/" + item
-        outputFiles.append(outputItem)
-        if os.path.isfile(inputItem):
-            if not officeToMarkdownLib.checkModDatesMatch(inputItem, outputItem):
-                print("Copying file: " + inputItem + " to " + outputItem, flush=True)
-                shutil.copyfile(inputItem, outputItem)
-                officeToMarkdownLib.makeModDatesMatch(inputItem, outputItem)
+    for inputItem in inputFolder.iterdir():
+        outputItem = outputFolder / item
+        outputFiles.append(str(outputItem))
+        if inputItem.is_file():
+            if not inputItem.stat().st_mtime == outputItem.stat().st_mtime
+                if verbose:
+                    print("Copying file: " + inputItem + " to " + outputItem, flush=True)
+                shutil.copyfile(str(inputItem), str(outputItem))
+                officeToMarkdownLib.makeModDatesMatch(str(inputItem), str(outputItem))
         else:
-            os.mkdir(outputItem)
+            os.mkdir(str(outputItem))
             copyFolder(inputItem, outputItem)
 
 # If the user has specified a "copy in" folder, copy the contens of that folder over to the destination as well.
 # This happens after "scan folders", so for any conflicting filenames, the copy process will take precedence.
 if "copyIn" in args and not args["copyIn"] == "":
-    copyFolder(officeToMarkdownLib.normalisePath(args["copyIn"]), officeToMarkdownLib.normalisePath(args["output"]))
+    copyFolder(pathlib.Path(args["copyIn"]), pathlib.Path(args["output"]))
 
 def deleteExtraFiles(theFolder):
-    for item in os.listdir(theFolder):
-        fileItem = theFolder + "/" + item
-        if os.path.isfile(fileItem):
-            if not fileItem in outputFiles:
-                print("Removing extra file: " + fileItem, flush=True)
-                os.remove(fileItem)
+    for item in theFolder.iterdir():
+        if item.is_file():
+            if not str(item) in outputFiles:
+                print("Removing extra file: " + str(item), flush=True)
+                os.remove(str(item))
         else:
-            deleteExtraFiles(fileItem)
+            deleteExtraFiles(item)
 
 if args["deleteExtraFiles"] == "true":
-    if args["verbose"] == "true":
+    if verbose:
         print("outputFiles:")
         print(outputFiles)
-    deleteExtraFiles(officeToMarkdownLib.normalisePath(args["output"]), outputFiles)
+    deleteExtraFiles(pathlib.Path(args["output"]))
