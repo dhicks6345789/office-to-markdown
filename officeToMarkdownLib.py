@@ -441,7 +441,7 @@ def scanFolder(verbose, theMatches, theMatchTimestamps, thePreviousInputFileTime
                 ifVerbose(verbose, "OfficeToMarkdown - matched: " + str(item) + " with " + match)
                 scriptExec = theMatches[match][0]
                 scriptPath = pathlib.Path(theMatches[match][1])
-                outputItem = theOutputFolder / pathlib.Path(item.name))
+                outputItem = theOutputFolder / pathlib.Path(item.name)
                 scriptTimestamp = "0"
                 if str(scriptPath) in theMatchTimestamps:
                     scriptTimestamp = theMatchTimestamps[str(scriptPath)]
