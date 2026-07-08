@@ -52,20 +52,6 @@ officeToMarkdownLib.writeDataFile(args["dataRoot"] + os.sep + "matchChanges.csv"
 
 previousInputChanges = officeToMarkdownLib.readDataFile(args["dataRoot"] + os.sep + "inputChanges.csv")
 
-#currentInputChanges = officeToMarkdownLib.getFolderChangeDetails(officeToMarkdownLib.normalisePath(args["input"]))
-#changedInputPaths = []
-#for item in currentInputChanges:
-#    if item in previousInputChanges:
-#        if not currentInputChanges[item] == previousInputChanges[item]:
-#            changedInputPaths.append(item)
-#    else:
-#        changedInputPaths.append(item)
-#
-#if args["verbose"] == "true":
-#    print("changedInputPaths:")
-#    print(changedInputPaths)
-#officeToMarkdownLib.writeDataFile(args["dataRoot"] + os.sep + "inputChanges.csv", currentInputChanges)
-
 # Start the scanFolders process.
 currentInputChanges, outputFiles = officeToMarkdownLib.scanFolder(verbose, args["scriptRoot"], matches, previousMatchChanges, previousInputChanges, pathlib.Path(args["input"]), pathlib.Path(args["output"]))
 
@@ -101,7 +87,7 @@ def deleteExtraFiles(theFolder):
             deleteExtraFiles(item)
 
 if args["deleteExtraFiles"] == "true":
-    if verbose:
-        print("Deleting extra files - valid output files:")
-        print(outputFiles)
+    #if verbose:
+        #print("Deleting extra files - valid output files:")
+        #print(outputFiles)
     deleteExtraFiles(pathlib.Path(args["output"]))
