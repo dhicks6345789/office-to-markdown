@@ -5,17 +5,29 @@ import subprocess
 # Our own Docs To Markdown library.
 import officeToMarkdownLib
 
-# Get the command line arguments.
-inputFolder = sys.argv[1]
-outputFolder = sys.argv[2]
+# Parse and normalise the command-line arguments.
+args = officeToMarkdownLib.processCommandLineArgs(defaultArgs={"scriptRoot":str(pathlib.Path.cwd()), "verbose":"false", "validFrontMatterFields":""}, requiredArgs=["scriptTimestamp","inputPath","inputTimestamp","outputPath"], optionalArgs=["scriptRoot", "verbose"])
+args["verbose"] = args["verbose"].lower()
+inputPath = pathlib.Path(args["inputPath"])
+outputPath = pathlib.Path(args["outputPath"])
+  
+# Report the output filename back to the calling script.
+#print(outputPath, flush=True, file=sys.stdout)
 
-print("Processing FAQ folder: " + inputFolder + " to " + outputFolder, flush=True, file=sys.stderr)
-exit(0)
-for inputItem in os.listdir(inputFolder):
-    fileType = inputItem.rsplit(".", 1)[1].upper()
-    if fileType in ["DOCX", "DOC"]:
+# Check and see if either the input file or the script itself have changed since the last
+# run - there's no point doing any work if neither have changed.
+doTransform = False
+if not officeToMarkdownLib.checkTimestampsMatch(args["scriptTimestamp"], pathlib.Path(__file__)):
+  doTransform = True
+elif not officeToMarkdownLib.checkTimestampsMatch(args["inputTimestamp"], inputPath):
+  doTransform = True
+if doTransform:
+  officeToMarkdownLib.ifVerbose(args["verbose"], "processFAQ       - Processing " + str(inputPath) + " to " + str(outputPath))
+
+for inputItem in inputPath.iterdir():
+    if inputItem.suffix in [".docx", ".doc"]:
         # Deal with a DOCX / DOC file - pass it up to the processDOCFile script to deal with.
-        subprocess.run(["python3", "../docs-to-markdown/processDOCFile.py", officeToMarkdownLib.normalisePath(inputFolder + "/" + inputItem), officeToMarkdownLib.normalisePath(outputFolder)])
+        subprocess.run(["python", "processDOCFile.py", officeToMarkdownLib.normalisePath(inputFolder + "/" + inputItem), officeToMarkdownLib.normalisePath(outputFolder)])
     elif fileType in ["MP4"]:
         # Deal with an MP4 file - use FFmpeg to set the size and format of any videos in this FAQ.
         outputItem = inputItem.rsplit(".", 1)[0] + ".webm"
