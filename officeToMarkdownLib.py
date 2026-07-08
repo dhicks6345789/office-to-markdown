@@ -462,7 +462,7 @@ def scanFolder(verbose, theMatches, theMatchTimestamps, thePreviousInputFileTime
                 state = 0
                 for outputLine in commandLineResult.stdout.split("\n"):
                     outputLine = outputLine.strip()
-                    if not outputFile == "":
+                    if not outputLine == "":
                         if state == 0:
                             if outputLine == "---":
                                 state = 1
