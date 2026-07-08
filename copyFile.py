@@ -38,7 +38,7 @@ print(outputFilePath, flush=True, file=sys.stdout)
 doTransform = False
 if not args["scriptTimestamp"] == str(pathlib.Path(__file__).stat().st_mtime):
   doTransform = True
-elif not str(inputPath.stat().st_mtime) == previousInputFileTimestamps[str(inputPath)]:
+elif (not str(inputPath) in previousInputFileTimestamps) or (not str(inputPath.stat().st_mtime) == previousInputFileTimestamps[str(inputPath)]):
   doTransform = True
 if doTransform:
   officeToMarkdownLib.ifVerbose(args["verbose"], "copyFile         - Copying file: " + str(inputPath) + " to " + str(outputPath))
