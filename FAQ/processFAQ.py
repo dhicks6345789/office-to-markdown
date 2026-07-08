@@ -14,6 +14,31 @@ outputPath = pathlib.Path(args["outputPath"])
 
 for inputItem in inputPath.iterdir():
   if inputItem.suffix in [".docx", ".doc"]:
+    doTransform = False
+    if not officeToMarkdownLib.checkTimestampsMatch(args["scriptTimestamp"], pathlib.Path(__file__)):
+      doTransform = True
+    elif not officeToMarkdownLib.checkTimestampsMatch(args["inputTimestamp"], inputPath):
+      doTransform = True
+    if doTransform:
+      officeToMarkdownLib.ifVerbose(args["verbose"], "processDOCFile   - Processing " + inputPath.suffix + " file: " + str(inputPath) + " to " + str(outputPath))
+  
+      # Our library function here calls Pandoc to do the conversion.
+      docMarkdown, docFrontmatter = officeToMarkdownLib.docToMarkdown(inputPath)
+  
+      # If we don't already have a "title" front matter variable, go through the Markdown line by line,
+      # checking for the first defined title string that we can use as a title.
+      trimmedMarkdown = ""
+      for markdownLine in docMarkdown.split("\n"):
+        if markdownLine.startswith("# ") and not "title" in docFrontmatter.keys():
+          docFrontmatter["title"] = markdownLine[2:].lstrip()
+        else:
+          trimmedMarkdown = trimmedMarkdown + markdownLine + "\n"
+
+
+
+
+
+    
     # Deal with a DOCX / DOC file - pass it up to the processDOCFile script to deal with.
     commandLine = ["python", "processDOCFile.py", "--verbose", args["verbose"], "--scriptTimestamp", str(scriptTimestamp), "--inputPath", inputItem, "--inputTimestamp", str(inputTimestamp), "--outputPath", outputItem]
     officeToMarkdownLib.ifVerbose(args["verbose"], "processFAQ       - running: " + " ".join(commandLine))
