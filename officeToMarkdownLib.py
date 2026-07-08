@@ -414,8 +414,11 @@ def addToWriteLog(theFilename, theLogLocation="/tmp/docsToMarkdownWriteLog.txt")
         file.write(theFilename + "\n")
 
 def checkTimestampsMatch(theTimestamp, thePath):
+    print("checkTimestampsMatch: " + theTimestamp + ", " + thePath + "...")
     if thePath.stat().st_mtime == theTimestamp:
+        print("...yes, they match.")
         return True
+    print("...no, they don't match.")
     return False
 
 def ifVerbose(theVerboseString, theOutput):
