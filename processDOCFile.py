@@ -8,7 +8,7 @@ import pathlib
 import officeToMarkdownLib
 
 # Parse and normalise the command-line arguments.
-args = officeToMarkdownLib.processCommandLineArgs(defaultArgs={"scriptRoot":str(pathlib.Path.cwd()), "verbose":"false", "validFrontMatterFields":""}, requiredArgs=["scriptTimestamp","inputPath","inputTimestamp","outputPath"], optionalArgs=["scriptRoot", "verbose"])
+args = officeToMarkdownLib.processCommandLineArgs(defaultArgs={"scriptRoot":str(pathlib.Path.cwd()), "validFrontMatterFields":"", "verbose":"false"}, requiredArgs=["scriptTimestamp","inputPath","outputPath"], optionalArgs=["scriptRoot", "verbose"])
 args["verbose"] = args["verbose"].lower()
 inputPath = pathlib.Path(args["inputPath"])
 outputPath = pathlib.Path(args["outputPath"])
