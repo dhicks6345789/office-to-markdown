@@ -10,9 +10,12 @@ import pathlib
 import officeToMarkdownLib
 
 # Parse and normalise the command-line arguments.
-args = officeToMarkdownLib.processCommandLineArgs(defaultArgs={"scriptRoot":str(pathlib.Path.cwd()), "verbose":"false", "validFrontMatterFields":""}, requiredArgs=["scriptTimestamp","inputPath","inputTimestamp","outputPath"], optionalArgs=["scriptRoot", "verbose"])
-args["verbose"] = args["verbose"].lower()
+args = officeToMarkdownLib.processCommandLineArgs(defaultArgs={"scriptRoot":str(pathlib.Path.cwd()), "validFrontMatterFields":"", "verbose":"false"}, requiredArgs=["scriptTimestamp","inputPath","outputPath"], optionalArgs=["scriptRoot", "verbose"])
+verbose = false
+if args["verbose"].lower() == "true":
+  verbose = True
 inputPath = pathlib.Path(args["inputPath"])
+inputPathTimestamp = str(inputPath.stat().st_mtime)
 outputPath = pathlib.Path(args["outputPath"])
 
 # We are passed the output /folder/, so we have to figure out the output file name from the input file name.
