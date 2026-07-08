@@ -25,9 +25,19 @@ if doTransform:
   officeToMarkdownLib.ifVerbose(args["verbose"], "processFAQ       - Processing " + str(inputPath) + " to " + str(outputPath))
 
 for inputItem in inputPath.iterdir():
-    if inputItem.suffix in [".docx", ".doc"]:
-        # Deal with a DOCX / DOC file - pass it up to the processDOCFile script to deal with.
-        subprocess.run(["python", "processDOCFile.py", officeToMarkdownLib.normalisePath(inputFolder + "/" + inputItem), officeToMarkdownLib.normalisePath(outputFolder)])
+  if inputItem.suffix in [".docx", ".doc"]:
+    # Deal with a DOCX / DOC file - pass it up to the processDOCFile script to deal with.
+    commandLine = [scriptExec, scriptPath, "--verbose", args["verbose"], "--scriptTimestamp", str(scriptTimestamp), "--inputPath", inputItem, "--inputTimestamp", str(inputTimestamp), "--outputPath", outputItem]
+    officeToMarkdownLib.ifVerbose(args["verbose"], "processFAQ       - running: " + " ".join(commandLine))
+    commandLineResult = subprocess.run(commandLine, capture_output=True, text=True)
+    for outputFile in commandLineResult.stdout.split("\n"):
+      outputFile = outputFile.strip()
+      if not outputFile == "":
+        outputFiles.append(outputFile)
+      if args["verbose"] == "true":
+        stderrOutput = commandLineResult.stderr.strip()
+        if not stderrOutput == "":
+          print(stderrOutput)
     elif fileType in ["MP4"]:
         # Deal with an MP4 file - use FFmpeg to set the size and format of any videos in this FAQ.
         outputItem = inputItem.rsplit(".", 1)[0] + ".webm"
