@@ -67,7 +67,7 @@ previousInputChanges = officeToMarkdownLib.readDataFile(args["dataRoot"] + os.se
 #officeToMarkdownLib.writeDataFile(args["dataRoot"] + os.sep + "inputChanges.csv", currentInputChanges)
 
 # Start the scanFolders process.
-currentInputChanges, outputFiles = officeToMarkdownLib.scanFolder(verbose, matches, previousMatchChanges, previousInputChanges, pathlib.Path(args["input"]), pathlib.Path(args["output"]))
+currentInputChanges, outputFiles = officeToMarkdownLib.scanFolder(verbose, args["scriptRoot"], matches, previousMatchChanges, previousInputChanges, pathlib.Path(args["input"]), pathlib.Path(args["output"]))
 
 # Write the updated input file modification timestamps the the "inputChanges" file.
 officeToMarkdownLib.writeDataFile(args["dataRoot"] + os.sep + "inputChanges.csv", currentInputChanges)
