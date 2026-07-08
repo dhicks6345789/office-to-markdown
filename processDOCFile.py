@@ -40,7 +40,7 @@ if inputPath.suffix.lower() in [".docx", ".doc"]:
   doTransform = False
   if not officeToMarkdownLib.checkTimestampsMatch(args["scriptTimestamp"], pathlib.Path(__file__)):
     doTransform = True
-  elif not inputPathTimestamp == previousInputFileTimestamps[str(inputPath)]:
+  elif (not str(inputPath) in previousInputFileTimestamps) or (not str(inputPath.stat().st_mtime) == previousInputFileTimestamps[str(inputPath)]):
     doTransform = True
   if doTransform:
     officeToMarkdownLib.ifVerbose(verbose, "processDOCFile   - Processing " + inputPath.suffix + " file: " + str(inputPath) + " to " + str(outputPath))
