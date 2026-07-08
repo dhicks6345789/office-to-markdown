@@ -9,7 +9,9 @@ import officeToMarkdownLib
 
 # Parse and normalise the command-line arguments.
 args = officeToMarkdownLib.processCommandLineArgs(defaultArgs={"scriptRoot":str(pathlib.Path.cwd()), "validFrontMatterFields":"", "verbose":"false"}, requiredArgs=["scriptTimestamp","inputPath","outputPath"], optionalArgs=["scriptRoot", "verbose"])
-args["verbose"] = args["verbose"].lower()
+verbose = false
+if args["verbose"].lower() == "true":
+  verbose = True
 inputPath = pathlib.Path(args["inputPath"])
 inputPathTimestamp = str(inputPath.stat().st_mtime)
 outputPath = pathlib.Path(args["outputPath"])
@@ -41,7 +43,7 @@ if inputPath.suffix.lower() in [".docx", ".doc"]:
   elif not inputPathTimestamp == previousInputFileTimestamps[str(inputPath)]:
     doTransform = True
   if doTransform:
-    officeToMarkdownLib.ifVerbose(args["verbose"], "processDOCFile   - Processing " + inputPath.suffix + " file: " + str(inputPath) + " to " + str(outputPath))
+    officeToMarkdownLib.ifVerbose(verbose, "processDOCFile   - Processing " + inputPath.suffix + " file: " + str(inputPath) + " to " + str(outputPath))
 
     # Our library function here calls Pandoc to do the conversion.
     docMarkdown, docFrontmatter = officeToMarkdownLib.docToMarkdown(inputPath)
