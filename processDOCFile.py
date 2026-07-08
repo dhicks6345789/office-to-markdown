@@ -24,6 +24,9 @@ if inputPath.suffix.lower() in [".docx", ".doc"]:
   # We are passed the output /folder/, so we have to figure out the output file name from the input file name.
   outputFilePath = outputPath / pathlib.Path(inputPath.stem + ".md")
   
+  # Report the input filename, with current update timestamp, back to the calling script.
+  print(str(inputPath) + "," + str(inputPath), flush=True, file=sys.stdout)
+  print(str("---", flush=True, file=sys.stdout)
   # Report the output filename back to the calling script.
   print(outputFilePath, flush=True, file=sys.stdout)
 
