@@ -11,7 +11,7 @@ import officeToMarkdownLib
 
 # Parse and normalise the command-line arguments.
 args = officeToMarkdownLib.processCommandLineArgs(defaultArgs={"scriptRoot":str(pathlib.Path.cwd()), "validFrontMatterFields":"", "verbose":"false"}, requiredArgs=["scriptTimestamp","inputPath","outputPath"], optionalArgs=["scriptRoot", "verbose"])
-verbose = false
+verbose = False
 if args["verbose"].lower() == "true":
   verbose = True
 inputPath = pathlib.Path(args["inputPath"])
