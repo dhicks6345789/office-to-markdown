@@ -11,6 +11,7 @@ import officeToMarkdownLib
 args = officeToMarkdownLib.processCommandLineArgs(defaultArgs={"scriptRoot":str(pathlib.Path.cwd()), "validFrontMatterFields":"", "verbose":"false"}, requiredArgs=["scriptTimestamp","inputPath","outputPath"], optionalArgs=["scriptRoot", "verbose"])
 args["verbose"] = args["verbose"].lower()
 inputPath = pathlib.Path(args["inputPath"])
+inputPathTimestamp = str(inputPath.stat().st_mtime)
 outputPath = pathlib.Path(args["outputPath"])
 
 # The calling script provides a list of any input files, along with file update timestamps, via stdin.
@@ -25,7 +26,7 @@ if inputPath.suffix.lower() in [".docx", ".doc"]:
   outputFilePath = outputPath / pathlib.Path(inputPath.stem + ".md")
   
   # Report the input filename, with current update timestamp, back to the calling script.
-  print(str(inputPath) + "," + str(inputPath), flush=True, file=sys.stdout)
+  print(str(inputPath) + "," + inputPathTimestamp, flush=True, file=sys.stdout)
   print(str("---", flush=True, file=sys.stdout)
   # Report the output filename back to the calling script.
   print(outputFilePath, flush=True, file=sys.stdout)
@@ -35,7 +36,7 @@ if inputPath.suffix.lower() in [".docx", ".doc"]:
   doTransform = False
   if not officeToMarkdownLib.checkTimestampsMatch(args["scriptTimestamp"], pathlib.Path(__file__)):
     doTransform = True
-  elif not officeToMarkdownLib.checkTimestampsMatch(previousInputFileTimestamps[str(inputPath)], inputPath):
+  elif not inputPathTimestamp == previousInputFileTimestamps[str(inputPath)]:
     doTransform = True
   if doTransform:
     officeToMarkdownLib.ifVerbose(args["verbose"], "processDOCFile   - Processing " + inputPath.suffix + " file: " + str(inputPath) + " to " + str(outputPath))
