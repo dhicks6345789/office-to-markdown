@@ -428,10 +428,11 @@ def ifVerbose(theVerbose, theOutput):
 # Looks through the contents of the input folder, applying a transform script to each file or folder found.
 # A cache of file paths with checksum details is maintained, this is used to avoid processing a file if it (and the associated processing script) hasn't been changed since the last run.
 # Folders are recursed into. Some matches might match whole sub-folders, in which case that sub-folder's processing will be handled by the transform script.
-def scanFolder(verbose, theMatches, theMatchTimestamps, theInputTimestamps, theInputFolder, theOutputFolder):
+def scanFolder(verbose, theMatches, theMatchTimestamps, thePreviousInputFileTimestamps, theInputFolder, theOutputFolder):
     ifVerbose(verbose, "OfficeToMarkdown - scanning folder: " + str(theInputFolder))
     outputFiles = []
     unmatchedItems = []
+    newInputFileTimestamps = {}
     for item in theInputFolder.iterdir():
         matched = False
         for match in theMatches:
@@ -449,11 +450,19 @@ def scanFolder(verbose, theMatches, theMatchTimestamps, theInputTimestamps, theI
                     inputTimestamp = theInputTimestamps[str(item)]
                 commandLine = [scriptExec, scriptPath, "--verbose", str(verbose), "--scriptTimestamp", str(scriptTimestamp), "--inputPath", inputItem, "--outputPath", outputItem]
                 ifVerbose(verbose, "OfficeToMarkdown - running: " + " ".join(commandLine))
-                commandLineResult = subprocess.run(commandLine, input=theInputTimestamps, capture_output=True, text=True)
-                for outputFile in commandLineResult.stdout.split("\n"):
-                    outputFile = outputFile.strip()
+                commandLineResult = subprocess.run(commandLine, input="\n".join([f"{key},{value}" for key, value in thePreviousInputFileTimestamps.items()]), capture_output=True, text=True)
+                state = 0
+                for outputLine in commandLineResult.stdout.split("\n"):
+                    outputLine = outputLine.strip()
                     if not outputFile == "":
-                        outputFiles.append(outputFile)
+                        if state == 0:
+                            if outputLine == "---":
+                                state = 1
+                            else:
+                                outputLineSplit = outputLine.split(,)
+                                newInputFileTimestamps[outputLineSplit[0]] = outputLineSplit[1]
+                        elif state == 1:
+                            outputFiles.append(outputLine)
                 if args["verbose"] == "true":
                     stderrOutput = commandLineResult.stderr.strip()
                     if not stderrOutput == "":
@@ -463,4 +472,4 @@ def scanFolder(verbose, theMatches, theMatchTimestamps, theInputTimestamps, theI
     for item in unmatchedItems:
         if item.is_dir():
             outputFiles.append(scanFolder(verbose, theMatches, theMatchTimestamps, theInputTimestamps, item, theOutputFolder / pathlib.Path(item.name)))
-    return outputFiles
+    return newInputFileTimestamps, outputFiles
