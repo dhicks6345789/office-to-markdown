@@ -36,7 +36,7 @@ print(outputFilePath, flush=True, file=sys.stdout)
 # Check and see if either the input file or the script itself have changed since the last
 # run - there's no point doing any work if neither have changed.
 doTransform = False
-if not args["scriptTimestamp"] == str(pathlib.Path(__file__).stat().st_mtime)
+if not args["scriptTimestamp"] == str(pathlib.Path(__file__).stat().st_mtime):
   doTransform = True
 elif not str(inputPath.stat().st_mtime) == previousInputFileTimestamps[str(inputPath)]:
   doTransform = True
