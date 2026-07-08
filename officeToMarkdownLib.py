@@ -415,7 +415,7 @@ def addToWriteLog(theFilename, theLogLocation="/tmp/docsToMarkdownWriteLog.txt")
 
 def checkTimestampsMatch(theTimestamp, thePath):
     print("checkTimestampsMatch: " + theTimestamp + ", " + str(thePath) + "(" + str(thePath.stat().st_mtime) + ")" + "...", flush=True, file=sys.stderr)
-    if thePath.stat().st_mtime == theTimestamp:
+    if str(thePath.stat().st_mtime) == str(theTimestamp):
         print("...yes, they match.", flush=True, file=sys.stderr)
         return True
     print("...no, they don't match.", flush=True, file=sys.stderr)
