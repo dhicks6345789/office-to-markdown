@@ -22,7 +22,7 @@ for line in sys.stdin:
   lineSplit = line.strip().split(",")
   previousInputFileTimestamps[lineSplit[0]] = lineSplit[1]
 
-print("processDOCFile   - previousInputFileTimestamps: " + str(previousInputFileTimestamps), flush=True, file=sys.stderr)
+#print("processDOCFile   - previousInputFileTimestamps: " + str(previousInputFileTimestamps), flush=True, file=sys.stderr)
 
 # Check we are trying to convert a DOCX / DOC file.
 if inputPath.suffix.lower() in [".docx", ".doc"]:
