@@ -1,5 +1,6 @@
 import os
 import sys
+import pathlib
 import subprocess
 
 # Our own Docs To Markdown library.
