@@ -10,19 +10,6 @@ args = officeToMarkdownLib.processCommandLineArgs(defaultArgs={"scriptRoot":str(
 args["verbose"] = args["verbose"].lower()
 inputPath = pathlib.Path(args["inputPath"])
 outputPath = pathlib.Path(args["outputPath"])
-  
-# Report the output filename back to the calling script.
-#print(outputPath, flush=True, file=sys.stdout)
-
-# Check and see if either the input file or the script itself have changed since the last
-# run - there's no point doing any work if neither have changed.
-doTransform = False
-if not officeToMarkdownLib.checkTimestampsMatch(args["scriptTimestamp"], pathlib.Path(__file__)):
-  doTransform = True
-elif not officeToMarkdownLib.checkTimestampsMatch(args["inputTimestamp"], inputPath):
-  doTransform = True
-if doTransform:
-  officeToMarkdownLib.ifVerbose(args["verbose"], "processFAQ       - Processing " + str(inputPath) + " to " + str(outputPath))
 
 for inputItem in inputPath.iterdir():
   if inputItem.suffix in [".docx", ".doc"]:
@@ -33,26 +20,26 @@ for inputItem in inputPath.iterdir():
     for outputFile in commandLineResult.stdout.split("\n"):
       outputFile = outputFile.strip()
       if not outputFile == "":
-        outputFiles.append(outputFile)
+        print(outputFile, flush=True, file=sys.stdout)
       if args["verbose"] == "true":
         stderrOutput = commandLineResult.stderr.strip()
         if not stderrOutput == "":
-          print(stderrOutput)
-    elif fileType in ["MP4"]:
-        # Deal with an MP4 file - use FFmpeg to set the size and format of any videos in this FAQ.
-        outputItem = inputItem.rsplit(".", 1)[0] + ".webm"
-        # Video files can take time / processing power to deal with, so we check we actually need to update something first before going ahead.
-        if not officeToMarkdownLib.checkModDatesMatch(inputFolder + os.sep + inputItem, outputFolder + os.sep + outputItem):
-            print("STATUS: Processing FAQ video: " + inputFolder + os.sep + inputItem + " to " + outputFolder + os.sep + outputItem, flush=True)
+          print(stderrOutput, flush=True, file=sys.stderr)
+    #elif fileType in ["MP4"]:
+        ## Deal with an MP4 file - use FFmpeg to set the size and format of any videos in this FAQ.
+        #outputItem = inputItem.rsplit(".", 1)[0] + ".webm"
+        ## Video files can take time / processing power to deal with, so we check we actually need to update something first before going ahead.
+        #if not officeToMarkdownLib.checkModDatesMatch(inputFolder + os.sep + inputItem, outputFolder + os.sep + outputItem):
+            #print("STATUS: Processing FAQ video: " + inputFolder + os.sep + inputItem + " to " + outputFolder + os.sep + outputItem, flush=True)
             
-            # Figure out the video's dimensions.
-            videoDimensions = os.popen("ffprobe -v error -select_streams v -show_entries stream=width,height -of csv=p=0:s=x " + inputFolder + os.sep + inputItem).read().strip()
-            videoWidth = int(videoDimensions.split("x")[0])
-            videoHeight = int(videoDimensions.split("x")[1])
+            ## Figure out the video's dimensions.
+            #videoDimensions = os.popen("ffprobe -v error -select_streams v -show_entries stream=width,height -of csv=p=0:s=x " + inputFolder + os.sep + inputItem).read().strip()
+            #videoWidth = int(videoDimensions.split("x")[0])
+            #videoHeight = int(videoDimensions.split("x")[1])
             
-            # Crop the video to a square, centred in the middle, then scale the dimensions to 240x240.
-            # Also, normalise the audio - see: http://johnriselvato.com/ffmpeg-how-to-normalize-audio/
-            os.system("ffmpeg -i " + inputFolder + os.sep + inputItem + " -filter:v crop=" + str(videoHeight) + ":" + str(videoHeight) + ":" + str(int((videoWidth - videoHeight) / 2)) + ":0,scale=240:240,setsar=1 -filter:a loudnorm=I=-16:LRA=11:TP=-1.5 /tmp/faq.webm > /dev/null 2>&1")
-            os.system("mv /tmp/faq.webm " + outputFolder + os.sep + outputItem)
+            ## Crop the video to a square, centred in the middle, then scale the dimensions to 240x240.
+            ## Also, normalise the audio - see: http://johnriselvato.com/ffmpeg-how-to-normalize-audio/
+            #os.system("ffmpeg -i " + inputFolder + os.sep + inputItem + " -filter:v crop=" + str(videoHeight) + ":" + str(videoHeight) + ":" + str(int((videoWidth - videoHeight) / 2)) + ":0,scale=240:240,setsar=1 -filter:a loudnorm=I=-16:LRA=11:TP=-1.5 /tmp/faq.webm > /dev/null 2>&1")
+            #os.system("mv /tmp/faq.webm " + outputFolder + os.sep + outputItem)
             
-            officeToMarkdownLib.makeModDatesMatch(inputFolder + os.sep + inputItem, outputFolder + os.sep + outputItem)
+            #officeToMarkdownLib.makeModDatesMatch(inputFolder + os.sep + inputItem, outputFolder + os.sep + outputItem)
