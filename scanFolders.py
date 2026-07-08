@@ -51,21 +51,26 @@ if args["verbose"] == "true":
 officeToMarkdownLib.writeDataFile(args["dataRoot"] + os.sep + "matchChanges.csv", currentMatchChanges)
 
 previousInputChanges = officeToMarkdownLib.readDataFile(args["dataRoot"] + os.sep + "inputChanges.csv")
-currentInputChanges = officeToMarkdownLib.getFolderChangeDetails(officeToMarkdownLib.normalisePath(args["input"]))
-changedInputPaths = []
-for item in currentInputChanges:
-    if item in previousInputChanges:
-        if not currentInputChanges[item] == previousInputChanges[item]:
-            changedInputPaths.append(item)
-    else:
-        changedInputPaths.append(item)
-if args["verbose"] == "true":
-    print("changedInputPaths:")
-    print(changedInputPaths)
-officeToMarkdownLib.writeDataFile(args["dataRoot"] + os.sep + "inputChanges.csv", currentInputChanges)
+
+#currentInputChanges = officeToMarkdownLib.getFolderChangeDetails(officeToMarkdownLib.normalisePath(args["input"]))
+#changedInputPaths = []
+#for item in currentInputChanges:
+#    if item in previousInputChanges:
+#        if not currentInputChanges[item] == previousInputChanges[item]:
+#            changedInputPaths.append(item)
+#    else:
+#        changedInputPaths.append(item)
+#
+#if args["verbose"] == "true":
+#    print("changedInputPaths:")
+#    print(changedInputPaths)
+#officeToMarkdownLib.writeDataFile(args["dataRoot"] + os.sep + "inputChanges.csv", currentInputChanges)
 
 # Start the scanFolders process.
-newInputChanges, outputFiles = officeToMarkdownLib.scanFolder(verbose, matches, previousMatchChanges, previousInputChanges, pathlib.Path(args["input"]), pathlib.Path(args["output"]))
+currentInputChanges, outputFiles = officeToMarkdownLib.scanFolder(verbose, matches, previousMatchChanges, previousInputChanges, pathlib.Path(args["input"]), pathlib.Path(args["output"]))
+
+# Write the updated input file modification timestamps the the "inputChanges" file.
+officeToMarkdownLib.writeDataFile(args["dataRoot"] + os.sep + "inputChanges.csv", currentInputChanges)
 
 def copyFolder(inputFolder, outputFolder):
     for inputItem in inputFolder.iterdir():
