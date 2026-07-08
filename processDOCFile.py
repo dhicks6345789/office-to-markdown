@@ -13,6 +13,12 @@ args["verbose"] = args["verbose"].lower()
 inputPath = pathlib.Path(args["inputPath"])
 outputPath = pathlib.Path(args["outputPath"])
 
+# The calling script provides a list of any input files, along with file update timestamps, via stdin.
+previousInputFileTimestamps = {}
+for line in sys.stdin:
+  lineSplit = line.strip().split(",")
+  previousInputFileTimestamps[lineSplit[0]] = lineSplit[1]
+
 # Check we are trying to convert a DOCX / DOC file.
 if inputPath.suffix.lower() in [".docx", ".doc"]:
   # We are passed the output /folder/, so we have to figure out the output file name from the input file name.
@@ -26,7 +32,7 @@ if inputPath.suffix.lower() in [".docx", ".doc"]:
   doTransform = False
   if not officeToMarkdownLib.checkTimestampsMatch(args["scriptTimestamp"], pathlib.Path(__file__)):
     doTransform = True
-  elif not officeToMarkdownLib.checkTimestampsMatch(args["inputTimestamp"], inputPath):
+  elif not officeToMarkdownLib.checkTimestampsMatch(previousInputFileTimestamps[str(inputPath)], inputPath):
     doTransform = True
   if doTransform:
     officeToMarkdownLib.ifVerbose(args["verbose"], "processDOCFile   - Processing " + inputPath.suffix + " file: " + str(inputPath) + " to " + str(outputPath))
