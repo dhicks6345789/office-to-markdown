@@ -122,7 +122,7 @@ officeToMarkdownLib.writeDataFile(args["dataRoot"] + os.sep + "inputChanges.csv"
 #            scanFolder(officeToMarkdownLib.normalisePath(theInput + os.sep + item), officeToMarkdownLib.normalisePath(theOutput + os.sep + item))
 
 # Start the scanFolders process.
-outputFiles = officeToMarkdownLib.scanFolder(verbose, matches, previousMatchChanges, previousInputChanges, pathlib.Path(inputFolder), pathlib.Path(outputFolder))
+outputFiles = officeToMarkdownLib.scanFolder(verbose, matches, previousMatchChanges, previousInputChanges, pathlib.Path(args["input"]), pathlib.Path(outputFolder))
 
 def copyFolder(inputFolder, outputFolder):
     print("copyFolder: " + inputFolder + " -> " + outputFolder)
