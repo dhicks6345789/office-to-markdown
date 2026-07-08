@@ -429,7 +429,7 @@ def ifVerbose(theVerbose, theOutput):
 # Looks through the contents of the input folder, applying a transform script to each file or folder found.
 # A cache of file paths with checksum details is maintained, this is used to avoid processing a file if it (and the associated processing script) hasn't been changed since the last run.
 # Folders are recursed into. Some matches might match whole sub-folders, in which case that sub-folder's processing will be handled by the transform script.
-def scanFolder(verbose, theMatches, theMatchTimestamps, thePreviousInputFileTimestamps, theInputFolder, theOutputFolder):
+def scanFolder(verbose, theScriptRoot, theMatches, theMatchTimestamps, thePreviousInputFileTimestamps, theInputFolder, theOutputFolder):
     ifVerbose(verbose, "OfficeToMarkdown - scanning folder: " + str(theInputFolder))
     print("theMatchTimestamps:")
     print(theMatchTimestamps)
@@ -443,7 +443,7 @@ def scanFolder(verbose, theMatches, theMatchTimestamps, thePreviousInputFileTime
                 matched = True
                 ifVerbose(verbose, "OfficeToMarkdown - matched: " + str(item) + " with " + match)
                 scriptExec = theMatches[match][0]
-                scriptPath = theMatches[match][1]
+                scriptPath = theScriptRoot + "/" + theMatches[match][1]
                 scriptTimestamp = "0"
                 if scriptPath in theMatchTimestamps:
                     scriptTimestamp = theMatchTimestamps[scriptPath]
@@ -485,7 +485,7 @@ def scanFolder(verbose, theMatches, theMatchTimestamps, thePreviousInputFileTime
             for matchInputItem in thePreviousInputFileTimestamps:
                 if matchInputItem.startswith(str(item)):
                     matchInputItems[matchInputItem] = thePreviousInputFileTimestamps[matchInputItem]
-            subNewInputFileTimestamps, subOutputFiles = scanFolder(verbose, theMatches, theMatchTimestamps, matchInputItems, item, theOutputFolder / pathlib.Path(item.name))
+            subNewInputFileTimestamps, subOutputFiles = scanFolder(verbose, theScriptRoot, theMatches, theMatchTimestamps, matchInputItems, item, theOutputFolder / pathlib.Path(item.name))
             newInputFileTimestamps.update(subNewInputFileTimestamps)
             outputFiles.extend(subOutputFiles)
     return newInputFileTimestamps, outputFiles
