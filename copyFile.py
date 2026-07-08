@@ -27,6 +27,9 @@ for line in sys.stdin:
 # We are passed the output /folder/, so we have to figure out the output file name from the input file name.
 outputFilePath = outputPath / inputPath.name
 
+# Report the input filename, with current update timestamp, back to the calling script.
+print(str(inputPath) + "," + inputPathTimestamp, flush=True, file=sys.stdout)
+print("---", flush=True, file=sys.stdout)
 # Report the output filename back to the calling script.
 print(outputFilePath, flush=True, file=sys.stdout)
 
