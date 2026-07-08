@@ -17,7 +17,9 @@ outputFiles = []
 # Parse and normalise the command-line arguments.
 args = officeToMarkdownLib.processCommandLineArgs(defaultArgs={"scriptRoot":str(pathlib.Path.cwd()), "dataRoot":str(pathlib.Path.cwd()), "verbose":"false", "produceFolderIndexes":"false", "deleteExtraFiles":"false", "validFrontMatterFields":""}, requiredArgs=["input","output"], optionalArgs=["scriptRoot", "verbose", "deleteExtraFiles", "copyIn", "data", "produceFolderIndexes", "baseURL", "validFrontMatterFields"])
 args["dataRoot"] = officeToMarkdownLib.normalisePath(args["dataRoot"])
-args["verbose"] = args["verbose"].lower()
+verbose = False
+if args["verbose"].lower() == "true":
+    verbose = True
 args["deleteExtraFiles"] = args["deleteExtraFiles"].lower()
 args["produceFolderIndexes"] = args["produceFolderIndexes"].lower()
 args["validFrontMatterFields"] = args["validFrontMatterFields"].split(",")
@@ -148,7 +150,7 @@ def deleteExtraFiles(theFolder):
             deleteExtraFiles(fileItem)
 
 # Start the scanFolders process.
-scanFolder("", "")
+officeToMarkdownLib.scanFolder(verbose, matches, previousMatchChanges, previousInputChanges, pathlib.Path(inputFolder), pathlib.Path(outputFolder))
 
 # If the user has specified a "copy in" folder, copy the contens of that folder over to the destination as well.
 # This happens after "scan folders", so for any conflicting filenames, the copy process will take precedence.
