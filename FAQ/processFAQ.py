@@ -15,7 +15,7 @@ outputPath = pathlib.Path(args["outputPath"])
 for inputItem in inputPath.iterdir():
   if inputItem.suffix in [".docx", ".doc"]:
     # Deal with a DOCX / DOC file - pass it up to the processDOCFile script to deal with.
-    commandLine = [scriptExec, scriptPath, "--verbose", args["verbose"], "--scriptTimestamp", str(scriptTimestamp), "--inputPath", inputItem, "--inputTimestamp", str(inputTimestamp), "--outputPath", outputItem]
+    commandLine = ["python", "processDOCFile.py", "--verbose", args["verbose"], "--scriptTimestamp", str(scriptTimestamp), "--inputPath", inputItem, "--inputTimestamp", str(inputTimestamp), "--outputPath", outputItem]
     officeToMarkdownLib.ifVerbose(args["verbose"], "processFAQ       - running: " + " ".join(commandLine))
     commandLineResult = subprocess.run(commandLine, capture_output=True, text=True)
     for outputFile in commandLineResult.stdout.split("\n"):
