@@ -154,6 +154,7 @@ def deleteExtraFiles(theFolder):
 
 if args["deleteExtraFiles"] == "true":
     if verbose:
-        print("outputFiles:")
-        print(outputFiles)
+        print("Deleting extra files - valid output files:")
+        for item in outputFiles:
+            print(item)
     deleteExtraFiles(pathlib.Path(args["output"]))
