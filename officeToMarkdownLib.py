@@ -460,6 +460,7 @@ def scanFolder(verbose, theMatches, theMatchTimestamps, thePreviousInputFileTime
                             matchInputItems[matchInputItem] = thePreviousInputFileTimestamps[matchInputItem]
                 commandLineResult = subprocess.run(commandLine, input="\n".join([f"{key},{value}" for key, value in matchInputItems.items()]), capture_output=True, text=True)
                 state = 0
+                # We expect the output (on stdout) from a sub-script to be a list of input file filename,timestamp pairs, then a "---", then a list of output files.
                 for outputLine in commandLineResult.stdout.split("\n"):
                     outputLine = outputLine.strip()
                     if not outputLine == "":
