@@ -466,7 +466,7 @@ def scanFolder(verbose, theMatches, theMatchTimestamps, thePreviousInputFileTime
                             if outputLine == "---":
                                 state = 1
                             else:
-                                outputLineSplit = outputLine.split(,)
+                                outputLineSplit = outputLine.split(",")
                                 newInputFileTimestamps[outputLineSplit[0]] = outputLineSplit[1]
                         elif state == 1:
                             outputFiles.append(outputLine)
