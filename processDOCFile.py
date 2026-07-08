@@ -29,7 +29,7 @@ if inputPath.suffix.lower() in [".docx", ".doc"]:
   elif not officeToMarkdownLib.checkTimestampsMatch(args["inputTimestamp"], inputPath):
     doTransform = True
   if doTransform:
-    officeToMarkdownLib.ifVerbose(args["verbose"], "  processDOCFile - Processing " + inputPath.suffix + " file: " + str(inputPath) + " to " + str(outputPath))
+    officeToMarkdownLib.ifVerbose(args["verbose"], "processDOCFile   - Processing " + inputPath.suffix + " file: " + str(inputPath) + " to " + str(outputPath))
 
     # Our library function here calls Pandoc to do the conversion.
     docMarkdown, docFrontmatter = officeToMarkdownLib.docToMarkdown(inputPath)
