@@ -472,7 +472,7 @@ def scanFolder(verbose, theMatches, theMatchTimestamps, thePreviousInputFileTime
                                 newInputFileTimestamps[outputLineSplit[0]] = outputLineSplit[1]
                         elif state == 1:
                             outputFiles.append(outputLine)
-                if args["verbose"] == "true":
+                if verbose:
                     stderrOutput = commandLineResult.stderr.strip()
                     if not stderrOutput == "":
                         print(stderrOutput)
