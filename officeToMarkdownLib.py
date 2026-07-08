@@ -483,5 +483,7 @@ def scanFolder(verbose, theMatches, theMatchTimestamps, thePreviousInputFileTime
             for matchInputItem in thePreviousInputFileTimestamps:
                 if matchInputItem.startswith(str(item)):
                     matchInputItems[matchInputItem] = thePreviousInputFileTimestamps[matchInputItem]
-            outputFiles.extend(scanFolder(verbose, theMatches, theMatchTimestamps, matchInputItems, item, theOutputFolder / pathlib.Path(item.name)))
+            subNewInputFileTimestamps, subOutputFiles = scanFolder(verbose, theMatches, theMatchTimestamps, matchInputItems, item, theOutputFolder / pathlib.Path(item.name))
+            newInputFileTimestamps.update(subNewInputFileTimestamps)
+            outputFiles.extend(subOutputFiles)
     return newInputFileTimestamps, outputFiles
