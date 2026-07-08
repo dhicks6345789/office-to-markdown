@@ -449,7 +449,7 @@ def scanFolder(verbose, theMatches, theMatchTimestamps, theInputTimestamps, theI
                     inputTimestamp = theInputTimestamps[str(item)]
                 commandLine = [scriptExec, scriptPath, "--verbose", str(verbose), "--scriptTimestamp", str(scriptTimestamp), "--inputPath", inputItem, "--outputPath", outputItem]
                 ifVerbose(verbose, "OfficeToMarkdown - running: " + " ".join(commandLine))
-                commandLineResult = subprocess.run(commandLine, capture_output=True, text=True)
+                commandLineResult = subprocess.run(commandLine, input=theInputTimestamps, capture_output=True, text=True)
                 for outputFile in commandLineResult.stdout.split("\n"):
                     outputFile = outputFile.strip()
                     if not outputFile == "":
