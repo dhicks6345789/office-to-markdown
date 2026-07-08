@@ -18,6 +18,12 @@ inputPath = pathlib.Path(args["inputPath"])
 inputPathTimestamp = str(inputPath.stat().st_mtime)
 outputPath = pathlib.Path(args["outputPath"])
 
+# The calling script provides a list of any input files, along with file update timestamps, via stdin.
+previousInputFileTimestamps = {}
+for line in sys.stdin:
+  lineSplit = line.strip().split(",")
+  previousInputFileTimestamps[lineSplit[0]] = lineSplit[1]
+
 # We are passed the output /folder/, so we have to figure out the output file name from the input file name.
 outputFilePath = outputPath / inputPath.name
 
