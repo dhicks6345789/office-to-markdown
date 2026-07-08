@@ -29,6 +29,6 @@ if not officeToMarkdownLib.checkTimestampsMatch(args["scriptTimestamp"], pathlib
 elif not officeToMarkdownLib.checkTimestampsMatch(args["inputTimestamp"], inputPath):
   doTransform = True
 if doTransform:
-  officeToMarkdownLib.ifVerbose(args["verbose"], "copyFile - Copying file: " + str(inputPath) + " to " + str(outputPath))
+  officeToMarkdownLib.ifVerbose(args["verbose"], "        copyFile - Copying file: " + str(inputPath) + " to " + str(outputPath))
   shutil.copyfile(inputPath, outputFilePath)
   officeToMarkdownLib.makeModDatesMatch(inputPath, outputPath)
