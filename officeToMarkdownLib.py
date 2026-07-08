@@ -421,3 +421,51 @@ def checkTimestampsMatch(theTimestamp, thePath):
 def ifVerbose(theVerboseString, theOutput):
     if theVerboseString.lower() == "true":
         print(theOutput, flush=True, file=sys.stderr)
+
+
+# Looks through the contents of the input folder, applying a transform script to each file or folder found.
+# A cache of file paths with checksum details is maintained, this is used to avoid processing a file if it (and the associated processing script) hasn't been changed since the last run.
+# Folders are recursed into. Some matches might match whole sub-folders, in which case that sub-folder's processing will be handled by the transform script.
+def scanFolder(theMatches, verbose, theInputTimestamps, theInputFolder, theOutputTimestamps, theOutputFolder):
+    if verbose:
+        print("OfficeToMarkdown - scanning folder: " + str(theInputFolder), flush=True, file=sys.stderr)
+    unmatchedItems = []
+    for item in theInputFolder.iterdir():
+        matched = False
+        for match in theMatches:
+            if (matched == False) and (folderMatched == False) and (not re.match(match[], str(item) == None):
+                if verbose:
+                    print("OfficeToMarkdown - matched: " + str(item) + " with " + match, flush=True, file=sys.stderr)
+                matched = True
+                scriptExec = theMatches[match][0])
+                scriptPath = pathlib.Path(matches[match][1])
+                if item.is_file():
+                    outputItem = theOutputFolder / pathlib.Path(item.name))
+                    
+                outputItem = officeToMarkdownLib.platformPath(outputItem)
+                
+                
+
+                scriptTimestamp = "0"
+                if scriptPath in previousMatchChanges:
+                    scriptTimestamp = previousMatchChanges[scriptPath]
+                inputTimestamp = "0"
+                if inputItem in previousInputChanges:
+                    inputTimestamp = previousInputChanges[inputItem]
+                commandLine = [scriptExec, scriptPath, "--verbose", args["verbose"], "--scriptTimestamp", str(scriptTimestamp), "--inputPath", inputItem, "--inputTimestamp", str(inputTimestamp), "--outputPath", outputItem]
+                officeToMarkdownLib.ifVerbose(args["verbose"], "OfficeToMarkdown - running: " + " ".join(commandLine))
+                
+                commandLineResult = subprocess.run(commandLine, capture_output=True, text=True)
+                for outputFile in commandLineResult.stdout.split("\n"):
+                    outputFile = outputFile.strip()
+                    if not outputFile == "":
+                        outputFiles.append(outputFile)
+                if args["verbose"] == "true":
+                    stderrOutput = commandLineResult.stderr.strip()
+                    if not stderrOutput == "":
+                        print(stderrOutput)
+        if (matched == False) and (folderMatched == False) and (not item == ""):
+            unmatchedItems.append(item)
+    for item in unmatchedItems:
+        if os.path.isdir(inputFolder + os.sep + item):
+            scanFolder(officeToMarkdownLib.normalisePath(theInput + os.sep + item), officeToMarkdownLib.normalisePath(theOutput + os.sep + item))
