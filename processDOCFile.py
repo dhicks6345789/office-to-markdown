@@ -29,7 +29,7 @@ if inputPath.suffix.lower() in [".docx", ".doc"]:
   
   # Report the input filename, with current update timestamp, back to the calling script.
   print(str(inputPath) + "," + inputPathTimestamp, flush=True, file=sys.stdout)
-  print(str("---", flush=True, file=sys.stdout)
+  print("---", flush=True, file=sys.stdout)
   # Report the output filename back to the calling script.
   print(outputFilePath, flush=True, file=sys.stdout)
 
