@@ -129,7 +129,7 @@ def copyFolder(inputFolder, outputFolder):
         outputItem = outputFolder / item
         outputFiles.append(str(outputItem))
         if inputItem.is_file():
-            if not inputItem.stat().st_mtime == outputItem.stat().st_mtime
+            if not inputItem.stat().st_mtime == outputItem.stat().st_mtime:
                 if verbose:
                     print("Copying file: " + inputItem + " to " + outputItem, flush=True)
                 shutil.copyfile(str(inputItem), str(outputItem))
