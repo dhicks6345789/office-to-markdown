@@ -480,5 +480,9 @@ def scanFolder(verbose, theMatches, theMatchTimestamps, thePreviousInputFileTime
             unmatchedItems.append(item)
     for item in unmatchedItems:
         if item.is_dir():
-            outputFiles.append(scanFolder(verbose, theMatches, theMatchTimestamps, theInputTimestamps, item, theOutputFolder / pathlib.Path(item.name)))
+            matchInputItems = {}
+            for matchInputItem in thePreviousInputFileTimestamps:
+                if matchInputItem.startswith(str(item)):
+                    matchInputItems[matchInputItem] = thePreviousInputFileTimestamps[matchInputItem]
+            outputFiles.append(scanFolder(verbose, theMatches, theMatchTimestamps, matchInputItems, item, theOutputFolder / pathlib.Path(item.name)))
     return newInputFileTimestamps, outputFiles
