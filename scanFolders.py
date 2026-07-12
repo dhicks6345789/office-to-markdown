@@ -41,9 +41,11 @@ changedMatchPaths = []
 for item in currentMatchChanges:
     if item in scriptStrings:
         if item in previousMatchChanges:
+            print(str(currentMatchChanges[item]) + " == " + str(previousMatchChanges[item]))
             if not str(currentMatchChanges[item]) == str(previousMatchChanges[item]):
                 changedMatchPaths.append(item)
         else:
+            print("Append: " + item)
             changedMatchPaths.append(item)
 if args["verbose"] == "true":
     print("changedMatchPaths:")
