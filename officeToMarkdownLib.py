@@ -234,9 +234,9 @@ def readDataFile(theFilename):
             returnScalars = True
         for index, row in pandasData.iterrows():
             if returnScalars:
-                result[row[0]] = row[1]
+                result[row[0]] = str(row[1])
             else:
-                result[row[0]] = row.values.flatten().tolist()[1:]
+                result[row[0]] = str(row.values.flatten().tolist()[1:])
         return(result)
     return result
 
@@ -296,7 +296,7 @@ def getFolderChangeDetails(thePath):
                     changes.update(subChanges)
                     changes[itemPath] = sorted(subChanges.values())[0]
             else:
-                changes[itemPath] = os.path.getmtime(itemPath)
+                changes[itemPath] = str(os.path.getmtime(itemPath))
     return changes
 
 # Given two ints, returns those two ints divided by their highest common divisor, or simply
