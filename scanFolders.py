@@ -35,7 +35,7 @@ for item in matches:
         scriptStrings.append(scriptString)
 
 # Read the matchChanges cache file, and work out if any of the transform scripts have been updated since the last run.
-previousMatchChanges = officeToMarkdownLib.readDataFile(args["dataRoot"] + os.sep + "matchChanges.csv", returnStrings=True)
+previousMatchChanges = officeToMarkdownLib.readDataFile(args["dataRoot"] + os.sep + "matchChanges.csv", returnStrings=False)
 currentMatchChanges = officeToMarkdownLib.getFolderChangeDetails(args["scriptRoot"])
 changedMatchPaths = []
 for item in currentMatchChanges:
