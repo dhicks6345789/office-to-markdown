@@ -221,7 +221,7 @@ def processCommandLineArgs(defaultArgs={}, requiredArgs=[], optionalArgs=[], opt
     return args
 
 # Reads a CSV or Excel file, returns the contents of that file as an associative array, with the first column as the key and the second column as the data. If more than two columns are present, each data item will be an array.
-def readDataFile(theFilename):
+def readDataFile(theFilename, returnStrings=False):
     result = {}
     if os.path.isfile(theFilename):
         # Figure out what format the file is in and use the appropriate loader.
@@ -234,9 +234,15 @@ def readDataFile(theFilename):
             returnScalars = True
         for index, row in pandasData.iterrows():
             if returnScalars:
-                result[row[0]] = str(row[1])
+                if returnStrings:
+                    result[row[0]] = str(row[1])
+                else:
+                    result[row[0]] = row[1]
             else:
-                result[row[0]] = str(row.values.flatten().tolist()[1:])
+                if returnStrings:
+                    result[row[0]] = str(row.values.flatten().tolist()[1:])
+                else:
+                    result[row[0]] = row.values.flatten().tolist()[1:]
         return(result)
     return result
 
