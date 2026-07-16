@@ -447,8 +447,8 @@ def scanFolder(verbose, theScriptRoot, theMatches, theMatchTimestamps, thePrevio
                 print(theMatches[match])
                 scriptExec = (theMatches[match])[0]
                 scriptPath = theScriptRoot + "/" + (theMatches[match])[1]
-                print(scriptExec)
-                print(scriptPath)
+                print("scriptExec: " + scriptExec)
+                print("scriptPath: " + scriptPath)
                 scriptTimestamp = "0"
                 if scriptPath in theMatchTimestamps:
                     scriptTimestamp = theMatchTimestamps[scriptPath]
