@@ -221,7 +221,7 @@ def processCommandLineArgs(defaultArgs={}, requiredArgs=[], optionalArgs=[], opt
     return args
 
 # Reads a CSV or Excel file, returns the contents of that file as an associative array, with the first column as the key and the second column as the data. If more than two columns are present, each data item will be an array.
-def readDataFile(theFilename, returnStrings=False):
+def readDataFile(theFilename):
     result = {}
     if os.path.isfile(theFilename):
         # Figure out what format the file is in and use the appropriate loader.
@@ -234,15 +234,9 @@ def readDataFile(theFilename, returnStrings=False):
             returnScalars = True
         for index, row in pandasData.iterrows():
             if returnScalars:
-                if returnStrings:
-                    result[row[0]] = str(row[1])
-                else:
-                    result[row[0]] = row[1]
+                result[row[0]] = row[1]
             else:
-                if returnStrings:
-                    result[row[0]] = str(row.values.flatten().tolist()[1:])
-                else:
-                    result[row[0]] = row.values.flatten().tolist()[1:]
+                result[row[0]] = row.values.flatten().tolist()[1:]
         return(result)
     return result
 
@@ -255,7 +249,7 @@ def writeDataFile(theFilename, theData):
     
     # Figure out what format the file is in and use the appropriate writer.
     if theFilename.endswith(".csv"):
-        outputDataframe.to_csv(theFilename, index=False, header=False)
+        outputDataframe.to_csv(theFilename, float_format='%.7f', index=False, header=False)
     elif theFilename.endswith(".xlsx") or theFilename.endswith(".xls"):
         outputDataframe.to_excel(theFilename, index=False, header=False)
 
@@ -300,9 +294,9 @@ def getFolderChangeDetails(thePath):
                 subChanges = getFolderChangeDetails(itemPath)
                 if not subChanges == {}:
                     changes.update(subChanges)
-                    changes[itemPath] = sorted(subChanges.values())[0]
             else:
                 changes[itemPath] = str(os.path.getmtime(itemPath))
+    changes[thePath] = sorted(changes.values())[0]
     return changes
 
 # Given two ints, returns those two ints divided by their highest common divisor, or simply
