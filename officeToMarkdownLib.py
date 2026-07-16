@@ -237,9 +237,18 @@ def readDataFile(theFilename):
                 result[row[0]] = row[1]
             else:
                 result[row[0]] = row.values.flatten().tolist()[1:]
-        return(result)
     return result
-
+    
+# Reads a CSV file containing filenames along with their last-modified timetsamps.
+def readChangesFile(theFilename):
+    result = {}
+    if os.path.isfile(theFilename):
+        for line in getFile(theFilename).split("\n"):
+            if not line.strip() == "":
+                lineSplit = line.split[","]
+                result[lineSplit[0]] = lineSplit[1]
+    return result
+    
 # Writes the data contained in a dict to a CSV or Excel file.
 def writeDataFile(theFilename, theData):
     pandasData = []
@@ -252,6 +261,13 @@ def writeDataFile(theFilename, theData):
         outputDataframe.to_csv(theFilename, float_format='%.7f', index=False, header=False)
     elif theFilename.endswith(".xlsx") or theFilename.endswith(".xls"):
         outputDataframe.to_excel(theFilename, index=False, header=False)
+
+# Writes the data contained in a dict holdings filenames with last-modified timesstamps to a CSV file.
+def writeChangesFile(theFilename, theData):
+    outputString = ""
+    for item in theData:
+        outputString = outputString + item + "," + theData[item] + "\n"
+    putFile(theFilename, outputString[:-1])
 
 # Parse arguments from a config file. Accepts CSV, Excel and YAML formats.
 def processArgsFile(theFilename, defaultArgs={}, requiredArgs=[], optionalArgs=[], optionalArgLists=[]):
