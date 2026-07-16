@@ -433,6 +433,8 @@ def scanFolder(verbose, theScriptRoot, theMatches, theMatchTimestamps, thePrevio
     ifVerbose(verbose, "OfficeToMarkdown - scanning folder: " + str(theInputFolder))
     #print("theMatchTimestamps:")
     #print(theMatchTimestamps)
+    print("theMatches:")
+    print(theMatches)
     outputFiles = []
     unmatchedItems = []
     newInputFileTimestamps = {}
@@ -442,6 +444,7 @@ def scanFolder(verbose, theScriptRoot, theMatches, theMatchTimestamps, thePrevio
             if (matched == False) and (not re.match(match, str(item)) == None):
                 matched = True
                 ifVerbose(verbose, "OfficeToMarkdown - matched: " + str(item) + " with " + match)
+                print(theMatches[match])
                 scriptExec = theMatches[match][0]
                 scriptPath = theScriptRoot + "/" + theMatches[match][1]
                 scriptTimestamp = "0"
