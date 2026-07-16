@@ -437,10 +437,6 @@ def ifVerbose(theVerbose, theOutput):
 # Folders are recursed into. Some matches might match whole sub-folders, in which case that sub-folder's processing will be handled by the transform script.
 def scanFolder(verbose, theScriptRoot, theMatches, theMatchTimestamps, thePreviousInputFileTimestamps, theInputFolder, theOutputFolder):
     ifVerbose(verbose, "OfficeToMarkdown - scanning folder: " + str(theInputFolder))
-    #print("theMatchTimestamps:")
-    #print(theMatchTimestamps)
-    print("theMatches:")
-    print(theMatches)
     outputFiles = []
     unmatchedItems = []
     newInputFileTimestamps = {}
@@ -450,11 +446,8 @@ def scanFolder(verbose, theScriptRoot, theMatches, theMatchTimestamps, thePrevio
             if (matched == False) and (not re.match(match, str(item)) == None):
                 matched = True
                 ifVerbose(verbose, "OfficeToMarkdown - matched: " + str(item) + " with " + match)
-                print(theMatches[match])
                 scriptExec = (theMatches[match])[0]
                 scriptPath = theScriptRoot + "/" + (theMatches[match])[1]
-                print("scriptExec: " + scriptExec)
-                print("scriptPath: " + scriptPath)
                 scriptTimestamp = "0"
                 if scriptPath in theMatchTimestamps:
                     scriptTimestamp = theMatchTimestamps[scriptPath]
