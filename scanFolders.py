@@ -35,7 +35,7 @@ for item in matches:
         scriptStrings.append(scriptString)
 
 # Read the matchChanges cache file, and work out if any of the transform scripts have been updated since the last run.
-previousMatchChanges = officeToMarkdownLib.readDataFile(args["dataRoot"] + os.sep + "matchChanges.csv")
+previousMatchChanges = officeToMarkdownLib.readDataFile(args["dataRoot"] + os.sep + "matchChanges.csv", returnStrings=True)
 currentMatchChanges = officeToMarkdownLib.getFolderChangeDetails(args["scriptRoot"])
 changedMatchPaths = []
 for item in currentMatchChanges:
@@ -54,7 +54,7 @@ if args["verbose"] == "true":
     print(changedMatchPaths)
 officeToMarkdownLib.writeDataFile(args["dataRoot"] + os.sep + "matchChanges.csv", currentMatchChanges)
 
-previousInputChanges = officeToMarkdownLib.readDataFile(args["dataRoot"] + os.sep + "inputChanges.csv")
+previousInputChanges = officeToMarkdownLib.readDataFile(args["dataRoot"] + os.sep + "inputChanges.csv", returnStrings=True)
 
 # Start the scanFolders process.
 currentInputChanges, outputFiles = officeToMarkdownLib.scanFolder(verbose, args["scriptRoot"], matches, previousMatchChanges, previousInputChanges, pathlib.Path(args["input"]), pathlib.Path(args["output"]))
