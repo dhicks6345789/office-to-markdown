@@ -48,6 +48,8 @@ for item in currentMatchChanges:
             print("Append: " + item)
             changedMatchPaths.append(item)
 if args["verbose"] == "true":
+    print("matches:")
+    print(matches)
     print("changedMatchPaths:")
     print(changedMatchPaths)
 officeToMarkdownLib.writeDataFile(args["dataRoot"] + os.sep + "matchChanges.csv", currentMatchChanges)
