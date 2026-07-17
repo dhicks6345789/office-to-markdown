@@ -452,10 +452,13 @@ def scanFolder(verbose, theScriptRoot, theMatches, theMatchTimestamps, thePrevio
     newInputFileTimestamps = {}
     for item in theInputFolder.iterdir():
         matched = False
+        itemStr = str(item)
+        if item.is_dir():
+            itemStr = itemStr + "/"
         for match in theMatches:
-            if (matched == False) and (not re.match(match, str(item)) == None):
+            if (matched == False) and (not re.match(match, itemStr) == None):
                 matched = True
-                ifVerbose(verbose, "OfficeToMarkdown - matched: " + str(item) + " with " + match)
+                ifVerbose(verbose, "OfficeToMarkdown - matched: " + itemStr + " with " + match)
                 scriptExec = (theMatches[match])[0]
                 scriptPath = theScriptRoot + "/" + (theMatches[match])[1]
                 scriptTimestamp = "0"
@@ -469,7 +472,7 @@ def scanFolder(verbose, theScriptRoot, theMatches, theMatchTimestamps, thePrevio
                 matchInputItems = {}
                 if item.is_file():
                     if str(item) in thePreviousInputFileTimestamps:
-                        matchInputItems[str(item)] = thePreviousInputFileTimestamps[str(item)]
+                        matchInputItems[itemStr] = thePreviousInputFileTimestamps[itemStr]
                 else:
                     for matchInputItem in thePreviousInputFileTimestamps:
                         if matchInputItem.startswith(str(item)):
