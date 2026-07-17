@@ -39,6 +39,10 @@ for inputItem in inputPath.iterdir():
           docFrontmatter["title"] = markdownLine[2:].lstrip()
         else:
           trimmedMarkdown = trimmedMarkdown + markdownLine + "\n"
+          
+      # Write out the Markdown file, matching the modification date with the original input document so we can skip next time if the input is unmodified.
+      officeToMarkdownLib.putFile(outputFilePath, officeToMarkdownLib.frontMatterToString(docFrontmatter) + trimmedMarkdown.strip())
+      officeToMarkdownLib.makeModDatesMatch(inputPath, outputFilePath)
 
 
 
