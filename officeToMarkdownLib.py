@@ -473,8 +473,10 @@ def scanFolder(verbose, theScriptRoot, theMatches, theMatchTimestamps, thePrevio
                     if str(item) in thePreviousInputFileTimestamps:
                         matchInputItems[itemStr] = thePreviousInputFileTimestamps[itemStr]
                 else:
+                    print("Comparing: " + itemStr)
+                    print(thePreviousInputFileTimestamps)
                     for matchInputItem in thePreviousInputFileTimestamps:
-                        if matchInputItem.startswith(str(item)):
+                        if matchInputItem.startswith(itemStr):
                             matchInputItems[matchInputItem] = thePreviousInputFileTimestamps[matchInputItem]
                 ifVerbose(verbose, "OfficeToMarkdown - running: " + " ".join(commandLine))
                 ifVerbose(verbose, "OfficeToMarkdown - passing: " + "\n".join([f"{key},{value}" for key, value in matchInputItems.items()]))
