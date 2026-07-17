@@ -3,7 +3,7 @@ import sys
 import pathlib
 import subprocess
 
-# Our own Docs To Markdown library.
+# Our own Office To Markdown library.
 import officeToMarkdownLib
 
 # Parse and normalise the command-line arguments.
