@@ -43,6 +43,7 @@ updateAll = False
 for item in ["scanFolders.py", "officeToMarkdownLib.py"]:
     itemPathStr = args["scriptRoot"] + os.sep + item
     if not previousMatchChanges[itemPathStr] == currentMatchChanges[itemPathStr]:
+        print(itemPathStr + " updated - re-running all scripts.")
         updateAll = True
 
 ## Work out which, if any, scripts have been changed.
@@ -62,8 +63,7 @@ if args["verbose"] == "true":
     #print(changedMatchPaths)
 officeToMarkdownLib.writeChangesFile(args["dataRoot"] + os.sep + "matchChanges.csv", currentMatchChanges)
 if updateAll:
-    for item in currentMatchChanges:
-        currentMatchChanges[item] = "0"
+    currentMatchChanges = {}
 
 previousInputChanges = officeToMarkdownLib.readChangesFile(args["dataRoot"] + os.sep + "inputChanges.csv")
 
