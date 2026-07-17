@@ -29,7 +29,7 @@ for inputItem in inputPath.iterdir():
     doTransform = False
     if not officeToMarkdownLib.checkTimestampsMatch(args["scriptTimestamp"], pathlib.Path(__file__)):
       doTransform = True
-    elif not previousInputChanges[str(inputItem)] == currentInputChanges[str(inputItem)]:
+    elif (not str(inputItem) in previousInputChanges) or (not previousInputChanges[str(inputItem)] == currentInputChanges[str(inputItem)]):
       doTransform = True
     if doTransform:
       officeToMarkdownLib.ifVerbose(args["verbose"], "processFAQ       - Processing " + inputItem.suffix + " file: " + str(inputItem) + " to " + str(outputFilePath))
