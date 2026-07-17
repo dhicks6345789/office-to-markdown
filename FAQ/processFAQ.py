@@ -23,7 +23,7 @@ currentMatchChanges = officeToMarkdownLib.getFolderChangeDetails(args["scriptRoo
 previousInputChanges = {}
 for line in sys.stdin:
   lineSplit = line.strip().split(",")
-  inputFileTimestamps[lineSplit[0]] = lineSplit[1]
+  previousInputChanges[lineSplit[0]] = lineSplit[1]
 
 for inputItem in inputPath.iterdir():
   if inputItem.suffix in [".docx", ".doc"]:
