@@ -29,9 +29,9 @@ for inputItem in inputPath.iterdir():
     outputFilePath = outputPath / pathlib.Path(inputItem.stem + ".md")
     outputFilePaths.append(outputFilePath)
     doTransform = False
+    print(previousInputChanges[str(inputItem)] + " == " + currentInputChanges[str(inputItem)], flush=True, file=sys.stderr)
     if not officeToMarkdownLib.checkTimestampsMatch(args["scriptTimestamp"], pathlib.Path(__file__)):
       doTransform = True
-    print(previousInputChanges[str(inputItem)] + " == " + currentInputChanges[str(inputItem)], flush=True, file=sys.stderr)
     elif (not str(inputItem) in previousInputChanges) or (not previousInputChanges[str(inputItem)] == currentInputChanges[str(inputItem)]):
       doTransform = True
     if doTransform:
