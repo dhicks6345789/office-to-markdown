@@ -14,11 +14,13 @@ outputPath = pathlib.Path(args["outputPath"])
 outputFilePaths = []
 
 # Read the list of input files with last-modified timestamps from stdin...
-previousInputChanges = officeToMarkdownLib.readChangesFile(sys.stdin)
+previousInputChanges = {}
+for line in sys.stdin:
+  if not line.strip() == "":
+    lineSplit = line.split(",")
+    previousInputChanges[lineSplit[0]] = lineSplit[1]
 # ...and read the current input file modification times to compare those with.
 currentInputChanges = officeToMarkdownLib.getFolderChangeDetails(args["inputPath"])
-
-
 
 for inputItem in inputPath.iterdir():
   if inputItem.suffix in [".docx", ".doc"]:
