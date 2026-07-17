@@ -17,7 +17,7 @@ outputFilePaths = []
 previousInputChanges = {}
 for line in sys.stdin:
   if not line.strip() == "":
-    lineSplit = line.split(",")
+    lineSplit = line.strip().split(",")
     previousInputChanges[lineSplit[0]] = lineSplit[1]
 print("previousInputChanges:", flush=True, file=sys.stderr)
 print(previousInputChanges, flush=True, file=sys.stderr)
