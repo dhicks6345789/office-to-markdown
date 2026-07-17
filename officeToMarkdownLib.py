@@ -245,7 +245,7 @@ def readChangesFile(theFilename):
     if os.path.isfile(theFilename):
         for line in getFile(theFilename).split("\n"):
             if not line.strip() == "":
-                lineSplit = line.split(",")
+                lineSplit = line.strip().split(",")
                 result[lineSplit[0]] = lineSplit[1]
     return result
     
