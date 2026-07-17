@@ -19,8 +19,8 @@ for line in sys.stdin:
   if not line.strip() == "":
     lineSplit = line.split(",")
     previousInputChanges[lineSplit[0]] = lineSplit[1]
-print("previousInputChanges:")
-print(previousInputChanges)
+print("previousInputChanges:", flush=True, file=sys.stderr)
+print(previousInputChanges, flush=True, file=sys.stderr)
 # ...and read the current input file modification times to compare those with.
 currentInputChanges = officeToMarkdownLib.getFolderChangeDetails(args["inputPath"])
 
@@ -31,6 +31,7 @@ for inputItem in inputPath.iterdir():
     doTransform = False
     if not officeToMarkdownLib.checkTimestampsMatch(args["scriptTimestamp"], pathlib.Path(__file__)):
       doTransform = True
+    print(previousInputChanges[str(inputItem)] + " == " + currentInputChanges[str(inputItem)], flush=True, file=sys.stderr)
     elif (not str(inputItem) in previousInputChanges) or (not previousInputChanges[str(inputItem)] == currentInputChanges[str(inputItem)]):
       doTransform = True
     if doTransform:
