@@ -17,6 +17,8 @@ previousInputChanges = officeToMarkdownLib.readChangesFile(sys.stdin)
 # ...and read the current input file modification times to compare those with.
 currentInputChanges = officeToMarkdownLib.getFolderChangeDetails(args["inputPath"])
 
+
+
 for inputItem in inputPath.iterdir():
   if inputItem.suffix in [".docx", ".doc"]:
     doTransform = False
@@ -64,3 +66,6 @@ for inputItem in inputPath.iterdir():
 
 
 # We expect the output (on stdout) from a sub-script to be a list of input file filename,timestamp pairs, then a "---", then a list of output files.
+for item in currentInputChanges:
+  print(item + "," + currentInputChanges[item])
+print("---")
