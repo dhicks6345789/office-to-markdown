@@ -473,13 +473,11 @@ def scanFolder(verbose, theScriptRoot, theMatches, theMatchTimestamps, thePrevio
                     if str(item) in thePreviousInputFileTimestamps:
                         matchInputItems[itemStr] = thePreviousInputFileTimestamps[itemStr]
                 else:
-                    print("Comparing: " + itemStr)
-                    print(thePreviousInputFileTimestamps)
                     for matchInputItem in thePreviousInputFileTimestamps:
                         if matchInputItem.startswith(itemStr):
                             matchInputItems[matchInputItem] = thePreviousInputFileTimestamps[matchInputItem]
                 ifVerbose(verbose, "OfficeToMarkdown - running: " + " ".join(commandLine))
-                ifVerbose(verbose, "OfficeToMarkdown - passing: " + "\n".join([f"{key},{value}" for key, value in matchInputItems.items()]))
+                #ifVerbose(verbose, "OfficeToMarkdown - passing: " + "\n".join([f"{key},{value}" for key, value in matchInputItems.items()]))
                 commandLineResult = subprocess.run(commandLine, input="\n".join([f"{key},{value}" for key, value in matchInputItems.items()]), capture_output=True, text=True)
                 state = 0
                 # We expect the output (on stdout) from a sub-script to be a list of input file filename,timestamp pairs, then a "---", then a list of output files.
