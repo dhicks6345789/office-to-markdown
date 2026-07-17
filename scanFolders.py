@@ -34,14 +34,23 @@ for item in matches:
     if not scriptString in scriptStrings:
         scriptStrings.append(scriptString)
 
-# Read the matchChanges cache file, and work out if any of the transform scripts have been updated since the last run.
+# Read the matchChanges cache file and get the current last-updated timestamps of the script files so we can work out if any of the transform scripts have been updated since the last run.
 previousMatchChanges = officeToMarkdownLib.readChangesFile(args["dataRoot"] + os.sep + "matchChanges.csv")
 currentMatchChanges = officeToMarkdownLib.getFolderChangeDetails(args["scriptRoot"])
+
+# If the main scripts or library have been updated we want all scripts to be re-run.
+updateAll = False
+for item in ["scanFolders.py", "officeToMarkdownLib.py"]:
+    itemPathStr = args["scriptRoot"] + os.sep + item
+    if not previousMatchChanges[itemPathStr] == currentMatchChanges[itemPathStr]:
+        updateAll = True
+
+# Work out which, if any, scripts have been changed.
 changedMatchPaths = []
 for item in currentMatchChanges:
     if item in scriptStrings:
         if item in previousMatchChanges:
-            if not str(currentMatchChanges[item]) == str(previousMatchChanges[item]):
+            if updateAll or (not str(currentMatchChanges[item]) == str(previousMatchChanges[item])):
                 changedMatchPaths.append(item)
         else:
             print("Append: " + item)
