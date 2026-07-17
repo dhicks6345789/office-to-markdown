@@ -1,5 +1,5 @@
-^.*/faq/$,python,FAQ/processFAQ.py
-^.*/mailmerge/,python,mailmerge/processMailmerge.py
+^.*/faq$,python,FAQ/processFAQ.py
+^.*/mailmerge,python,mailmerge/processMailmerge.py
 ^.*\.docx$,python,processDOCFile.py
 ^.*\.svg$,python,copyFile.py
 ^.*\.webp$,python,copyFile.py
