@@ -11,7 +11,7 @@ args = officeToMarkdownLib.processCommandLineArgs(defaultArgs={"scriptRoot":str(
 args["verbose"] = args["verbose"].lower()
 inputPath = pathlib.Path(args["inputPath"])
 outputPath = pathlib.Path(args["outputPath"])
-outputPaths = []
+outputFilePaths = []
 
 # Read the list of input files with last-modified timestamps from stdin...
 previousInputChanges = officeToMarkdownLib.readChangesFile(sys.stdin)
@@ -22,6 +22,8 @@ currentInputChanges = officeToMarkdownLib.getFolderChangeDetails(args["inputPath
 
 for inputItem in inputPath.iterdir():
   if inputItem.suffix in [".docx", ".doc"]:
+    outputFilePath = outputPath / pathlib.Path(inputPath.stem + ".md")
+    outputFilePaths.append(outputFilePath)
     doTransform = False
     if not officeToMarkdownLib.checkTimestampsMatch(args["scriptTimestamp"], pathlib.Path(__file__)):
       doTransform = True
@@ -43,12 +45,6 @@ for inputItem in inputPath.iterdir():
       # Write out the Markdown file, matching the modification date with the original input document so we can skip next time if the input is unmodified.
       officeToMarkdownLib.putFile(outputFilePath, officeToMarkdownLib.frontMatterToString(docFrontmatter) + trimmedMarkdown.strip())
       officeToMarkdownLib.makeModDatesMatch(inputPath, outputFilePath)
-
-
-
-
-
-  
     #elif fileType in ["MP4"]:
         ## Deal with an MP4 file - use FFmpeg to set the size and format of any videos in this FAQ.
         #outputItem = inputItem.rsplit(".", 1)[0] + ".webm"
@@ -74,3 +70,5 @@ for inputItem in inputPath.iterdir():
 for item in currentInputChanges:
   print(item + "," + currentInputChanges[item])
 print("---")
+for item in outputFilePaths:
+  print(item)
