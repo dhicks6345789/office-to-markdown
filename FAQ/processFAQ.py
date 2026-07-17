@@ -24,16 +24,16 @@ currentInputChanges = officeToMarkdownLib.getFolderChangeDetails(args["inputPath
 
 for inputItem in inputPath.iterdir():
   if inputItem.suffix in [".docx", ".doc"]:
-    outputFilePath = outputPath / pathlib.Path(inputPath.stem + ".md")
+    outputFilePath = outputPath / pathlib.Path(inputItem.stem + ".md")
     outputFilePaths.append(outputFilePath)
     doTransform = False
     if not officeToMarkdownLib.checkTimestampsMatch(args["scriptTimestamp"], pathlib.Path(__file__)):
       doTransform = True
-    elif not officeToMarkdownLib.checkTimestampsMatch(previousInputChanges[inputPath], inputPath):
+    elif not officeToMarkdownLib.checkTimestampsMatch(previousInputChanges[inputItem], inputItem):
       doTransform = True
     if doTransform:
       officeToMarkdownLib.ifVerbose(args["verbose"], "processFAQ       - Processing " + inputPath.suffix + " file: " + str(inputPath) + " to " + str(outputPath))
-      docMarkdown, docFrontmatter = officeToMarkdownLib.docToMarkdown(inputPath)
+      docMarkdown, docFrontmatter = officeToMarkdownLib.docToMarkdown(inputItem)
   
       # If we don't already have a "title" front matter variable, go through the Markdown line by line,
       # checking for the first defined title string that we can use as a title.
