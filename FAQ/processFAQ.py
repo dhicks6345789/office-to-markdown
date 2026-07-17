@@ -19,6 +19,8 @@ for line in sys.stdin:
   if not line.strip() == "":
     lineSplit = line.split(",")
     previousInputChanges[lineSplit[0]] = lineSplit[1]
+print("previousInputChanges:")
+print(previousInputChanges)
 # ...and read the current input file modification times to compare those with.
 currentInputChanges = officeToMarkdownLib.getFolderChangeDetails(args["inputPath"])
 
