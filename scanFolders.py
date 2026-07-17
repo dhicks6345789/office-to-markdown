@@ -39,32 +39,17 @@ previousMatchChanges = officeToMarkdownLib.readChangesFile(args["dataRoot"] + os
 currentMatchChanges = officeToMarkdownLib.getFolderChangeDetails(args["scriptRoot"])
 
 # If the main scripts or library have been updated we want all scripts to be re-run.
-updateAll = False
 for item in ["scanFolders.py", "officeToMarkdownLib.py"]:
     itemPathStr = args["scriptRoot"] + os.sep + item
-    print("Checking " + itemPathStr)
     if not previousMatchChanges[itemPathStr] == currentMatchChanges[itemPathStr]:
-        print(itemPathStr + " updated - re-running all scripts.")
-        updateAll = True
+        if args["verbose"] == "true":
+            print(itemPathStr + " updated - re-running all scripts.")
+        previousMatchChanges = {}
+officeToMarkdownLib.writeChangesFile(args["dataRoot"] + os.sep + "matchChanges.csv", currentMatchChanges)
 
-## Work out which, if any, scripts have been changed.
-#changedMatchPaths = []
-#for item in currentMatchChanges:
-#    if item in scriptStrings:
-#        if item in previousMatchChanges:
-#            if updateAll or (not str(currentMatchChanges[item]) == str(previousMatchChanges[item])):
-#                changedMatchPaths.append(item)
-#        else:
-#            print("Append: " + item)
-#            changedMatchPaths.append(item)
 if args["verbose"] == "true":
     print("matches:")
     print(matches)
-    #print("changedMatchPaths:")
-    #print(changedMatchPaths)
-officeToMarkdownLib.writeChangesFile(args["dataRoot"] + os.sep + "matchChanges.csv", currentMatchChanges)
-if updateAll:
-    currentMatchChanges = {}
 
 previousInputChanges = officeToMarkdownLib.readChangesFile(args["dataRoot"] + os.sep + "inputChanges.csv")
 
