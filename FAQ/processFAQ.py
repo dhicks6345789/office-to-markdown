@@ -12,8 +12,15 @@ args["verbose"] = args["verbose"].lower()
 inputPath = pathlib.Path(args["inputPath"])
 outputPath = pathlib.Path(args["outputPath"])
 
+
+
+We expect the output (on stdout) from a sub-script to be a list of input file filename,timestamp pairs, then a "---", then a list of output files.
+previousMatchChanges = officeToMarkdownLib.readChangesFile(args["dataRoot"] + os.sep + "matchChanges.csv")
+currentMatchChanges = officeToMarkdownLib.getFolderChangeDetails(args["scriptRoot"])
+
+
 # Read a list of input items with last-updated timestamps from stdin.
-inputFileTimestamps = {}
+previousInputChanges = {}
 for line in sys.stdin:
   lineSplit = line.strip().split(",")
   inputFileTimestamps[lineSplit[0]] = lineSplit[1]
