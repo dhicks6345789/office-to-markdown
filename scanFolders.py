@@ -41,7 +41,7 @@ currentMatchChanges = officeToMarkdownLib.getFolderChangeDetails(args["scriptRoo
 # If the main scripts or library have been updated we want all scripts to be re-run.
 for item in ["scanFolders.py", "officeToMarkdownLib.py"]:
     itemPathStr = args["scriptRoot"] + os.sep + item
-    if not previousMatchChanges[itemPathStr] == currentMatchChanges[itemPathStr]:
+    if (not itemPathStr in previousMatchChanges) or (not previousMatchChanges[itemPathStr] == currentMatchChanges[itemPathStr]):
         if args["verbose"] == "true":
             print(itemPathStr + " updated - re-running all scripts.")
         previousMatchChanges = {}
