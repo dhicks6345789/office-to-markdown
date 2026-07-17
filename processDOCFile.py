@@ -43,7 +43,7 @@ if inputPath.suffix.lower() in [".docx", ".doc"]:
   elif (not str(inputPath) in previousInputFileTimestamps) or (not str(inputPath.stat().st_mtime) == previousInputFileTimestamps[str(inputPath)]):
     doTransform = True
   if doTransform:
-    officeToMarkdownLib.ifVerbose(verbose, "processDOCFile   - Processing " + inputPath.suffix + " file: " + str(inputPath) + " to " + str(outputPath))
+    officeToMarkdownLib.ifVerbose(verbose, "processDOCFile   - " + inputPath.suffix + " fl: " + str(inputPath) + " to " + str(outputPath))
 
     # Our library function here calls Pandoc to do the conversion.
     docMarkdown, docFrontmatter = officeToMarkdownLib.docToMarkdown(inputPath)
