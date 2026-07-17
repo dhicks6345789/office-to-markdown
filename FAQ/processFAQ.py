@@ -7,10 +7,13 @@ import subprocess
 import officeToMarkdownLib
 
 # Parse and normalise the command-line arguments.
-args = officeToMarkdownLib.processCommandLineArgs(defaultArgs={"scriptRoot":str(pathlib.Path.cwd()), "verbose":"false", "validFrontMatterFields":""}, requiredArgs=["scriptTimestamp","inputPath","inputTimestamp","outputPath"], optionalArgs=["scriptRoot", "verbose"])
+args = officeToMarkdownLib.processCommandLineArgs(defaultArgs={"scriptRoot":str(pathlib.Path.cwd()), "verbose":"false", "validFrontMatterFields":""}, requiredArgs=["scriptTimestamp","inputPath","outputPath"], optionalArgs=["scriptRoot", "verbose"])
 args["verbose"] = args["verbose"].lower()
 inputPath = pathlib.Path(args["inputPath"])
 outputPath = pathlib.Path(args["outputPath"])
+
+# Read a list of input items with last-updated timestamps from stdin.
+inputItems = {line.strip() for line in sys.stdin if line.strip()}
 
 for inputItem in inputPath.iterdir():
   if inputItem.suffix in [".docx", ".doc"]:
