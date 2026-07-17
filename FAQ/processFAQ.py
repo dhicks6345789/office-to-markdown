@@ -32,7 +32,7 @@ for inputItem in inputPath.iterdir():
     elif not officeToMarkdownLib.checkTimestampsMatch(previousInputChanges[inputItem], inputItem):
       doTransform = True
     if doTransform:
-      officeToMarkdownLib.ifVerbose(args["verbose"], "processFAQ       - Processing " + inputPath.suffix + " file: " + str(inputItem) + " to " + str(outputFilePath))
+      officeToMarkdownLib.ifVerbose(args["verbose"], "processFAQ       - Processing " + inputItem.suffix + " file: " + str(inputItem) + " to " + str(outputFilePath))
       docMarkdown, docFrontmatter = officeToMarkdownLib.docToMarkdown(inputItem)
   
       # If we don't already have a "title" front matter variable, go through the Markdown line by line,
