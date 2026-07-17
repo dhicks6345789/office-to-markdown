@@ -45,22 +45,25 @@ for item in ["scanFolders.py", "officeToMarkdownLib.py"]:
     if not previousMatchChanges[itemPathStr] == currentMatchChanges[itemPathStr]:
         updateAll = True
 
-# Work out which, if any, scripts have been changed.
-changedMatchPaths = []
-for item in currentMatchChanges:
-    if item in scriptStrings:
-        if item in previousMatchChanges:
-            if updateAll or (not str(currentMatchChanges[item]) == str(previousMatchChanges[item])):
-                changedMatchPaths.append(item)
-        else:
-            print("Append: " + item)
-            changedMatchPaths.append(item)
+## Work out which, if any, scripts have been changed.
+#changedMatchPaths = []
+#for item in currentMatchChanges:
+#    if item in scriptStrings:
+#        if item in previousMatchChanges:
+#            if updateAll or (not str(currentMatchChanges[item]) == str(previousMatchChanges[item])):
+#                changedMatchPaths.append(item)
+#        else:
+#            print("Append: " + item)
+#            changedMatchPaths.append(item)
 if args["verbose"] == "true":
     print("matches:")
     print(matches)
-    print("changedMatchPaths:")
-    print(changedMatchPaths)
+    #print("changedMatchPaths:")
+    #print(changedMatchPaths)
 officeToMarkdownLib.writeChangesFile(args["dataRoot"] + os.sep + "matchChanges.csv", currentMatchChanges)
+if updateAll:
+    for item in currentMatchChanges:
+        currentMatchChanges[item] = "0"
 
 previousInputChanges = officeToMarkdownLib.readChangesFile(args["dataRoot"] + os.sep + "inputChanges.csv")
 
