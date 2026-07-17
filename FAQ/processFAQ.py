@@ -11,6 +11,7 @@ args = officeToMarkdownLib.processCommandLineArgs(defaultArgs={"scriptRoot":str(
 args["verbose"] = args["verbose"].lower()
 inputPath = pathlib.Path(args["inputPath"])
 outputPath = pathlib.Path(args["outputPath"])
+outputPaths = []
 
 # Read the list of input files with last-modified timestamps from stdin...
 previousInputChanges = officeToMarkdownLib.readChangesFile(sys.stdin)
