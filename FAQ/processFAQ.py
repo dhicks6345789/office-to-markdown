@@ -12,29 +12,20 @@ args["verbose"] = args["verbose"].lower()
 inputPath = pathlib.Path(args["inputPath"])
 outputPath = pathlib.Path(args["outputPath"])
 
-
-
-We expect the output (on stdout) from a sub-script to be a list of input file filename,timestamp pairs, then a "---", then a list of output files.
-previousMatchChanges = officeToMarkdownLib.readChangesFile(args["dataRoot"] + os.sep + "matchChanges.csv")
-currentMatchChanges = officeToMarkdownLib.getFolderChangeDetails(args["scriptRoot"])
-
-
-# Read a list of input items with last-updated timestamps from stdin.
-previousInputChanges = {}
-for line in sys.stdin:
-  lineSplit = line.strip().split(",")
-  previousInputChanges[lineSplit[0]] = lineSplit[1]
+# Read the list of input files with last-modified timestamps from stdin...
+previousInputChanges = officeToMarkdownLib.readChangesFile(sys.stdin)
+# ...and read the current input file modification times to compare those with.
+currentInputChanges = officeToMarkdownLib.getFolderChangeDetails(args["inputPath"])
 
 for inputItem in inputPath.iterdir():
   if inputItem.suffix in [".docx", ".doc"]:
     doTransform = False
     if not officeToMarkdownLib.checkTimestampsMatch(args["scriptTimestamp"], pathlib.Path(__file__)):
       doTransform = True
-    elif not officeToMarkdownLib.checkTimestampsMatch(inputFileTimestamps[inputPath], inputPath):
+    elif not officeToMarkdownLib.checkTimestampsMatch(previousInputChanges[inputPath], inputPath):
       doTransform = True
     if doTransform:
       officeToMarkdownLib.ifVerbose(args["verbose"], "processFAQ       - Processing " + inputPath.suffix + " file: " + str(inputPath) + " to " + str(outputPath))
-  
       docMarkdown, docFrontmatter = officeToMarkdownLib.docToMarkdown(inputPath)
   
       # If we don't already have a "title" front matter variable, go through the Markdown line by line,
@@ -69,3 +60,7 @@ for inputItem in inputPath.iterdir():
             #os.system("mv /tmp/faq.webm " + outputFolder + os.sep + outputItem)
             
             #officeToMarkdownLib.makeModDatesMatch(inputFolder + os.sep + inputItem, outputFolder + os.sep + outputItem)
+
+
+
+# We expect the output (on stdout) from a sub-script to be a list of input file filename,timestamp pairs, then a "---", then a list of output files.
