@@ -31,18 +31,19 @@ filesCopied = {}
 def copyFiles(theInputPath, theOutputPath):
   outputFilePath = theOutputPath / theInputPath.name
   if theInputPath.is_file:
-    filesCopied[str(theInputPath)] = (str(outputFilePath), str(outputFilePath.stat().st_mtime))
     if scriptUpdated or (not str(inputPath) in previousInputFileTimestamps) or (not str(inputPath.stat().st_mtime) == previousInputFileTimestamps[str(inputPath)]):
       officeToMarkdownLib.ifVerbose(args["verbose"], "copyFile         - copying: " + str(theInputPath) + " to " + str(outputFilePath))
       shutil.copy2(theInputPath, outputFilePath)
+    filesCopied[str(theInputPath)] = (str(outputFilePath), str(outputFilePath.stat().st_mtime))
   else:
     for item in theInputPath.iterdir():
       copyFiles(item, outputFilePath)
 copyFiles(args["input"], args["output"])
 
-
-# Report the input filename, with current update timestamp, back to the calling script.
-print(str(args["input"]) + "," + inputFileTimestamp, flush=True, file=sys.stdout)
+# Report the input filenames, with current update timestamp, back to the calling script.
+for fileCopied in filesCopied:  
+  print(fileCopied + "," + filesCopied[fileCopied][1], flush=True, file=sys.stdout)
 print("---", flush=True, file=sys.stdout)
-# Report the output filename back to the calling script.
-print(outputFilePath, flush=True, file=sys.stdout)
+# Report the output filenames back to the calling script.
+for fileCopied in filesCopied:
+  print(filesCopied[filesCopied][0], flush=True, file=sys.stdout)
