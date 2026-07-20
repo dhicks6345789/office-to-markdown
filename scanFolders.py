@@ -33,7 +33,7 @@ matches = officeToMarkdownLib.readDataFile(args["dataRoot"] / pathlib.Path("matc
 #        scriptPaths.append(scriptPath)
 
 # Read the matchChanges cache file, a list of the script files used to do the transforms along with their last-updated timestamps...
-matchChangesPath = args["dataRoot"] / pathlib.path("matchChanges.csv")
+matchChangesPath = args["dataRoot"] / pathlib.Path("matchChanges.csv")
 previousMatchChanges = officeToMarkdownLib.readChangesFile(matchChangesPath)
 # ...then get the current last-updated timestamps of the script files so we can work out if any of the transform scripts have been updated since the last run...
 currentMatchChanges = officeToMarkdownLib.getFolderChangeDetails(args["scriptRoot"])
