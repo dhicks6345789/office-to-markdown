@@ -49,4 +49,4 @@ for fileCopied in filesCopied:
 print("---", flush=True, file=sys.stdout)
 # Report the output filenames back to the calling script.
 for fileCopied in filesCopied:
-  print(filesCopied[filesCopied][0], flush=True, file=sys.stdout)
+  print(filesCopied[fileCopied][0], flush=True, file=sys.stdout)
