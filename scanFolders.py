@@ -48,17 +48,16 @@ for item in ["scanFolders.py", "officeToMarkdownLib.py"]:
         officeToMarkdownLib.ifVerbose(args["verbose"], itemPathStr + " updated - re-running all scripts.")
         previousMatchChanges = {}
 
-sys.exit(0)
-
 # Read the inputChanges cache file, a list of previously-seen input files and their last-updated filestamps.
-previousInputChanges = officeToMarkdownLib.readChangesFile(dataRoot + os.sep + "inputChanges.csv")
+inputChangesPath = args["dataRoot"] / pathlib.Path("inputChanges.csv")
+previousInputChanges = officeToMarkdownLib.readChangesFile(inputChangesPath)
 
 # Start the scanFolders process. This scans the given folder, using the passed-in dicts of last-updated timestamps to spot any changed files so we can avoid re-doing work if we don't need to.
 # The function returns a dict of updated last-updated timestamps for input files and a list of output files.
-currentInputChanges, outputFiles = officeToMarkdownLib.scanFolder(verbose, args["scriptRoot"], matches, previousMatchChanges, previousInputChanges, pathlib.Path(args["input"]), pathlib.Path(args["output"]))
+currentInputChanges, outputFiles = officeToMarkdownLib.scanFolder(verbose, args["scriptRoot"], matches, previousMatchChanges, previousInputChanges, args["input"], args["output"])
 
 # Write the updated last-updated file timestamps the the "inputChanges" file.
-officeToMarkdownLib.writeChangesFile(dataRoot + os.sep + "inputChanges.csv", currentInputChanges)
+officeToMarkdownLib.writeChangesFile(inputChangesPath, currentInputChanges)
 
 # If the user has specified a "copy in" folder, copy the contens of that folder over to the destination as well.
 # This happens after "scan folders", so for any conflicting filenames, the copy process will take precedence.
@@ -75,8 +74,8 @@ def copyFolder(inputFolder, outputFolder):
         else:
             os.mkdir(str(outputItem))
             copyFolder(inputItem, outputItem)
-if "copyIn" in args and not args["copyIn"] == "":
-    copyFolder(pathlib.Path(args["copyIn"]), pathlib.Path(args["output"]))
+if "copyIn" in args and not str(args["copyIn"]) == "":
+    copyFolder(args["copyIn"], args["output"])
 
 # If the user has specified the "deleteExtraFiles" option then we clear any extra files out of the output destination. We define "extra files" as any files that could not have been produced as output files
 # this run, i.e. the contents of the "outputFiles" list. Note that this list should include files that would have been oputput by any sub-script, even if they weren't updated this run because non of their inputs
@@ -89,5 +88,5 @@ def deleteExtraFiles(theFolder):
                 os.remove(str(item))
         else:
             deleteExtraFiles(item)
-if args["deleteExtraFiles"] == "true":
-    deleteExtraFiles(pathlib.Path(args["output"]))
+if args["deleteExtraFiles"] == True:
+    deleteExtraFiles(args["output"])
