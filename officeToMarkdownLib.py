@@ -438,7 +438,7 @@ def scanFolder(verbose, theScriptRoot, theMatches, theMatchTimestamps, thePrevio
                 scriptExec = (theMatches[match])[0]
                 scriptPath = theScriptRoot / pathlib.Path((theMatches[match])[1])
                 scriptTimestamp = "0"
-                if scriptPath in theMatchTimestamps:
+                if str(scriptPath) in theMatchTimestamps:
                     scriptTimestamp = theMatchTimestamps[scriptPath]
                 inputTimestamp = "0"
                 if str(item) in thePreviousInputFileTimestamps:
