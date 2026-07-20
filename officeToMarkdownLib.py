@@ -437,13 +437,14 @@ def scanFolder(verbose, theScriptRoot, theMatches, theMatchTimestamps, thePrevio
                 ifVerbose(verbose, "OfficeToMarkdown - matched: " + itemStr + " with " + match)
                 scriptExec = (theMatches[match])[0]
                 scriptPath = theScriptRoot / pathlib.Path((theMatches[match])[1])
+                scriptPathStr = str(scriptPath)
                 scriptTimestamp = "0"
-                if str(scriptPath) in theMatchTimestamps:
-                    scriptTimestamp = theMatchTimestamps[scriptPath]
+                if scriptPathStr in theMatchTimestamps:
+                    scriptTimestamp = theMatchTimestamps[scriptPathStr]
                 inputTimestamp = "0"
                 if str(item) in thePreviousInputFileTimestamps:
                     inputTimestamp = thePreviousInputFileTimestamps[str(item)]
-                commandLine = [scriptExec, scriptPath, "--scriptTimestamp", str(scriptTimestamp), "--input", str(item), "--output", str(theOutputFolder)]
+                commandLine = [scriptExec, scriptPathStr, "--scriptTimestamp", scriptTimestamp, "--input", str(item), "--output", str(theOutputFolder)]
                 if verbose:
                     commandLine.append("--verbose")
                 matchInputItems = {}
@@ -455,7 +456,6 @@ def scanFolder(verbose, theScriptRoot, theMatches, theMatchTimestamps, thePrevio
                         if matchInputItem.startswith(itemStr):
                             matchInputItems[matchInputItem] = thePreviousInputFileTimestamps[matchInputItem]
                 ifVerbose(verbose, "OfficeToMarkdown - running: " + " ".join([f"{value}" for value in commandLine]))
-                #ifVerbose(verbose, "OfficeToMarkdown - passing: " + "\n".join([f"{key},{value}" for key, value in matchInputItems.items()]))
                 commandLineResult = subprocess.run(commandLine, input="\n".join([f"{key},{value}" for key, value in matchInputItems.items()]), capture_output=True, text=True)
                 state = 0
                 # We expect the output (on stdout) from a sub-script to be a list of input file filename,timestamp pairs, then a "---", then a list of output files.
