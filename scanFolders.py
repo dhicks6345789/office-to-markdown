@@ -10,20 +10,7 @@ import subprocess
 # Our own Docs To Markdown library.
 import officeToMarkdownLib
 
-
-
-## Parse and normalise the command-line arguments.
-#args = officeToMarkdownLib.processCommandLineArgs(defaultArgs={"scriptRoot":str(pathlib.Path.cwd()), "dataRoot":str(pathlib.Path.cwd()), "verbose":"false", "produceFolderIndexes":"false", "deleteExtraFiles":"false", "validFrontMatterFields":""}, requiredArgs=["input","output"], optionalArgs=["scriptRoot", "verbose", "deleteExtraFiles", "copyIn", "data", "produceFolderIndexes", "baseURL", "validFrontMatterFields"])
-#dataRoot = pathlib.Path(args["dataRoot"])
-#verbose = False
-#if args["verbose"].lower() == "true":
-#    verbose = True
-#args["deleteExtraFiles"] = args["deleteExtraFiles"].lower()
-#args["produceFolderIndexes"] = args["produceFolderIndexes"].lower()
-#args["validFrontMatterFields"] = args["validFrontMatterFields"].split(",")
-
-
-
+# Parse input arguments.
 parser = argparse.ArgumentParser(description="Scans a folder structure and runs transform scripts on matched files and sub-folders.")
 parser.add_argument("--input", type=pathlib.Path, help="Input folder.")
 parser.add_argument("--output", type=pathlib.Path, help="Output folder.")
@@ -35,18 +22,12 @@ parser.add_argument("--deleteExtraFiles", action="store_true", help="Delete any 
 parser.add_argument("--dryRunExtraFiles", action="store_true", help="Do a dry run of the delete extra files operation - just list the files that would be deleted.")
 parser.add_argument("--produceFolderIndexes", action="store_true", help="")
 parser.add_argument("--validFrontMatterFields", action="store_true", help="")
-args = parser.parse_args()
-
-
-
-
-
+args = vars(parser.parse_args())
 
 # Print a config summary for the user.
 print("OfficeToMarkdown - arguments:", flush=True)
-argVars = vars(args)
-for arg in argVars:
-    print(" - " + arg + ": " + str(argVars[arg]), flush=True)
+for arg in args:
+    print(" - " + arg + ": " + str(args[arg]), flush=True)
 
 sys.exit(0)
 
