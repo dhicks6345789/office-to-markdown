@@ -84,7 +84,7 @@ def deleteExtraFiles(theFolder):
     for item in theFolder.iterdir():
         if item.is_file():
             if not str(item) in outputFiles:
-                officeToMarkdownLib.ifVerbose(args["verbose"], "Removing extra file: " + str(item), flush=True)
+                officeToMarkdownLib.ifVerbose(args["verbose"], "Removing extra file: " + str(item))
                 os.remove(str(item))
         else:
             deleteExtraFiles(item)
