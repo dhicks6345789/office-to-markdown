@@ -195,50 +195,16 @@ def docToMarkdownFile(inputFile, outputFile, baseURL="", markdownType="gfm", val
     outputMarkdown, outputFrontmatter = docToMarkdown(inputFile, baseURL=baseURL, markdownType=markdownType, validFrontMatterFields=validFrontMatterFields)
     putFile(outputFile, frontMatterToString(outputFrontmatter) + outputMarkdown)
 
-# Parse any command line arguments passed.
-def processCommandLineArgs(defaultArgs={}, requiredArgs=[], optionalArgs=[], optionalArgLists=[]):
-    # Step through the system-provided command line arguments - remember sys.argv[0] is the script's path, so we skip that.
-    args = {}
-    currentArgName = None
-    for argItem in sys.argv[1:]:
-        if argItem.startswith("--"):
-            currentArgName = argItem[2:]
-        elif not currentArgName == None:
-            args[currentArgName] = str(argItem)
-            currentArgName = None
-        else:
-            print("ERROR: unknown argument, " + argItem)
-            sys.exit(1)
-    
-    # If we have an argument of "config", treat that as a location to load a config file from, and go and process any further arguments given there.
-    # If arguments defined on the command line are also present in the given config file, the command line arguments take precedence.
-    if "config" in args.keys():
-        fileArgs = processArgsFile(args["config"], optionalArgs=optionalArgs+requiredArgs, optionalArgLists=optionalArgLists)
-        for argName in fileArgs.keys():
-            args[argName] = fileArgs[argName]
-    
-    # If we have any default argument values defined, and those arguments
-    # aren't already present, add the default values in to the result.
-    for argName in defaultArgs.keys():
-        if not argName in args.keys():
-            args[argName] = defaultArgs[argName]
-
-    # If any required arguments are missing, stop.
-    for argName in requiredArgs:
-        if not argName in args:
-            print("ERROR: Required argument not present: " + argName, flush=True)
-            sys.exit(1)
-    return args
-
 # Reads a CSV or Excel file, returns the contents of that file as an associative array, with the first column as the key and the second column as the data. If more than two columns are present, each data item will be an array.
-def readDataFile(theFilename):
+def readDataFile(theFilePath):
     result = {}
-    if os.path.isfile(theFilename):
+    if theFilePath.is_file():
         # Figure out what format the file is in and use the appropriate loader.
-        if theFilename.endswith(".csv"):
-            pandasData = pandas.read_csv(theFilename, header=None)
-        elif theFilename.endswith(".xlsx") or theFilename.endswith(".xls"):
-            pandasData = pandas.read_excel(theFilename, header=None)
+        fileSuffix = theFilePath.suffix.lower()
+        if fileSuffix == ".csv":
+            pandasData = pandas.read_csv(theFilePath, header=None)
+        elif fileSuffix in [".xlsx", ".xls"]:
+            pandasData = pandas.read_excel(theFilePath, header=None)
         returnScalars = False
         if pandasData.shape[1] == 2:
             returnScalars = True
