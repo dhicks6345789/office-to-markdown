@@ -286,7 +286,7 @@ def getFolderChangeDetails(thePath):
             if item.is_dir():
                 changes.update(getFolderChangeDetails(item))
             else:
-                changes[str(item)] = str(itemPath.stat().st_mtime)
+                changes[str(item)] = str(item.stat().st_mtime)
     changes[thePath] = sorted(changes.values())[0]
     return changes
 
