@@ -1,5 +1,3 @@
-# Copy either individual files or whole folders of files, recursing into any sub-folders found.
-
 # Standard libraries.
 import os
 import sys
@@ -13,7 +11,7 @@ import officeToMarkdownLib
 
 
 # Parse command-line arguments.
-parser = argparse.ArgumentParser(description="Scans a folder structure and runs transform scripts on matched files and sub-folders.")
+parser = argparse.ArgumentParser(description="Copy either individual files or whole folders of files, recursing into any sub-folders found.")
 parser.add_argument("--scriptTimestamp", help="The previous last-modified timestamp value (as a floating point number) for this script.")
 args = officeToMarkdownLib.parseArgs(parser)
 
