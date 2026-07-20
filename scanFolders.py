@@ -24,17 +24,18 @@ import officeToMarkdownLib
 
 
 
-args = argparse.ArgumentParser(description="Scans a folder structure and runs transform scripts on matched files and sub-folders.")
-args.add_argument("--input", type=pathlib.Path, help="Input folder.")
-args.add_argument("--output", type=pathlib.Path, help="Output folder.")
-args.add_argument("--scriptRoot", type=pathlib.Path, default=str(pathlib.Path.cwd()), help="The root of the script folder. Defaults to the current working directory.")
-args.add_argument("--dataRoot", type=pathlib.Path, default=str(pathlib.Path.cwd()), help="The root of the script folder. Defaults to the current working directory.")
-args.add_argument("--copyIn", type=pathlib.Path, default="", help="A folder to copy the contents of directly into the defined output folder.")
-args.add_argument("--verbose", action="store_true", help="Turn on verbose output.")
-args.add_argument("--deleteExtraFiles", action="store_true", help="Delete any files from the defined output folder not produced by this script.")
-args.add_argument("--dryRunExtraFiles", action="store_true", help="Do a dry run of the delete extra files operation - just list the files that would be deleted.")
-args.add_argument("--produceFolderIndexes", action="store_true", help="")
-args.add_argument("--validFrontMatterFields", action="store_true", help="")
+parser = argparse.ArgumentParser(description="Scans a folder structure and runs transform scripts on matched files and sub-folders.")
+parser.add_argument("--input", type=pathlib.Path, help="Input folder.")
+parser.add_argument("--output", type=pathlib.Path, help="Output folder.")
+parser.add_argument("--scriptRoot", type=pathlib.Path, default=str(pathlib.Path.cwd()), help="The root of the script folder. Defaults to the current working directory.")
+parser.add_argument("--dataRoot", type=pathlib.Path, default=str(pathlib.Path.cwd()), help="The root of the script folder. Defaults to the current working directory.")
+parser.add_argument("--copyIn", type=pathlib.Path, default="", help="A folder to copy the contents of directly into the defined output folder.")
+parser.add_argument("--verbose", action="store_true", help="Turn on verbose output.")
+parser.add_argument("--deleteExtraFiles", action="store_true", help="Delete any files from the defined output folder not produced by this script.")
+parser.add_argument("--dryRunExtraFiles", action="store_true", help="Do a dry run of the delete extra files operation - just list the files that would be deleted.")
+parser.add_argument("--produceFolderIndexes", action="store_true", help="")
+parser.add_argument("--validFrontMatterFields", action="store_true", help="")
+args = parser.parse_args()
 
 
 
@@ -45,6 +46,8 @@ args.add_argument("--validFrontMatterFields", action="store_true", help="")
 print("OfficeToMarkdown - arguments:", flush=True)
 for arg in args:
     print(" - " + arg + ": " + str(args[arg]), flush=True)
+
+sys.exit(0)
 
 # Read the "matches.csv" file, which describes which transform script to run for each file type / sub folder in the input folder structure.
 matches = officeToMarkdownLib.readDataFile(dataRoot + os.sep + "matches.csv")
