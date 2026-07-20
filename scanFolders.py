@@ -25,7 +25,7 @@ for arg in args:
     print(" - " + arg + ": " + str(args[arg]), flush=True)
 
 # Read the "matches.csv" file, which describes which transform script to run for each file type / sub folder in the input folder structure.
-matches = officeToMarkdownLib.readDataFile(dataRoot + os.sep + "matches.csv")
+matches = officeToMarkdownLib.readDataFile(args["dataRoot"] / pathlib.Path("matches.csv"))
 #scriptPaths = []
 #for item in matches:
 #    scriptPath = args["scriptRoot"] / pathlib.Path(matches[item][1]))
