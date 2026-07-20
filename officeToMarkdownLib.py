@@ -68,6 +68,15 @@ def putFile(theFilename, theContent):
     outfile.write(theContent)
     outfile.close()
 
+# Parse command-line input arguments. Since we have a set of scripts that take the same baseline arguments we have a central library function that adds our standard
+# arguments to an argparse.ArgumentParser object.
+def parseArgs(theParser):
+    theParser.add_argument("--input", type=pathlib.Path, help="Input folder.")
+    theParser.add_argument("--output", type=pathlib.Path, help="Output folder.")
+    theParser.add_argument("--scriptRoot", type=pathlib.Path, default=str(pathlib.Path.cwd()), help="The root of the script folder. Defaults to the current working directory.")
+    theParser.add_argument("--dataRoot", type=pathlib.Path, default=str(pathlib.Path.cwd()), help="The root of the script folder. Defaults to the current working directory.")
+    theParser.add_argument("--verbose", action="store_true", help="Turn on verbose output.")
+
 ## A utility function to return a given path string in normalised format, i.e. with a consistant path separator ("/") accross platforms,
 ## and without any doubled path separators / no path separator at the end of the string.
 #def normalisePath(thePath):
