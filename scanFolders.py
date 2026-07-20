@@ -17,7 +17,7 @@ parser.add_argument("--deleteExtraFiles", action="store_true", help="Delete any 
 parser.add_argument("--dryRunExtraFiles", action="store_true", help="Do a dry run of the delete extra files operation - just list the files that would be deleted.")
 parser.add_argument("--produceFolderIndexes", action="store_true", help="")
 parser.add_argument("--validFrontMatterFields", action="store_true", help="")
-args = officeToMarkdownLib.addArgs(parser)
+args = officeToMarkdownLib.parseArgs(parser)
 
 # Print a config summary for the user.
 print("OfficeToMarkdown - arguments:", flush=True)
