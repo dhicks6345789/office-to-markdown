@@ -24,29 +24,31 @@ print("OfficeToMarkdown - arguments:", flush=True)
 for arg in args:
     print(" - " + arg + ": " + str(args[arg]), flush=True)
 
-sys.exit(0)
-
 # Read the "matches.csv" file, which describes which transform script to run for each file type / sub folder in the input folder structure.
 matches = officeToMarkdownLib.readDataFile(dataRoot + os.sep + "matches.csv")
-scriptStrings = []
-for item in matches:
-    scriptString = officeToMarkdownLib.normalisePath(args["scriptRoot"] + "/" + matches[item][1])
-    if not scriptString in scriptStrings:
-        scriptStrings.append(scriptString)
+#scriptPaths = []
+#for item in matches:
+#    scriptPath = args["scriptRoot"] / pathlib.Path(matches[item][1]))
+#    if not scriptPath in scriptPaths:
+#        scriptPaths.append(scriptPath)
 
 # Read the matchChanges cache file, a list of the script files used to do the transforms along with their last-updated timestamps...
-previousMatchChanges = officeToMarkdownLib.readChangesFile(dataRoot + os.sep + "matchChanges.csv")
+matchChangesPath = args["dataRoot" / pathlib.path("matchChanges.csv")
+previousMatchChanges = officeToMarkdownLib.readChangesFile(matchChangesPath)
 # ...then get the current last-updated timestamps of the script files so we can work out if any of the transform scripts have been updated since the last run...
 currentMatchChanges = officeToMarkdownLib.getFolderChangeDetails(args["scriptRoot"])
 # ...and save those new update timestamps.
-officeToMarkdownLib.writeChangesFile(dataRoot + os.sep + "matchChanges.csv", currentMatchChanges)
+officeToMarkdownLib.writeChangesFile(matchChangesPath, currentMatchChanges)
 
 # If the main scripts or library have been updated we want all scripts to be re-run.
 for item in ["scanFolders.py", "officeToMarkdownLib.py"]:
-    itemPathStr = args["scriptRoot"] + os.sep + item
+    itemPath = args["scriptRoot"] / pathlib.Path(item)
+    itemPathStr = str(itemPath)
     if (not itemPathStr in previousMatchChanges) or (not previousMatchChanges[itemPathStr] == currentMatchChanges[itemPathStr]):
         officeToMarkdownLib.ifVerbose(verbose, itemPathStr + " updated - re-running all scripts.")
         previousMatchChanges = {}
+
+sys.exit(0)
 
 # Read the inputChanges cache file, a list of previously-seen input files and their last-updated filestamps.
 previousInputChanges = officeToMarkdownLib.readChangesFile(dataRoot + os.sep + "inputChanges.csv")
