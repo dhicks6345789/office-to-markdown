@@ -12,22 +12,28 @@ import officeToMarkdownLib
 
 
 
-# Parse and normalise the command-line arguments.
-args = officeToMarkdownLib.processCommandLineArgs(defaultArgs={"scriptRoot":str(pathlib.Path.cwd()), "dataRoot":str(pathlib.Path.cwd()), "verbose":"false", "produceFolderIndexes":"false", "deleteExtraFiles":"false", "validFrontMatterFields":""}, requiredArgs=["input","output"], optionalArgs=["scriptRoot", "verbose", "deleteExtraFiles", "copyIn", "data", "produceFolderIndexes", "baseURL", "validFrontMatterFields"])
-dataRoot = pathlib.Path(args["dataRoot"])
-verbose = False
-if args["verbose"].lower() == "true":
-    verbose = True
-args["deleteExtraFiles"] = args["deleteExtraFiles"].lower()
-args["produceFolderIndexes"] = args["produceFolderIndexes"].lower()
-args["validFrontMatterFields"] = args["validFrontMatterFields"].split(",")
+## Parse and normalise the command-line arguments.
+#args = officeToMarkdownLib.processCommandLineArgs(defaultArgs={"scriptRoot":str(pathlib.Path.cwd()), "dataRoot":str(pathlib.Path.cwd()), "verbose":"false", "produceFolderIndexes":"false", "deleteExtraFiles":"false", "validFrontMatterFields":""}, requiredArgs=["input","output"], optionalArgs=["scriptRoot", "verbose", "deleteExtraFiles", "copyIn", "data", "produceFolderIndexes", "baseURL", "validFrontMatterFields"])
+#dataRoot = pathlib.Path(args["dataRoot"])
+#verbose = False
+#if args["verbose"].lower() == "true":
+#    verbose = True
+#args["deleteExtraFiles"] = args["deleteExtraFiles"].lower()
+#args["produceFolderIndexes"] = args["produceFolderIndexes"].lower()
+#args["validFrontMatterFields"] = args["validFrontMatterFields"].split(",")
 
 
 
 args = argparse.ArgumentParser(description="Scans a folder structure and runs transform scripts on matched files and sub-folders.")
-args.add_argument("--input", help="Input folder.")
-args.add_argument("--output", help="Output folder.")
-args.add_argument("--scriptRoot", type=string, default=str(pathlib.Path.cwd()), help="The root of the script folder. Defaults to the current working directory.")
+args.add_argument("--input", type=pathlib.Path, help="Input folder.")
+args.add_argument("--output", type=pathlib.Path, help="Output folder.")
+args.add_argument("--scriptRoot", type=pathlib.Path, default=str(pathlib.Path.cwd()), help="The root of the script folder. Defaults to the current working directory.")
+args.add_argument("--dataRoot", type=pathlib.Path, default=str(pathlib.Path.cwd()), help="The root of the script folder. Defaults to the current working directory.")
+parser.add_argument("--verbose", action="store_true", help="Turn on verbose output.")
+parser.add_argument("--deleteExtraFiles", action="store_true", help="Delete any files from the defined output folder not produced by this script.")
+parser.add_argument("--dryRunExtraFiles", action="store_true", help="Do a dry run of the delete extra files operation - just list the files that would be deleted.")
+parser.add_argument("--produceFolderIndexes", action="store_true", help="")
+parser.add_argument("--validFrontMatterFields", action="store_true", help="")
 
 
 
