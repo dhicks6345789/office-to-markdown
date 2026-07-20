@@ -68,31 +68,31 @@ def putFile(theFilename, theContent):
     outfile.write(theContent)
     outfile.close()
 
-# A utility function to return a given path string in normalised format, i.e. with a consistant path separator ("/") accross platforms,
-# and without any doubled path separators / no path separator at the end of the string.
-def normalisePath(thePath):
-    result = thePath.strip()
-    if result == "":
-        return ""
-    result = result.replace(os.sep, "/")
-    result = result.replace("//", "/")
-    result = result.replace("/./", "/")
-    if result[len(result)-1] == "/":
-        result = result[:-1]
-    return result
+## A utility function to return a given path string in normalised format, i.e. with a consistant path separator ("/") accross platforms,
+## and without any doubled path separators / no path separator at the end of the string.
+#def normalisePath(thePath):
+#    result = thePath.strip()
+#    if result == "":
+#        return ""
+#    result = result.replace(os.sep, "/")
+#    result = result.replace("//", "/")
+#    result = result.replace("/./", "/")
+#    if result[len(result)-1] == "/":
+#        result = result[:-1]
+#    return result
 
-# Normalise the given path string, then replace any path separators with the platform-specific os.sep.
-def platformPath(thePath):
-    return normalisePath(thePath).replace("/", os.sep)
+## Normalise the given path string, then replace any path separators with the platform-specific os.sep.
+#def platformPath(thePath):
+#    return normalisePath(thePath).replace("/", os.sep)
 
-# A utility function to determine whether a variable has a value of "NaN" or not.
-# Checks if a string has a value of "NaN" (any case) as well as float values.
-def isnan(theVal):
-    if isinstance(theVal, str):
-        if theVal.lower() == "nan":
-            return True
-        return False
-    return math.isnan(theVal)
+## A utility function to determine whether a variable has a value of "NaN" or not.
+## Checks if a string has a value of "NaN" (any case) as well as float values.
+#def isnan(theVal):
+#    if isinstance(theVal, str):
+#        if theVal.lower() == "nan":
+#            return True
+#        return False
+#    return math.isnan(theVal)
 
 def checkModDatesMatch(theInputItem, theOutputItem):
     if os.path.isfile(theOutputItem):
