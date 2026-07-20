@@ -22,6 +22,7 @@ for line in sys.stdin:
   lineSplit = line.strip().split(",")
   previousInputFileTimestamps[lineSplit[0]] = lineSplit[1]
 
+# If this script itself has been updated we re-run the operation, just to make sure all output is up to date.
 scriptUpdated = False
 if not args["scriptTimestamp"] == str(pathlib.Path(__file__).stat().st_mtime):
   scriptUpdated = True
@@ -31,12 +32,13 @@ filesCopied = {}
 def copyFiles(theInputPath, theOutputPath):
   outputFilePath = theOutputPath / theInputPath.name
   if theInputPath.is_file:
-    if scriptUpdated or (not str(inputPath) in previousInputFileTimestamps) or (not str(inputPath.stat().st_mtime) == previousInputFileTimestamps[str(inputPath)]):
+    inputPathStr = str(theInputPath)
+    inputPathStat = theInputPath.stat()
+    if scriptUpdated or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
       officeToMarkdownLib.ifVerbose(args["verbose"], "copyFile         - copying: " + str(theInputPath) + " to " + str(outputFilePath))
       shutil.copy(theInputPath, outputFilePath)
-      makeModDatesMatch(theInputPath, outputFilePath)
-      os.utime(file_path, (timestamp, timestamp))
-    filesCopied[str(theInputPath)] = (str(outputFilePath), str(outputFilePath.stat().st_mtime))
+      os.utime(outputFilePath, (inputFileStat.st_atime, inputFileStat.st_mtime))
+    filesCopied[inputPathStr] = (str(outputFilePath), str(inputPathStat.st_mtime))
   else:
     for item in theInputPath.iterdir():
       copyFiles(item, outputFilePath)
