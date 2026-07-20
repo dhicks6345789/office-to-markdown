@@ -4,6 +4,7 @@ import re
 import sys
 import shutil
 import pathlib
+import argparse
 import subprocess
 
 # Our own Docs To Markdown library.
@@ -20,6 +21,18 @@ if args["verbose"].lower() == "true":
 args["deleteExtraFiles"] = args["deleteExtraFiles"].lower()
 args["produceFolderIndexes"] = args["produceFolderIndexes"].lower()
 args["validFrontMatterFields"] = args["validFrontMatterFields"].split(",")
+
+
+
+args = argparse.ArgumentParser(description="Scans a folder structure and runs transform scripts on matched files and sub-folders.")
+args.add_argument("--input", help="Input folder.")
+args.add_argument("--output", help="Output folder.")
+args.add_argument("--scriptRoot", type=string, default=str(pathlib.Path.cwd()), help="The root of the script folder. Defaults to the current working directory.")
+
+
+
+
+
 
 # Print a config summary for the user.
 print("OfficeToMarkdown - arguments:", flush=True)
