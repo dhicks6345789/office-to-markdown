@@ -68,7 +68,7 @@ def copyFolder(inputFolder, outputFolder):
         outputFiles.append(str(outputItem))
         if inputItem.is_file():
             if not inputItem.stat().st_mtime == outputItem.stat().st_mtime:
-                officeToMarkdownLib.ifVerbose(verbose, "Copying file: " + inputItem + " to " + outputItem, flush=True)
+                officeToMarkdownLib.ifVerbose(args["verbose"], "Copying file: " + inputItem + " to " + outputItem, flush=True)
                 shutil.copyfile(str(inputItem), str(outputItem))
                 officeToMarkdownLib.makeModDatesMatch(str(inputItem), str(outputItem))
         else:
@@ -84,7 +84,7 @@ def deleteExtraFiles(theFolder):
     for item in theFolder.iterdir():
         if item.is_file():
             if not str(item) in outputFiles:
-                officeToMarkdownLib.ifVerbose(verbose, "Removing extra file: " + str(item), flush=True)
+                officeToMarkdownLib.ifVerbose(args["verbose"], "Removing extra file: " + str(item), flush=True)
                 os.remove(str(item))
         else:
             deleteExtraFiles(item)
