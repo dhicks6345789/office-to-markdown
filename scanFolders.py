@@ -44,7 +44,7 @@ args = parser.parse_args()
 
 # Print a config summary for the user.
 print("OfficeToMarkdown - arguments:", flush=True)
-for arg in args:
+for arg in vars(args):
     print(" - " + arg + ": " + str(args[arg]), flush=True)
 
 sys.exit(0)
