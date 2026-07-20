@@ -443,7 +443,9 @@ def scanFolder(verbose, theScriptRoot, theMatches, theMatchTimestamps, thePrevio
                 inputTimestamp = "0"
                 if str(item) in thePreviousInputFileTimestamps:
                     inputTimestamp = thePreviousInputFileTimestamps[str(item)]
-                commandLine = [scriptExec, scriptPath, "--verbose", str(verbose), "--scriptTimestamp", str(scriptTimestamp), "--inputPath", str(item), "--outputPath", str(theOutputFolder)]
+                commandLine = [scriptExec, scriptPath, "--scriptTimestamp", str(scriptTimestamp), "--input", str(item), "--output", str(theOutputFolder)]
+                if args["verbose"]:
+                    commandLine.append("--verbose")
                 matchInputItems = {}
                 if item.is_file():
                     if str(item) in thePreviousInputFileTimestamps:
