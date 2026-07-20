@@ -277,17 +277,16 @@ def processArgsFile(theFilename, defaultArgs={}, requiredArgs=[], optionalArgs=[
             quit
     return args
 
+# Returns a dict of filePath:last-updated values for the given path. Both the file path value and the last-updated value are stored as strings. Sub-folders are
+# recursed into, the last-updated value for a folder will simply be the most recent value of all the files and sub-folders found in that folder.
 def getFolderChangeDetails(thePath):
     changes = {}
-    for item in os.listdir(thePath):
-        if not item in fileIgnores:
-            itemPath = thePath + "/" + item
-            if os.path.isdir(itemPath):
-                subChanges = getFolderChangeDetails(itemPath)
-                if not subChanges == {}:
-                    changes.update(subChanges)
+    for item in thePath.iterdir():
+        if not str(item) in fileIgnores:
+            if item.is_dir():
+                changes.update(getFolderChangeDetails(item))
             else:
-                changes[itemPath] = str(os.path.getmtime(itemPath))
+                changes[str(item)] = str(itemPath.stat().st_mtime)
     changes[thePath] = sorted(changes.values())[0]
     return changes
 
