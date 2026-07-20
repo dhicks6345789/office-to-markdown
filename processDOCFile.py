@@ -3,6 +3,7 @@
 # Standard Python libraries.
 import sys
 import pathlib
+import argparse
 
 # Our own Office To Markdown library.
 import officeToMarkdownLib
