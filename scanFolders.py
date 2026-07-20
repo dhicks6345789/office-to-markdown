@@ -45,7 +45,7 @@ for item in ["scanFolders.py", "officeToMarkdownLib.py"]:
     itemPath = args["scriptRoot"] / pathlib.Path(item)
     itemPathStr = str(itemPath)
     if (not itemPathStr in previousMatchChanges) or (not previousMatchChanges[itemPathStr] == currentMatchChanges[itemPathStr]):
-        officeToMarkdownLib.ifVerbose(verbose, itemPathStr + " updated - re-running all scripts.")
+        officeToMarkdownLib.ifVerbose(args["verbose"], itemPathStr + " updated - re-running all scripts.")
         previousMatchChanges = {}
 
 sys.exit(0)
