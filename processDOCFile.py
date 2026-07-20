@@ -27,7 +27,7 @@ if args["input"].suffix.lower() in [".docx", ".doc"]:
   inputFileTimestamp = str(args["input"].stat().st_mtime)
   
   # We are passed the output /folder/, so we have to figure out the output file name from the input file name.
-  outputFilePath = args["output"] / pathlib.Path(inputPath.stem + ".md")
+  outputFilePath = args["output"] / args["input"].stem + ".md")
   
   # Report the input filename, with current update timestamp, back to the calling script.
   print(str(args["input"]) + "," + inputFileTimestamp, flush=True, file=sys.stdout)
