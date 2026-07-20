@@ -288,7 +288,8 @@ def getFolderChangeDetails(thePath):
                 changes.update(getFolderChangeDetails(item))
             else:
                 changes[str(item)] = str(item.stat().st_mtime)
-    changes[str(thePath)] = sorted(changes.values())[0]
+    if len(changes) > 0:
+        changes[str(thePath)] = sorted(changes.values())[0]
     return changes
 
 # Given two ints, returns those two ints divided by their highest common divisor, or simply
