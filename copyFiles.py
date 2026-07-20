@@ -23,8 +23,9 @@ for line in sys.stdin:
 
 # If this script itself has been updated we re-run the operation, just to make sure all output is up to date.
 scriptUpdated = False
-if not args["scriptTimestamp"] == str(pathlib.Path(__file__).stat().st_mtime):
-  officeToMarkdownLib.ifVerbose(args["verbose"], "copyFile         - updated. ")
+scriptTimestamp = str(pathlib.Path(__file__).stat().st_mtime)
+if not args["scriptTimestamp"] == scriptTimestamp:
+  officeToMarkdownLib.ifVerbose(args["verbose"], "copyFile script  - updated: was " + args["scriptTimestamp"] + ", now " + scriptTimestamp)
   scriptUpdated = True
 
 # Copy individual files. If the input given is a folder, recurse into that folder and copy any files (or sub-folders) found.
