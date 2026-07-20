@@ -1,6 +1,7 @@
-# Copy a file.
+# Copy either individual files or whole folders of files, recursing into any sub-folders found.
 
 # Standard libraries.
+import os
 import sys
 import shutil
 import pathlib
