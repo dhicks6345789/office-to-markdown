@@ -1,22 +1,20 @@
-# Convert a DOCX / DOC (Word, Google Docs, etc) file to Markdown.
-# Designed to be called from the scanFolders script, so takes a very simple command line parameter list.
+# Copy a file.
 
 # Standard libraries.
 import sys
 import shutil
 import pathlib
+import argparse
 
 # Our own Office To Markdown library.
 import officeToMarkdownLib
 
-# Parse and normalise the command-line arguments.
-args = officeToMarkdownLib.processCommandLineArgs(defaultArgs={"scriptRoot":str(pathlib.Path.cwd()), "validFrontMatterFields":"", "verbose":"false"}, requiredArgs=["scriptTimestamp","inputPath","outputPath"], optionalArgs=["scriptRoot", "verbose"])
-verbose = False
-if args["verbose"].lower() == "true":
-  verbose = True
-inputPath = pathlib.Path(args["inputPath"])
-inputPathTimestamp = str(inputPath.stat().st_mtime)
-outputPath = pathlib.Path(args["outputPath"])
+
+
+# Parse command-line arguments.
+parser = argparse.ArgumentParser(description="Scans a folder structure and runs transform scripts on matched files and sub-folders.")
+parser.add_argument("--scriptTimestamp", help="The previous last-modified timestamp value (as a floating point number) for this script.")
+args = officeToMarkdownLib.parseArgs(parser)
 
 # The calling script provides a list of any input files, along with file update timestamps, via stdin.
 previousInputFileTimestamps = {}
@@ -25,10 +23,10 @@ for line in sys.stdin:
   previousInputFileTimestamps[lineSplit[0]] = lineSplit[1]
 
 # We are passed the output /folder/, so we have to figure out the output file name from the input file name.
-outputFilePath = outputPath / inputPath.name
+outputFilePath = args["output"] / inputPath.name
 
 # Report the input filename, with current update timestamp, back to the calling script.
-print(str(inputPath) + "," + inputPathTimestamp, flush=True, file=sys.stdout)
+print(str(args["input"]) + "," + inputPathTimestamp, flush=True, file=sys.stdout)
 print("---", flush=True, file=sys.stdout)
 # Report the output filename back to the calling script.
 print(outputFilePath, flush=True, file=sys.stdout)
