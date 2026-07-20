@@ -12,7 +12,7 @@ import officeToMarkdownLib
 
 # Parse command-line arguments.
 parser = argparse.ArgumentParser(description="Scans a folder structure and runs transform scripts on matched files and sub-folders.")
-parser.add_argument("--scriptTimestamp", type=string, help="The previous last-modified timestamp value (as a floating point number) for this script.")
+parser.add_argument("--scriptTimestamp", help="The previous last-modified timestamp value (as a floating point number) for this script.")
 args = officeToMarkdownLib.parseArgs(parser)
 
 # The calling script provides a list of any input files, along with file update timestamps, via stdin.
