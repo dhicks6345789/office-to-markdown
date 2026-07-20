@@ -283,7 +283,7 @@ def getFolderChangeDetails(thePath):
     changes = {}
     print(thePath)
     for item in thePath.iterdir():
-        if not str(item) in fileIgnores:
+        if not item.name in fileIgnores:
             if item.is_dir():
                 changes.update(getFolderChangeDetails(item))
             else:
