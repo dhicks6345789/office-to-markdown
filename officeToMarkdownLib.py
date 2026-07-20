@@ -281,7 +281,6 @@ def processArgsFile(theFilename, defaultArgs={}, requiredArgs=[], optionalArgs=[
 # recursed into, the last-updated value for a folder will simply be the most recent value of all the files and sub-folders found in that folder.
 def getFolderChangeDetails(thePath):
     changes = {}
-    print(thePath)
     for item in thePath.iterdir():
         if not item.name in fileIgnores:
             if item.is_dir():
