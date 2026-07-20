@@ -76,6 +76,7 @@ def parseArgs(theParser):
     theParser.add_argument("--scriptRoot", type=pathlib.Path, default=str(pathlib.Path.cwd()), help="The root of the script folder. Defaults to the current working directory.")
     theParser.add_argument("--dataRoot", type=pathlib.Path, default=str(pathlib.Path.cwd()), help="The root of the script folder. Defaults to the current working directory.")
     theParser.add_argument("--verbose", action="store_true", help="Turn on verbose output.")
+    return vars(theParser.parse_args())
 
 ## A utility function to return a given path string in normalised format, i.e. with a consistant path separator ("/") accross platforms,
 ## and without any doubled path separators / no path separator at the end of the string.
