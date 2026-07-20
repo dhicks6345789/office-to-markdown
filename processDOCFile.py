@@ -7,14 +7,12 @@ import pathlib
 # Our own Office To Markdown library.
 import officeToMarkdownLib
 
-# Parse and normalise the command-line arguments.
-args = officeToMarkdownLib.processCommandLineArgs(defaultArgs={"scriptRoot":str(pathlib.Path.cwd()), "validFrontMatterFields":"", "verbose":"false"}, requiredArgs=["scriptTimestamp","inputPath","outputPath"], optionalArgs=["scriptRoot", "verbose"])
-verbose = False
-if args["verbose"].lower() == "true":
-  verbose = True
-inputPath = pathlib.Path(args["inputPath"])
-inputPathTimestamp = str(inputPath.stat().st_mtime)
-outputPath = pathlib.Path(args["outputPath"])
+
+
+# Parse command-line arguments.
+parser = argparse.ArgumentParser(description="Scans a folder structure and runs transform scripts on matched files and sub-folders.")
+parser.add_argument("--scriptTimestamp", type=string, help="The previous last-modified timestamp value (as a floating point number) for this script.")
+args = officeToMarkdownLib.parseArgs(parser)
 
 # The calling script provides a list of any input files, along with file update timestamps, via stdin.
 previousInputFileTimestamps = {}
@@ -22,15 +20,16 @@ for line in sys.stdin:
   lineSplit = line.strip().split(",")
   previousInputFileTimestamps[lineSplit[0]] = lineSplit[1]
 
-#print("processDOCFile   - previousInputFileTimestamps: " + str(previousInputFileTimestamps), flush=True, file=sys.stderr)
-
 # Check we are trying to convert a DOCX / DOC file.
-if inputPath.suffix.lower() in [".docx", ".doc"]:
+if args["input"].suffix.lower() in [".docx", ".doc"]:
+  # Figure ut the last-modified time of the input file.
+  inputFileTimestamp = str(args["input"].stat().st_mtime)
+  
   # We are passed the output /folder/, so we have to figure out the output file name from the input file name.
-  outputFilePath = outputPath / pathlib.Path(inputPath.stem + ".md")
+  outputFilePath = args["output"] / pathlib.Path(inputPath.stem + ".md")
   
   # Report the input filename, with current update timestamp, back to the calling script.
-  print(str(inputPath) + "," + inputPathTimestamp, flush=True, file=sys.stdout)
+  print(str(args["input"]) + "," + inputFileTimestamp, flush=True, file=sys.stdout)
   print("---", flush=True, file=sys.stdout)
   # Report the output filename back to the calling script.
   print(outputFilePath, flush=True, file=sys.stdout)
@@ -40,13 +39,13 @@ if inputPath.suffix.lower() in [".docx", ".doc"]:
   doTransform = False
   if not officeToMarkdownLib.checkTimestampsMatch(args["scriptTimestamp"], pathlib.Path(__file__)):
     doTransform = True
-  elif (not str(inputPath) in previousInputFileTimestamps) or (not str(inputPath.stat().st_mtime) == previousInputFileTimestamps[str(inputPath)]):
+  elif (not str(args["input"]) in previousInputFileTimestamps) or (not str(args["input"].stat().st_mtime) == previousInputFileTimestamps[str(args["input"])]):
     doTransform = True
   if doTransform:
-    officeToMarkdownLib.ifVerbose(verbose, "processDOCFile   -   " + inputPath.suffix + ": " + str(inputPath) + " to " + str(outputPath))
+    officeToMarkdownLib.ifVerbose(args["verbose"], "processDOCFile   -   " + args["input"].suffix + ": " + str(args["input"]) + " to " + str(outputFilePath))
 
-    # Our library function here calls Pandoc to do the conversion.
-    docMarkdown, docFrontmatter = officeToMarkdownLib.docToMarkdown(inputPath)
+    # We use our library function to convert from DOCX to Markdown.
+    docMarkdown, docFrontmatter = officeToMarkdownLib.docToMarkdown(args["input"])
 
     # If we don't already have a "title" front matter variable, go through the Markdown line by line,
     # checking for the first defined title string that we can use as a title.
@@ -59,4 +58,4 @@ if inputPath.suffix.lower() in [".docx", ".doc"]:
 
     # Write out the Markdown file, matching the modification date with the original input document so we can skip next time if the input is unmodified.
     officeToMarkdownLib.putFile(outputFilePath, officeToMarkdownLib.frontMatterToString(docFrontmatter) + trimmedMarkdown.strip())
-    officeToMarkdownLib.makeModDatesMatch(inputPath, outputFilePath)
+    officeToMarkdownLib.makeModDatesMatch(args["input"], outputFilePath)
