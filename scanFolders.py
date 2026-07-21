@@ -13,7 +13,11 @@ import officeToMarkdownLib
 
 
 # Parse command-line arguments.
-args = vars(officeToMarkdownLib.setArgsForGeneral(argparse.ArgumentParser(description="Scans a folder structure and runs transform scripts on matched files and sub-folders.")).parse_args())
+parser = officeToMarkdownLib.setArgsForGeneral(argparse.ArgumentParser(description="Scans a folder structure and runs transform scripts on matched files and sub-folders."))
+parser.add_argument("--copyIn", default="", help="Copy in the contents of the given folder to the output folder.")
+parser.add_argument("--deleteExtraFiles", action="store_true", help="Remove any extra files from the output folder not egnerated by this script.")
+parser.add_argument("--dryRunExtraFiles", action="store_true", help="Does a dry-run of the deleteExtraFiles option, just displaying which files would be deleted by this action.")
+args = vars(parser.parse_args())
 
 # Print a config summary for the user.
 print("OfficeToMarkdown - arguments:", flush=True)
