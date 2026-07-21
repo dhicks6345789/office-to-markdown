@@ -22,12 +22,13 @@ scriptUpdated = officeToMarkdownLib.checkIfScriptUpdated(__file__, args["scriptT
 filesProcessed = {}
 def processFiles(theInputPath, theOutputPath):
   if theInputPath.is_file():
-    if theInputPath.suffix.lower() in [".docx"]:
+    inputPathStr = str(theInputPath)
+    inputPathStat = theInputPath.stat()
+    inputPathSuffix = theInputPath.suffix.lower()
+    if inputPathSuffix in [".docx"]:
       outputFilePath = theOutputPath / pathlib.Path(args["input"].stem + ".md")
-      inputPathStr = str(theInputPath)
-      inputPathStat = theInputPath.stat()
       if scriptUpdated or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
-        officeToMarkdownLib.ifVerbose(args["verbose"], "processDOCFile   -   " + args["input"].suffix + ": " + inputPathStr + " to " + str(outputFilePath))
+        officeToMarkdownLib.ifVerbose(args["verbose"], "processDOCFile   -   " + inputPathSuffix + ": " + inputPathStr + " to " + str(outputFilePath))
         
         # We use our library function to convert from DOCX to Markdown.
         docMarkdown, docFrontmatter = officeToMarkdownLib.docToMarkdown(theInputPath)
