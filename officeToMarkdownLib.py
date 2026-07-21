@@ -92,11 +92,18 @@ def readInputFilesAndTimestamps():
         result[lineSplit[0]] = lineSplit[1]
 
 # Returns True if the current executing script has been updated, when compared to the given timestamp value.
-def checkIfScriptUpdated(theTimestamp):
+def checkIfScriptUpdated(theTimestamp, theVerbose):
     result = False
     scriptTimestamp = str(pathlib.Path(__file__).stat().st_mtime)
     if not theTimestamp == scriptTimestamp:
         result = True
+        ifVerbose(theVerbose, padWithSpaces(__file__, 16) + " - updated: was " + args["scriptTimestamp"] + ", now " + scriptTimestamp)
+    return result
+
+def padWithSpaces(theString, theLength):
+    result = theString
+    while len(result) < theLength:
+        result = result + " "
     return result
 
 def checkModDatesMatch(theInputItem, theOutputItem):
