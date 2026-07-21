@@ -11,9 +11,7 @@ import officeToMarkdownLib
 
 
 # Parse command-line arguments.
-parser = argparse.ArgumentParser(description="Copy either individual files or whole folders of files, recursing into any sub-folders found.")
-parser.add_argument("--scriptTimestamp", help="The previous last-modified timestamp value (as a floating point number) for this script.")
-args = officeToMarkdownLib.parseArgs(parser)
+args = vars(officeToMarkdownLib.setArgsForSubScript(officeToMarkdownLib.setArgsForGeneral(description="Copy either individual files or whole folders of files, recursing into any sub-folders found.")).parse_args())
 
 # The calling script provides a list of any input files, along with file update timestamps, via stdin.
 previousInputFileTimestamps = {}
