@@ -21,7 +21,6 @@ scriptUpdated = officeToMarkdownLib.checkIfScriptUpdated(__file__, args["scriptT
 # Process individual DOCX files into Markdown. If the input given is a folder, recurse into that folder and process any files (or sub-folders) found.
 filesProcessed = {}
 def processFiles(theInputPath, theOutputPath):
-  print("inputPath: " + str(theInputPath), flush=True, file=sys.stderr)
   if theInputPath.is_file():
     inputPathStr = str(theInputPath)
     inputPathSuffix = theInputPath.suffix.lower()
