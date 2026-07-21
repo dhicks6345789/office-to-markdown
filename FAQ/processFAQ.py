@@ -64,7 +64,7 @@ def processFiles(theInputPath, theOutputPath):
         #officeToMarkdownLib.makeModDatesMatch(inputFolder + os.sep + inputItem, outputFolder + os.sep + outputItem)
       filesProcessed[inputPathStr] = (str(outputFilePath), str(inputPathStat.st_mtime))
   else:
-    ifVerbose(verbose, "ProcessFAQ       -  folder: " + str(theInputPath))
+    officeToMarkdownLib.ifVerbose(verbose, "ProcessFAQ       -  folder: " + str(theInputPath))
     outputFolderPath = theOutputPath / pathlib.Path(theInputPath.name)
     for item in theInputPath.iterdir():
       processFiles(item, outputFolderPath)
