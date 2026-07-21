@@ -27,7 +27,7 @@ def processFiles(theInputPath, theOutputPath):
     inputPathSuffix = theInputPath.suffix.lower()
     if inputPathSuffix in [".docx"]:
       outputFilePath = theOutputPath / pathlib.Path(args["input"].stem + ".md")
-      if scriptUpdated or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
+      if scriptUpdated or (not outputFilePath.is_file()) or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
         officeToMarkdownLib.ifVerbose(args["verbose"], "processFAQ       -   " + inputPathSuffix + ": " + inputPathStr + " to " + str(outputFilePath))
         
         # We use our library function to convert from DOCX to Markdown.
@@ -49,7 +49,7 @@ def processFiles(theInputPath, theOutputPath):
     # Deal with video files - use FFmpeg to convert to a common format (webm) and size.
     elif inputPathSuffix in [".mp4"]:
       outputFilePath = theOutputPath / pathlib.Path(args["input"].stem + ".webm")
-      if scriptUpdated or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
+      if scriptUpdated or (not outputFilePath.is_file()) or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
         officeToMarkdownLib.ifVerbose(args["verbose"], "processFAQ       -   " + inputPathSuffix + ": " + inputPathStr + " to " + str(outputFilePath))
         ## Figure out the video's dimensions.
         #videoDimensions = os.popen("ffprobe -v error -select_streams v -show_entries stream=width,height -of csv=p=0:s=x " + inputFolder + os.sep + inputItem).read().strip()
