@@ -36,10 +36,5 @@ def copyFiles(theInputPath, theOutputPath):
       copyFiles(item, outputFilePath)
 copyFiles(args["input"], args["output"])
 
-# Report the input filenames, with current update timestamp, back to the calling script.
-for fileCopied in filesCopied:  
-  print(fileCopied + "," + filesCopied[fileCopied][1], flush=True, file=sys.stdout)
-print("---", flush=True, file=sys.stdout)
-# Report the output filenames back to the calling script.
-for fileCopied in filesCopied:
-  print(filesCopied[fileCopied][0], flush=True, file=sys.stdout)
+# Report the input filenames, with current update timestamp, back to the calling script, along with the output filenames.
+officeToMarkdownLib.printFilesProcessed(filesCopied)
