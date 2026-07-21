@@ -23,8 +23,8 @@ filesProcessed = {}
 def processFiles(theInputPath, theOutputPath):
   if theInputPath.is_file():
     inputPathStr = str(theInputPath)
-    inputPathSuffix = theInputPath.suffix.lower()
     inputPathStat = theInputPath.stat()
+    inputPathSuffix = theInputPath.suffix.lower()
     if inputPathSuffix in [".docx"]:
       outputFilePath = theOutputPath / pathlib.Path(args["input"].stem + ".md")
       if scriptUpdated or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
@@ -64,6 +64,7 @@ def processFiles(theInputPath, theOutputPath):
         #officeToMarkdownLib.makeModDatesMatch(inputFolder + os.sep + inputItem, outputFolder + os.sep + outputItem)
       filesProcessed[inputPathStr] = (str(outputFilePath), str(inputPathStat.st_mtime))
   else:
+    ifVerbose(verbose, "ProcessFAQ       -  folder: " + str(theInputPath))
     outputFolderPath = theOutputPath / pathlib.Path(theInputPath.name)
     for item in theInputPath.iterdir():
       processFiles(item, outputFolderPath)
