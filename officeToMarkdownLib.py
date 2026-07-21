@@ -90,6 +90,7 @@ def readInputFilesAndTimestamps():
     for line in sys.stdin:
         lineSplit = line.strip().split(",")
         result[lineSplit[0]] = lineSplit[1]
+    return result
 
 # Returns True if the current executing script has been updated, when compared to the given timestamp value.
 def checkIfScriptUpdated(theTimestamp, theVerbose):
