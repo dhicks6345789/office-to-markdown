@@ -1,52 +1,55 @@
+# Standard libraries.
 import os
 import sys
 import pathlib
-import subprocess
+import argparse
 
 # Our own Office To Markdown library.
 import officeToMarkdownLib
 
-# Parse and normalise the command-line arguments.
-args = officeToMarkdownLib.processCommandLineArgs(defaultArgs={"scriptRoot":str(pathlib.Path.cwd()), "verbose":"false", "validFrontMatterFields":""}, requiredArgs=["scriptTimestamp","inputPath","outputPath"], optionalArgs=["scriptRoot", "verbose"])
-args["verbose"] = args["verbose"].lower()
-inputPath = pathlib.Path(args["inputPath"])
-outputPath = pathlib.Path(args["outputPath"])
-outputFilePaths = []
 
-# Read the list of input files with last-modified timestamps from stdin...
-previousInputChanges = {}
-for line in sys.stdin:
-  if not line.strip() == "":
-    lineSplit = line.strip().split(",")
-    previousInputChanges[lineSplit[0]] = lineSplit[1]
-# ...and read the current input file modification times to compare those with.
-currentInputChanges = officeToMarkdownLib.getFolderChangeDetails(args["inputPath"])
 
-for inputItem in inputPath.iterdir():
-  if inputItem.suffix in [".docx", ".doc"]:
-    outputFilePath = outputPath / pathlib.Path(inputItem.stem + ".md")
-    outputFilePaths.append(outputFilePath)
-    doTransform = False
-    if not officeToMarkdownLib.checkTimestampsMatch(args["scriptTimestamp"], pathlib.Path(__file__)):
-      doTransform = True
-    elif (not str(inputItem) in previousInputChanges) or (not previousInputChanges[str(inputItem)] == currentInputChanges[str(inputItem)]):
-      doTransform = True
-    if doTransform:
-      officeToMarkdownLib.ifVerbose(args["verbose"], "processFAQ       -   " + inputItem.suffix + ": " + str(inputItem) + " to " + str(outputFilePath))
-      docMarkdown, docFrontmatter = officeToMarkdownLib.docToMarkdown(inputItem)
-  
-      # If we don't already have a "title" front matter variable, go through the Markdown line by line,
-      # checking for the first defined title string that we can use as a title.
-      trimmedMarkdown = ""
-      for markdownLine in docMarkdown.split("\n"):
-        if markdownLine.startswith("# ") and not "title" in docFrontmatter.keys():
-          docFrontmatter["title"] = markdownLine[2:].lstrip()
-        else:
-          trimmedMarkdown = trimmedMarkdown + markdownLine + "\n"
+# Parse command-line arguments.
+args = vars(officeToMarkdownLib.setArgsForSubScript(argparse.ArgumentParser(description="Process the given input folder into an FAQ.")).parse_args())
+
+# The calling script provides a list of any input files, along with last-modified timestamps, via stdin as simple set of comma-separated "filename,timestamp" values.
+previousInputFileTimestamps = officeToMarkdownLib.readInputFilesAndTimestamps()
+
+# If this script itself has been updated we re-run the operation, just to make sure all output is up to date.
+scriptUpdated = officeToMarkdownLib.checkIfScriptUpdated(__file__, args["scriptTimestamp"], args["verbose"])
+
+# Process individual DOCX files into Markdown. If the input given is a folder, recurse into that folder and process any files (or sub-folders) found.
+filesProcessed = {}
+def processFiles(theInputPath, theOutputPath):
+  if theInputPath.is_file:
+    if theInputPath.suffix.lower() in [".docx"]:
+      outputFilePath = theOutputPath / pathlib.Path(args["input"].stem + ".md")
+      inputPathStr = str(theInputPath)
+      inputPathStat = theInputPath.stat()
+      if scriptUpdated or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
+        officeToMarkdownLib.ifVerbose(args["verbose"], "processDOCFile   -   " + args["input"].suffix + ": " + inputPathStr + " to " + str(outputFilePath))
+        
+        # We use our library function to convert from DOCX to Markdown.
+        docMarkdown, docFrontmatter = officeToMarkdownLib.docToMarkdown(theInputPath)
+        
+        # If we don't already have a "title" front matter variable, go through the Markdown line by line,
+        # checking for the first defined title string that we can use as a title.
+        trimmedMarkdown = ""
+        for markdownLine in docMarkdown.split("\n"):
+          if markdownLine.startswith("# ") and not "title" in docFrontmatter.keys():
+            docFrontmatter["title"] = markdownLine[2:].lstrip()
+          else:
+            trimmedMarkdown = trimmedMarkdown + markdownLine + "\n"
           
-      # Write out the Markdown file, matching the modification date with the original input document so we can skip next time if the input is unmodified.
-      officeToMarkdownLib.putFile(outputFilePath, officeToMarkdownLib.frontMatterToString(docFrontmatter) + trimmedMarkdown.strip())
-      officeToMarkdownLib.makeModDatesMatch(inputPath, outputFilePath)
+        # Write out the Markdown file, matching the modification date with the original input document so we can skip next time if the input is unmodified.
+        officeToMarkdownLib.putFile(outputFilePath, officeToMarkdownLib.frontMatterToString(docFrontmatter) + trimmedMarkdown.strip())
+        os.utime(outputFilePath, (inputPathStat.st_atime, inputPathStat.st_mtime))
+      filesProcessed[inputPathStr] = (str(outputFilePath), str(inputPathStat.st_mtime))
+  else:
+    outputFolderPath = theOutputPath / pathlib.Path(theInputPath.name)
+    for item in theInputPath.iterdir():
+      processFiles(item, outputFolderPath)
+processFiles(args["input"], args["output"])
     #elif fileType in ["MP4"]:
         ## Deal with an MP4 file - use FFmpeg to set the size and format of any videos in this FAQ.
         #outputItem = inputItem.rsplit(".", 1)[0] + ".webm"
@@ -66,11 +69,5 @@ for inputItem in inputPath.iterdir():
             
             #officeToMarkdownLib.makeModDatesMatch(inputFolder + os.sep + inputItem, outputFolder + os.sep + outputItem)
 
-
-
-# We expect the output (on stdout) from a sub-script to be a list of input file filename,timestamp pairs, then a "---", then a list of output files.
-for item in currentInputChanges:
-  print(item + "," + currentInputChanges[item])
-print("---")
-for item in outputFilePaths:
-  print(item)
+# Report the input filenames, with current update timestamp, back to the calling script, along with the output filenames.
+officeToMarkdownLib.printFilesProcessed(filesProcessed)
