@@ -93,9 +93,9 @@ def readInputFilesAndTimestamps():
     return result
 
 # Returns True if the current executing script has been updated, when compared to the given timestamp value.
-def checkIfScriptUpdated(theTimestamp, theVerbose):
+def checkIfScriptUpdated(theFilename, theTimestamp, theVerbose):
     result = False
-    scriptTimestamp = str(pathlib.Path(__file__).stat().st_mtime)
+    scriptTimestamp = str(pathlib.Path(theFilename).stat().st_mtime)
     if not theTimestamp == scriptTimestamp:
         ifVerbose(theVerbose, padWithSpaces(pathlib.Path(sys.argv[0]).name, 16) + " - updated: was " + theTimestamp + ", now " + scriptTimestamp)
         result = True
