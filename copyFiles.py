@@ -17,9 +17,7 @@ args = vars(officeToMarkdownLib.setArgsForSubScript(argparse.ArgumentParser(desc
 previousInputFileTimestamps = officeToMarkdownLib.readInputFilesAndTimestamps()
 
 # If this script itself has been updated we re-run the operation, just to make sure all output is up to date.
-scriptUpdated = officeToMarkdownLib.checkIfScriptUpdated(args["scriptTimestamp"])
-if scriptUpdated:
-  officeToMarkdownLib.ifVerbose(args["verbose"], "copyFiles script - updated: was " + args["scriptTimestamp"] + ", now " + scriptTimestamp)
+scriptUpdated = officeToMarkdownLib.checkIfScriptUpdated(args["scriptTimestamp"], args["verbose"])
 
 # Copy individual files. If the input given is a folder, recurse into that folder and copy any files (or sub-folders) found.
 filesCopied = {}
