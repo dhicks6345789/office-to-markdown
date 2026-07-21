@@ -1,7 +1,7 @@
-# Convert a DOCX / DOC (Word, Google Docs, etc) file to Markdown.
-
-# Standard Python libraries.
+# Standard libraries.
+import os
 import sys
+import shutil
 import pathlib
 import argparse
 
@@ -11,9 +11,7 @@ import officeToMarkdownLib
 
 
 # Parse command-line arguments.
-parser = argparse.ArgumentParser(description="Scans a folder structure and runs transform scripts on matched files and sub-folders.")
-parser.add_argument("--scriptTimestamp", help="The previous last-modified timestamp value (as a floating point number) for this script.")
-args = officeToMarkdownLib.parseArgs(parser)
+args = vars(officeToMarkdownLib.setArgsForSubScript(argparse.description="Process the given DOCX input file into a matching Markdown file in the output folder. If a directory is given as the input it will process all DOCX files in the folder, recursing into any sub-folders found.").parse_args())
 
 # The calling script provides a list of any input files, along with file update timestamps, via stdin.
 previousInputFileTimestamps = {}
