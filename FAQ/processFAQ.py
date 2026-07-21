@@ -22,8 +22,7 @@ scriptUpdated = officeToMarkdownLib.checkIfScriptUpdated(__file__, args["scriptT
 filesProcessed = {}
 def processFiles(theInputPath, theOutputPath):
   print("inputPath: " + str(theInputPath), flush=True, file=sys.stderr)
-  if theInputPath.is_file:
-    print("Is file!", flush=True, file=sys.stderr)
+  if theInputPath.is_file():
     inputPathStr = str(theInputPath)
     inputPathSuffix = theInputPath.suffix.lower()
     inputPathStat = theInputPath.stat()
