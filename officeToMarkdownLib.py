@@ -106,6 +106,15 @@ def padWithSpaces(theString, theLength):
         result = result + " "
     return result
 
+def printFilesProcessed(theFilesProcessed):
+    # Report the input filenames, with current update timestamp, back to the calling script.
+    for fileProcessed in theFilesProcessed:
+        print(fileProcessed + "," + theFilesProcessed[fileProcessed][1], flush=True, file=sys.stdout)
+    print("---", flush=True, file=sys.stdout)
+    # Report the output filenames back to the calling script.
+    for fileProcessed in theFilesProcessed:
+        print(theFilesProcessed[fileProcessed][0], flush=True, file=sys.stdout)
+
 def checkModDatesMatch(theInputItem, theOutputItem):
     if os.path.isfile(theOutputItem):
         inputItemDetails = os.stat(theInputItem)
