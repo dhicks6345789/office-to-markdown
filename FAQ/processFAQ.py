@@ -21,13 +21,15 @@ scriptUpdated = officeToMarkdownLib.checkIfScriptUpdated(__file__, args["scriptT
 # Process individual DOCX files into Markdown. If the input given is a folder, recurse into that folder and process any files (or sub-folders) found.
 filesProcessed = {}
 def processFiles(theInputPath, theOutputPath):
+  print("inputPath: " + str(theInputPath), flush=True, file=sys.stderr)
   if theInputPath.is_file:
-    if theInputPath.suffix.lower() in [".docx"]:
+    inputPathStr = str(theInputPath)
+    inputPathSuffix = theInputPath.suffix.lower()
+    inputPathStat = theInputPath.stat()
+    if inputPathSuffix in [".docx"]:
       outputFilePath = theOutputPath / pathlib.Path(args["input"].stem + ".md")
-      inputPathStr = str(theInputPath)
-      inputPathStat = theInputPath.stat()
       if scriptUpdated or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
-        officeToMarkdownLib.ifVerbose(args["verbose"], "processDOCFile   -   " + args["input"].suffix + ": " + inputPathStr + " to " + str(outputFilePath))
+        officeToMarkdownLib.ifVerbose(args["verbose"], "processFAQ         -   " + inputPathSuffix + ": " + inputPathStr + " to " + str(outputFilePath))
         
         # We use our library function to convert from DOCX to Markdown.
         docMarkdown, docFrontmatter = officeToMarkdownLib.docToMarkdown(theInputPath)
@@ -45,29 +47,28 @@ def processFiles(theInputPath, theOutputPath):
         officeToMarkdownLib.putFile(outputFilePath, officeToMarkdownLib.frontMatterToString(docFrontmatter) + trimmedMarkdown.strip())
         os.utime(outputFilePath, (inputPathStat.st_atime, inputPathStat.st_mtime))
       filesProcessed[inputPathStr] = (str(outputFilePath), str(inputPathStat.st_mtime))
+    # Deal with video files - use FFmpeg to convert to a common format (webm) and size.
+    elif inputPathSuffix in [".mp4"]:
+      outputFilePath = theOutputPath / pathlib.Path(args["input"].stem + ".webm")
+      if scriptUpdated or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
+        officeToMarkdownLib.ifVerbose(args["verbose"], "processFAQ         -   " + inputPathSuffix + ": " + inputPathStr + " to " + str(outputFilePath))
+        ## Figure out the video's dimensions.
+        #videoDimensions = os.popen("ffprobe -v error -select_streams v -show_entries stream=width,height -of csv=p=0:s=x " + inputFolder + os.sep + inputItem).read().strip()
+        #videoWidth = int(videoDimensions.split("x")[0])
+        #videoHeight = int(videoDimensions.split("x")[1])
+            
+        ## Crop the video to a square, centred in the middle, then scale the dimensions to 240x240.
+        ## Also, normalise the audio - see: http://johnriselvato.com/ffmpeg-how-to-normalize-audio/
+        #os.system("ffmpeg -i " + inputFolder + os.sep + inputItem + " -filter:v crop=" + str(videoHeight) + ":" + str(videoHeight) + ":" + str(int((videoWidth - videoHeight) / 2)) + ":0,scale=240:240,setsar=1 -filter:a loudnorm=I=-16:LRA=11:TP=-1.5 /tmp/faq.webm > /dev/null 2>&1")
+        #os.system("mv /tmp/faq.webm " + outputFolder + os.sep + outputItem)
+            
+        #officeToMarkdownLib.makeModDatesMatch(inputFolder + os.sep + inputItem, outputFolder + os.sep + outputItem)
+      filesProcessed[inputPathStr] = (str(outputFilePath), str(inputPathStat.st_mtime))
   else:
     outputFolderPath = theOutputPath / pathlib.Path(theInputPath.name)
     for item in theInputPath.iterdir():
       processFiles(item, outputFolderPath)
 processFiles(args["input"], args["output"])
-    #elif fileType in ["MP4"]:
-        ## Deal with an MP4 file - use FFmpeg to set the size and format of any videos in this FAQ.
-        #outputItem = inputItem.rsplit(".", 1)[0] + ".webm"
-        ## Video files can take time / processing power to deal with, so we check we actually need to update something first before going ahead.
-        #if not officeToMarkdownLib.checkModDatesMatch(inputFolder + os.sep + inputItem, outputFolder + os.sep + outputItem):
-            #print("STATUS: Processing FAQ video: " + inputFolder + os.sep + inputItem + " to " + outputFolder + os.sep + outputItem, flush=True)
-            
-            ## Figure out the video's dimensions.
-            #videoDimensions = os.popen("ffprobe -v error -select_streams v -show_entries stream=width,height -of csv=p=0:s=x " + inputFolder + os.sep + inputItem).read().strip()
-            #videoWidth = int(videoDimensions.split("x")[0])
-            #videoHeight = int(videoDimensions.split("x")[1])
-            
-            ## Crop the video to a square, centred in the middle, then scale the dimensions to 240x240.
-            ## Also, normalise the audio - see: http://johnriselvato.com/ffmpeg-how-to-normalize-audio/
-            #os.system("ffmpeg -i " + inputFolder + os.sep + inputItem + " -filter:v crop=" + str(videoHeight) + ":" + str(videoHeight) + ":" + str(int((videoWidth - videoHeight) / 2)) + ":0,scale=240:240,setsar=1 -filter:a loudnorm=I=-16:LRA=11:TP=-1.5 /tmp/faq.webm > /dev/null 2>&1")
-            #os.system("mv /tmp/faq.webm " + outputFolder + os.sep + outputItem)
-            
-            #officeToMarkdownLib.makeModDatesMatch(inputFolder + os.sep + inputItem, outputFolder + os.sep + outputItem)
 
 # Report the input filenames, with current update timestamp, back to the calling script, along with the output filenames.
 officeToMarkdownLib.printFilesProcessed(filesProcessed)
