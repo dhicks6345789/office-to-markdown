@@ -11,7 +11,7 @@ import officeToMarkdownLib
 
 
 # Parse command-line arguments.
-args = vars(officeToMarkdownLib.setArgsForSubScript(argparse.description="Process the given DOCX input file into a matching Markdown file in the output folder. If a directory is given as the input it will process all DOCX files in the folder, recursing into any sub-folders found.").parse_args())
+args = vars(officeToMarkdownLib.setArgsForSubScript(argparse.ArgumentParser(description="Process the given DOCX input file into a matching Markdown file in the output folder. If a directory is given as the input it will process all DOCX files in the folder, recursing into any sub-folders found.")).parse_args())
 
 # The calling script provides a list of any input files, along with file update timestamps, via stdin.
 previousInputFileTimestamps = {}
