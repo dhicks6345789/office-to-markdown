@@ -13,7 +13,7 @@ import officeToMarkdownLib
 
 
 # Parse command-line arguments.
-args = vars(officeToMarkdownLib.setArgsForStandard(argparse.ArgumentParser(description="Scans a folder structure and runs transform scripts on matched files and sub-folders.")).parse_args())
+args = vars(officeToMarkdownLib.setArgsForGeneral(argparse.ArgumentParser(description="Scans a folder structure and runs transform scripts on matched files and sub-folders.")).parse_args())
 
 # Print a config summary for the user.
 print("OfficeToMarkdown - arguments:", flush=True)
