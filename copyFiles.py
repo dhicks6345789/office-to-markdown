@@ -13,18 +13,13 @@ import officeToMarkdownLib
 # Parse command-line arguments.
 args = vars(officeToMarkdownLib.setArgsForSubScript(argparse.ArgumentParser(description="Copy either individual files or whole folders of files, recursing into any sub-folders found.")).parse_args())
 
-# The calling script provides a list of any input files, along with file update timestamps, via stdin.
-previousInputFileTimestamps = {}
-for line in sys.stdin:
-  lineSplit = line.strip().split(",")
-  previousInputFileTimestamps[lineSplit[0]] = lineSplit[1]
+# The calling script provides a list of any input files, along with last-modified timestamps, via stdin as simple set of comma-separated "filename,timestamp" values.
+previousInputFileTimestamps = officeToMarkdownLib.readInputFilesAndTimestamps()
 
 # If this script itself has been updated we re-run the operation, just to make sure all output is up to date.
-scriptUpdated = False
-scriptTimestamp = str(pathlib.Path(__file__).stat().st_mtime)
-if not args["scriptTimestamp"] == scriptTimestamp:
-  officeToMarkdownLib.ifVerbose(args["verbose"], "copyFile script  - updated: was " + args["scriptTimestamp"] + ", now " + scriptTimestamp)
-  scriptUpdated = True
+scriptUpdated = officeToMarkdownLib.checkIfScriptUpdated(args["scriptTimestamp"])
+if scriptUpdated:
+  officeToMarkdownLib.ifVerbose(args["verbose"], "copyFiles script - updated: was " + args["scriptTimestamp"] + ", now " + scriptTimestamp)
 
 # Copy individual files. If the input given is a folder, recurse into that folder and copy any files (or sub-folders) found.
 filesCopied = {}
