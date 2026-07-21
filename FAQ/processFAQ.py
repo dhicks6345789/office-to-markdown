@@ -67,6 +67,7 @@ def processFiles(theInputPath, theOutputPath):
   else:
     outputFolderPath = theOutputPath / pathlib.Path(theInputPath.name)
     for item in theInputPath.iterdir():
+      print("folder item: " + str(item), flush=True, file=sys.stderr)
       processFiles(item, outputFolderPath)
 processFiles(args["input"], args["output"])
 
