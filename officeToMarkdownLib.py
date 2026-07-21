@@ -84,6 +84,21 @@ def setArgsForSubScript(theParser):
     theParser.add_argument("--scriptTimestamp", help="The previous last-modified timestamp value (as a floating point number) for this script.")
     return theParser
 
+# Read the list of input files, along with last-modified timestamps, from stdin. Returns as a dict of filename:timestamp values, with all values as strings.
+def readInputFilesAndTimestamps():
+    result = {}
+    for line in sys.stdin:
+        lineSplit = line.strip().split(",")
+        result[lineSplit[0]] = lineSplit[1]
+
+# Returns True if the current executing script has been updated, when compared to the given timestamp value.
+def checkIfScriptUpdated(theTimestamp):
+    result = False
+    scriptTimestamp = str(pathlib.Path(__file__).stat().st_mtime)
+    if not theTimestamp == scriptTimestamp:
+        result = True
+    return result
+
 def checkModDatesMatch(theInputItem, theOutputItem):
     if os.path.isfile(theOutputItem):
         inputItemDetails = os.stat(theInputItem)
