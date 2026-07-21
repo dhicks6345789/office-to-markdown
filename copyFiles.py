@@ -11,7 +11,7 @@ import officeToMarkdownLib
 
 
 # Parse command-line arguments.
-args = vars(officeToMarkdownLib.setArgsForSubScript(description="Copy either individual files or whole folders of files, recursing into any sub-folders found.").parse_args())
+args = vars(officeToMarkdownLib.setArgsForSubScript(argparse.ArgumentParser(description="Copy either individual files or whole folders of files, recursing into any sub-folders found.")).parse_args())
 
 # The calling script provides a list of any input files, along with file update timestamps, via stdin.
 previousInputFileTimestamps = {}
