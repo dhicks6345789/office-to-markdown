@@ -70,39 +70,19 @@ def putFile(theFilename, theContent):
 
 # Parse command-line input arguments. Since we have a set of scripts that take the same baseline arguments we have a central library function that adds our standard
 # arguments to an argparse.ArgumentParser object.
-def parseArgs(theParser):
+def setArgsForGeneral(theParser):
     theParser.add_argument("--input", type=pathlib.Path, help="Input folder.")
     theParser.add_argument("--output", type=pathlib.Path, help="Output folder.")
     theParser.add_argument("--scriptRoot", type=pathlib.Path, default=str(pathlib.Path.cwd()), help="The root of the script folder. Defaults to the current working directory.")
     theParser.add_argument("--dataRoot", type=pathlib.Path, default=str(pathlib.Path.cwd()), help="The root of the script folder. Defaults to the current working directory.")
     theParser.add_argument("--verbose", action="store_true", help="Turn on verbose output.")
-    return vars(theParser.parse_args())
+    return theParser
 
-## A utility function to return a given path string in normalised format, i.e. with a consistant path separator ("/") accross platforms,
-## and without any doubled path separators / no path separator at the end of the string.
-#def normalisePath(thePath):
-#    result = thePath.strip()
-#    if result == "":
-#        return ""
-#    result = result.replace(os.sep, "/")
-#    result = result.replace("//", "/")
-#    result = result.replace("/./", "/")
-#    if result[len(result)-1] == "/":
-#        result = result[:-1]
-#    return result
-
-## Normalise the given path string, then replace any path separators with the platform-specific os.sep.
-#def platformPath(thePath):
-#    return normalisePath(thePath).replace("/", os.sep)
-
-## A utility function to determine whether a variable has a value of "NaN" or not.
-## Checks if a string has a value of "NaN" (any case) as well as float values.
-#def isnan(theVal):
-#    if isinstance(theVal, str):
-#        if theVal.lower() == "nan":
-#            return True
-#        return False
-#    return math.isnan(theVal)
+# Add arguments to an argparse.ArgumentParser object to handle the options for a Python sub-script.
+def setArgsForSubScript(theParser):
+    theParser = setArgsForGeneral(theParser)
+    theParser.add_argument("--scriptTimestamp", help="The previous last-modified timestamp value (as a floating point number) for this script.")
+    return theParser
 
 def checkModDatesMatch(theInputItem, theOutputItem):
     if os.path.isfile(theOutputItem):
