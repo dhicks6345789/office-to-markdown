@@ -10,14 +10,10 @@ import subprocess
 # Our own Docs To Markdown library.
 import officeToMarkdownLib
 
-# Parse input arguments.
-parser = argparse.ArgumentParser(description="Scans a folder structure and runs transform scripts on matched files and sub-folders.")
-parser.add_argument("--copyIn", type=pathlib.Path, default="", help="A folder to copy the contents of directly into the defined output folder.")
-parser.add_argument("--deleteExtraFiles", action="store_true", help="Delete any files from the defined output folder not produced by this script.")
-parser.add_argument("--dryRunExtraFiles", action="store_true", help="Do a dry run of the delete extra files operation - just list the files that would be deleted.")
-parser.add_argument("--produceFolderIndexes", action="store_true", help="")
-parser.add_argument("--validFrontMatterFields", action="store_true", help="")
-args = officeToMarkdownLib.parseArgs(parser)
+
+
+# Parse command-line arguments.
+args = vars(officeToMarkdownLib.setArgsForStandard(argparse.ArgumentParser(description="Scans a folder structure and runs transform scripts on matched files and sub-folders.")).parse_args())
 
 # Print a config summary for the user.
 print("OfficeToMarkdown - arguments:", flush=True)
