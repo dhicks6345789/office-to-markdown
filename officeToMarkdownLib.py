@@ -434,7 +434,7 @@ def ifVerbose(theVerbose, theOutput):
 # A cache of file paths with checksum details is maintained, this is used to avoid processing a file if it (and the associated processing script) hasn't been changed since the last run.
 # Folders are recursed into. Some matches might match whole sub-folders, in which case that sub-folder's processing will be handled by the transform script.
 def scanFolder(verbose, theScriptRoot, theMatches, theMatchTimestamps, thePreviousInputFileTimestamps, theInputFolder, theOutputFolder):
-    ifVerbose(verbose, "OfficeToMarkdown - scanning folder: " + str(theInputFolder))
+    ifVerbose(verbose, "ScanFolder       -  folder: " + str(theInputFolder))
     outputFiles = []
     unmatchedItems = []
     newInputFileTimestamps = {}
@@ -446,7 +446,7 @@ def scanFolder(verbose, theScriptRoot, theMatches, theMatchTimestamps, thePrevio
         for match in theMatches:
             if (matched == False) and (not re.match(match, itemStr) == None):
                 matched = True
-                ifVerbose(verbose, "OfficeToMarkdown - matched: " + itemStr + " with " + match)
+                ifVerbose(verbose, "ScanFolder       - matched: " + itemStr + " with " + match)
                 scriptExec = (theMatches[match])[0]
                 scriptPath = theScriptRoot / pathlib.Path((theMatches[match])[1])
                 scriptPathStr = str(scriptPath)
@@ -467,7 +467,7 @@ def scanFolder(verbose, theScriptRoot, theMatches, theMatchTimestamps, thePrevio
                     for matchInputItem in thePreviousInputFileTimestamps:
                         if matchInputItem.startswith(itemStr):
                             matchInputItems[matchInputItem] = thePreviousInputFileTimestamps[matchInputItem]
-                ifVerbose(verbose, "OfficeToMarkdown - running: " + " ".join([f"{value}" for value in commandLine]))
+                ifVerbose(verbose, "ScanFolder       - running: " + " ".join([f"{value}" for value in commandLine]))
                 commandLineResult = subprocess.run(commandLine, input="\n".join([f"{key},{value}" for key, value in matchInputItems.items()]), capture_output=True, text=True)
                 state = 0
                 # We expect the output (on stdout) from a sub-script to be a list of input file filename,timestamp pairs, then a "---", then a list of output files.
