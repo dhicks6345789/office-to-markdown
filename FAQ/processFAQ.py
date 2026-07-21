@@ -29,7 +29,7 @@ def processFiles(theInputPath, theOutputPath):
     if inputPathSuffix in [".docx"]:
       outputFilePath = theOutputPath / pathlib.Path(args["input"].stem + ".md")
       if scriptUpdated or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
-        officeToMarkdownLib.ifVerbose(args["verbose"], "processFAQ         -   " + inputPathSuffix + ": " + inputPathStr + " to " + str(outputFilePath))
+        officeToMarkdownLib.ifVerbose(args["verbose"], "processFAQ       -   " + inputPathSuffix + ": " + inputPathStr + " to " + str(outputFilePath))
         
         # We use our library function to convert from DOCX to Markdown.
         docMarkdown, docFrontmatter = officeToMarkdownLib.docToMarkdown(theInputPath)
@@ -51,7 +51,7 @@ def processFiles(theInputPath, theOutputPath):
     elif inputPathSuffix in [".mp4"]:
       outputFilePath = theOutputPath / pathlib.Path(args["input"].stem + ".webm")
       if scriptUpdated or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
-        officeToMarkdownLib.ifVerbose(args["verbose"], "processFAQ         -   " + inputPathSuffix + ": " + inputPathStr + " to " + str(outputFilePath))
+        officeToMarkdownLib.ifVerbose(args["verbose"], "processFAQ       -   " + inputPathSuffix + ": " + inputPathStr + " to " + str(outputFilePath))
         ## Figure out the video's dimensions.
         #videoDimensions = os.popen("ffprobe -v error -select_streams v -show_entries stream=width,height -of csv=p=0:s=x " + inputFolder + os.sep + inputItem).read().strip()
         #videoWidth = int(videoDimensions.split("x")[0])
@@ -65,10 +65,8 @@ def processFiles(theInputPath, theOutputPath):
         #officeToMarkdownLib.makeModDatesMatch(inputFolder + os.sep + inputItem, outputFolder + os.sep + outputItem)
       filesProcessed[inputPathStr] = (str(outputFilePath), str(inputPathStat.st_mtime))
   else:
-    print("Is folder!", flush=True, file=sys.stderr)
     outputFolderPath = theOutputPath / pathlib.Path(theInputPath.name)
     for item in theInputPath.iterdir():
-      print("folder item: " + str(item), flush=True, file=sys.stderr)
       processFiles(item, outputFolderPath)
 processFiles(args["input"], args["output"])
 
