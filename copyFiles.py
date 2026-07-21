@@ -15,7 +15,6 @@ args = vars(officeToMarkdownLib.setArgsForSubScript(argparse.ArgumentParser(desc
 
 # The calling script provides a list of any input files, along with last-modified timestamps, via stdin as simple set of comma-separated "filename,timestamp" values.
 previousInputFileTimestamps = officeToMarkdownLib.readInputFilesAndTimestamps()
-print(previousInputFileTimestamps)
 
 # If this script itself has been updated we re-run the operation, just to make sure all output is up to date.
 scriptUpdated = officeToMarkdownLib.checkIfScriptUpdated(args["scriptTimestamp"], args["verbose"])
