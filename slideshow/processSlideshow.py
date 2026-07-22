@@ -34,6 +34,7 @@ def processFiles(theInputPath, theOutputPath):
         inputPathStr = str(theInputPath)
         inputPathStat = theInputPath.stat()
         inputPathSuffix = theInputPath.suffix.lower()
+        # Handle any bitmap image, converting it to a PNG file.
         if inputPathSuffix in officeToMarkdownLib.bitmapSuffixes:
             outputFilePath = outputPath / pathlib.Path("slide-" + officeToMarkdownLib.padInt(slideCount, 5) + ".png")
             if scriptUpdated or (not outputFilePath.is_file()) or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
@@ -43,7 +44,7 @@ def processFiles(theInputPath, theOutputPath):
                         img = img.convert("RGB")
                     img.save(outputFilePath)
                     os.utime(outputFilePath, (inputPathStat.st_atime, inputPathStat.st_mtime))
-                officeToMarkdownLib.ifVerbose(args["verbose"], "processSlideshow -   " + inputPathSuffix + ": " + inputPathStr + " to " + str(outputFilePath))
+                officeToMarkdownLib.ifVerbose(args["verbose"], "processSlideshow - " + officeToMarkdownLib.padWithSpaces(inputPathSuffix, 7) + ": " + inputPathStr + " to " + str(outputFilePath))
             filesProcessed[inputPathStr] = (str(outputFilePath), str(inputPathStat.st_mtime))
             slideCount = slideCount + 1
         elif inputPathSuffix in [".pptx"]:
