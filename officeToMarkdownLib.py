@@ -100,7 +100,7 @@ def checkIfScriptUpdated(theFilename, theTimestamp, theVerbose):
 
 def prePadWithSpaces(theString, theLength):
     result = ""
-    for pl in range(0, theLength - len(theString))
+    for pl in range(0, theLength - len(theString)):
         result = result + " "
     return result + theString
 
