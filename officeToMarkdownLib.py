@@ -118,6 +118,7 @@ def printFilesProcessed(theFilesProcessed):
     # Report the output filenames back to the calling script.
     for fileProcessed in theFilesProcessed:
         print(theFilesProcessed[fileProcessed][0], flush=True, file=sys.stdout)
+        print(theFilesProcessed[fileProcessed][0], flush=True, file=sys.stderr)
 
 def checkModDatesMatch(theInputItem, theOutputItem):
     if os.path.isfile(theOutputItem):
