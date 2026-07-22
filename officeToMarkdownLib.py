@@ -94,7 +94,7 @@ def checkIfScriptUpdated(theFilename, theTimestamp, theVerbose):
     result = False
     scriptTimestamp = str(pathlib.Path(theFilename).stat().st_mtime)
     if not theTimestamp == scriptTimestamp:
-        ifVerbose(theVerbose, padWithSpaces(pathlib.Path(sys.argv[0]).name.split(".")[0], 16) + " - updated: was " + theTimestamp + ", now " + scriptTimestamp)
+        ifVerbose(theVerbose, postPadWithSpaces(pathlib.Path(sys.argv[0]).name.split(".")[0], 16) + " - updated: was " + theTimestamp + ", now " + scriptTimestamp)
         result = True
     return result
 
