@@ -59,7 +59,7 @@ def processFiles(theInputPath, theOutputPath):
                     raise RuntimeError("LibreOffice command line tool ('soffice' or 'libreoffice') not found in PATH.")
                 except subprocess.CalledProcessError as e:
                     raise RuntimeError(f"LibreOffice conversion failed:\n{e.stderr}")
-                tempPDFPath = theOutputPath / pathlib.Path(theInputPath.stem + ".pdf")
+                tempPDFPath = outputPath / pathlib.Path(theInputPath.stem + ".pdf")
                 if not tempPDFPath.exists():
                     raise FileNotFoundError("Expected intermediate PDF was not created: " + str(tempPDFPath))
         elif inputPathSuffix in officeToMarkdownLib.videoSuffixes:
