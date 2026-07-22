@@ -25,7 +25,7 @@ def processFiles(theInputPath, theOutputPath):
         inputPathStr = str(theInputPath)
         inputPathStat = theInputPath.stat()
         inputPathSuffix = theInputPath.suffix.lower()
-        if inputPathSuffix in docsToMarkdownLib.bitmapSuffixes:
+        if inputPathSuffix in officeToMarkdownLib.bitmapSuffixes:
             outputFilePath = theOutputPath / pathlib.Path(args["input"].stem + ".png")
             if scriptUpdated or (not outputFilePath.is_file()) or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
                 with Image.open(theInputPath) as img:
@@ -38,7 +38,7 @@ def processFiles(theInputPath, theOutputPath):
             filesProcessed[inputPathStr] = (str(outputFilePath), str(inputPathStat.st_mtime))
         elif inputPathSuffix in [".pptx"]:
             print("Presentation...", flush=True, file=sys.stderr)
-        elif inputPathSuffix in docsToMarkdownLib.videoSuffixes:
+        elif inputPathSuffix in officeToMarkdownLib.videoSuffixes:
             print("Video...", flush=True, file=sys.stderr)
     else:
         officeToMarkdownLib.ifVerbose(args["verbose"], "ProcessSlideshow -  folder: " + str(theInputPath))
