@@ -50,9 +50,9 @@ def processFiles(theInputPath, theOutputPath):
             slideCount = slideCount + 1
         elif inputPathSuffix in [".pptx"]:
             if scriptUpdated or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
-                # Try standard command; adjust executable name if on Windows/macOS if needed.
+                # Use LibreOffice to convert the PPTX file to PDF. This can be the headless or GUI version.
                 libreofficeExec = "soffice" if sys.platform != "win32" else "libreoffice"
-                libreofficeCmd = [libreofficeExec, "--headless", "--convert-to", "pdf", "--outdir", str(outputPath, inputPathStr]
+                libreofficeCmd = [libreofficeExec, "--headless", "--convert-to", "pdf", "--outdir", str(outputPath), inputPathStr]
                 try:
                     libreofficeResult = subprocess.run(libreofficeCmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
                 except FileNotFoundError:
