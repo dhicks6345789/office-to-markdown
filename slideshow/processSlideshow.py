@@ -1,34 +1,46 @@
-# A script to generate a slideshow (a folder containing index.html and a set of normalised assets) from a folder of assets (images, videos, audio).
-
 # Standard libraries.
 import os
-import io
 import sys
-import shutil
-import datetime
+import pathlib
+import argparse
 
-# Our own Docs To Markdown library.
-import docsToMarkdownLib
+# Our own Office To Markdown library.
+import officeToMarkdownLib
 
 
 
-# Get a timestamp of when we started.
-dateTimeNow = datetime.datetime.now()
-timestamp = int(round(dateTimeNow.timestamp()))
-dateTimeFormatted = dateTimeNow.strftime("%d-%m-%Y, %H:%M:%S")
+# Parse command-line arguments.
+args = vars(officeToMarkdownLib.setArgsForSubScript(argparse.ArgumentParser(description="Process the given folder and turn any images files (PNG, SVG), videos (MP4) or presentations (PPTX) into a slideshow (a folder containing index.html and a set of normalised assets).")).parse_args())
 
-# Get any arguments given via the command line.
-args = docsToMarkdownLib.processCommandLineArgs(defaultArgs={"width":"9", "height":"16", "processVideo":"true"}, requiredArgs=["input","output"])
+# The calling script provides a list of any input files, along with last-modified timestamps, via stdin as simple set of comma-separated "filename,timestamp" values.
+previousInputFileTimestamps = officeToMarkdownLib.readInputFilesAndTimestamps()
 
-print("STATUS: processSlideshow: " + args["input"] + " to " + args["output"], flush=True)
-print("Timestamp: " + str(timestamp) + ", Date / Time: " + dateTimeFormatted)
+# If this script itself has been updated we re-run the operation, just to make sure all output is up to date.
+scriptUpdated = officeToMarkdownLib.checkIfScriptUpdated(__file__, args["scriptTimestamp"], args["verbose"])
 
-doProcessVideo = False
-if args["processVideo"] == "true":
-    doProcessVideo = True
+# Process individual files. If the input given is a folder, recurse into that folder and process any files (or sub-folders) found.
+filesProcessed = {}
+def processFiles(theInputPath, theOutputPath):
+    if theInputPath.is_file():
+        inputPathStr = str(theInputPath)
+        inputPathStat = theInputPath.stat()
+        inputPathSuffix = theInputPath.suffix.lower()
+        if inputPathSuffix in [".pptx"]:
+            print("PPTX...")
+        elif inputPathSuffix in [".mp4"]:
+            print("MP4...")
+    else:
+        officeToMarkdownLib.ifVerbose(args["verbose"], "ProcessSlideshow -  folder: " + str(theInputPath))
+        outputFolderPath = theOutputPath / pathlib.Path(theInputPath.name)
+        for item in theInputPath.iterdir():
+            processFiles(item, outputFolderPath)
+processFiles(args["input"], args["output"])
 
-# Make sure the output folder exists.
-os.makedirs(args["output"], exist_ok=True)
+# Report the input filenames, with current update timestamp, back to the calling script, along with the output filenames.
+officeToMarkdownLib.printFilesProcessed(filesProcessed)
+
+
+
 
 
 
