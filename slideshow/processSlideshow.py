@@ -8,6 +8,9 @@ import subprocess
 # The Pillow bitmap-image-handling library.
 import PIL
 
+# The PDF2Image library for handling conversions from PDF to images.
+import pdf2image
+
 # Our own Office To Markdown library.
 import officeToMarkdownLib
 
@@ -50,7 +53,7 @@ def processFiles(theInputPath, theOutputPath):
             slideCount = slideCount + 1
         elif inputPathSuffix in [".pptx"]:
             if scriptUpdated or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
-                # Use LibreOffice to convert the PPTX file to PDF. This can be the headless or GUI version.
+                # Use (external application) LibreOffice (this can be the headless or GUI version) to convert the PPTX file to PDF...
                 libreofficeExec = "soffice" if sys.platform != "win32" else "libreoffice"
                 libreofficeCmd = [libreofficeExec, "--headless", "--convert-to", "pdf", "--outdir", str(outputPath), inputPathStr]
                 try:
@@ -62,6 +65,21 @@ def processFiles(theInputPath, theOutputPath):
                 tempPDFPath = outputPath / pathlib.Path(theInputPath.stem + ".pdf")
                 if not tempPDFPath.exists():
                     raise FileNotFoundError("Expected intermediate PDF was not created: " + str(tempPDFPath))
+
+                # ...then render PDF pages as individual PNG images using the pdf2image Python library.
+                slideshowImages = pdf2image.convert_from_path(str(tempPDFPath), dpi=dpi)
+                slideshowOutputs = []
+                for slideshowImage in slideshowImages:
+                    outputFilePath = outputPath / pathlib.Path("slide-" + officeToMarkdownLib.padInt(slideCount, 5) + ".png")
+                    slideshowImage.save(outputFilePath)
+                    os.utime(outputFilePath, (inputPathStat.st_atime, inputPathStat.st_mtime))
+                    slideshowOutputs.append(str(outputFilePath))
+                    slideCount = slideCount + 1
+                filesProcessed[inputPathStr] = (slideshowOutputs, str(inputPathStat.st_mtime))
+
+                # Cleanup intermediate PDF file.
+                if tempPDFPath.exists():
+                    tempPDFPath.unlink()
         elif inputPathSuffix in officeToMarkdownLib.videoSuffixes:
             print("Video...", flush=True, file=sys.stderr)
     else:
