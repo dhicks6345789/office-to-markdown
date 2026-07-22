@@ -26,11 +26,14 @@ slideCount = 1
 filesProcessed = {}
 def processFiles(theInputPath, theOutputPath):
     if theInputPath.is_file():
+        outputPath = theOutputPath
+        if theOutputPath.name == "slideshow":
+            outputPath = theOutputPath.parent
         inputPathStr = str(theInputPath)
         inputPathStat = theInputPath.stat()
         inputPathSuffix = theInputPath.suffix.lower()
         if inputPathSuffix in officeToMarkdownLib.bitmapSuffixes:
-            outputFilePath = theOutputPath / pathlib.Path("slide-" + officeToMarkdownLib.padInt(slideCount, 5) + ".png")
+            outputFilePath = outputPath / pathlib.Path("slide-" + officeToMarkdownLib.padInt(slideCount, 5) + ".png")
             if scriptUpdated or (not outputFilePath.is_file()) or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
                 with PIL.Image.open(theInputPath) as img:
                     # Ensure image is RGB if converting formats that don't support alpha/transparency
@@ -49,7 +52,7 @@ def processFiles(theInputPath, theOutputPath):
         outputFolderPath = theOutputPath / pathlib.Path(theInputPath.name)
         for item in theInputPath.iterdir():
             processFiles(item, outputFolderPath)
-processFiles(args["input"], args["output"].parent)
+processFiles(args["input"], args["output"])
 
 # Report the input filenames, with current update timestamp, back to the calling script, along with the output filenames.
 officeToMarkdownLib.printFilesProcessed(filesProcessed)
