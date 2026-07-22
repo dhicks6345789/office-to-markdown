@@ -22,6 +22,7 @@ previousInputFileTimestamps = officeToMarkdownLib.readInputFilesAndTimestamps()
 scriptUpdated = officeToMarkdownLib.checkIfScriptUpdated(__file__, args["scriptTimestamp"], args["verbose"])
 
 # Process individual files. If the input given is a folder, recurse into that folder and process any files (or sub-folders) found.
+slideCount = 1
 filesProcessed = {}
 def processFiles(theInputPath, theOutputPath):
     if theInputPath.is_file():
@@ -29,7 +30,7 @@ def processFiles(theInputPath, theOutputPath):
         inputPathStat = theInputPath.stat()
         inputPathSuffix = theInputPath.suffix.lower()
         if inputPathSuffix in officeToMarkdownLib.bitmapSuffixes:
-            outputFilePath = theOutputPath / pathlib.Path(args["input"].stem + ".png")
+            outputFilePath = theOutputPath / pathlib.Path("slide-" officeToMarkdownLib.padInt(slideCount, 5) + ".png")
             if scriptUpdated or (not outputFilePath.is_file()) or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
                 with PIL.Image.open(theInputPath) as img:
                     # Ensure image is RGB if converting formats that don't support alpha/transparency
