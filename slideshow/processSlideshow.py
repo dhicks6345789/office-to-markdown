@@ -3,6 +3,7 @@ import os
 import sys
 import pathlib
 import argparse
+import subprocess
 
 # The Pillow bitmap-image-handling library.
 import PIL
@@ -48,7 +49,16 @@ def processFiles(theInputPath, theOutputPath):
             filesProcessed[inputPathStr] = (str(outputFilePath), str(inputPathStat.st_mtime))
             slideCount = slideCount + 1
         elif inputPathSuffix in [".pptx"]:
-            print("Presentation...", flush=True, file=sys.stderr)
+            if scriptUpdated or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
+                # Try standard command; adjust executable name if on Windows/macOS if needed.
+                libreofficeExec = "soffice" if sys.platform != "win32" else "libreoffice"
+                libreofficeCmd = [libreofficeExec, "--headless", "--convert-to", "pdf", "--outdir", ".", str(inputPathStr)]
+                try:
+                    libreofficeResult = subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                except FileNotFoundError:
+                    raise RuntimeError("LibreOffice command line tool ('soffice' or 'libreoffice') not found in PATH.")
+                except subprocess.CalledProcessError as e:
+                    raise RuntimeError(f"LibreOffice conversion failed:\n{e.stderr}")
         elif inputPathSuffix in officeToMarkdownLib.videoSuffixes:
             print("Video...", flush=True, file=sys.stderr)
     else:
