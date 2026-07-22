@@ -25,71 +25,64 @@ previousInputFileTimestamps = officeToMarkdownLib.readInputFilesAndTimestamps()
 # If this script itself has been updated we re-run the operation, just to make sure all output is up to date.
 scriptUpdated = officeToMarkdownLib.checkIfScriptUpdated(__file__, args["scriptTimestamp"], args["verbose"])
 
-# Process individual files. If the input given is a folder, recurse into that folder and process any files (or sub-folders) found.
+officeToMarkdownLib.ifVerbose(args["verbose"], "ProcessSlideshow -  folder: " + str(args["input"]))
+
+outputPath = args["output"]
+if outputPath.name == "slideshow":
+    outputPath = theOutputPath.parent
+
 slideCount = 1
 filesProcessed = {}
-def processFiles(theInputPath, theOutputPath):
-    global slideCount
-    
-    if theInputPath.is_file():
-        outputPath = theOutputPath
-        if theOutputPath.name == "slideshow":
-            outputPath = theOutputPath.parent
-        outputPath.mkdir(parents=True, exist_ok=True)
-        inputPathStr = str(theInputPath)
-        inputPathStat = theInputPath.stat()
-        inputPathSuffix = theInputPath.suffix.lower()
-        # Handle any bitmap image, converting it to a PNG file.
-        if inputPathSuffix in officeToMarkdownLib.bitmapSuffixes:
-            outputFilePath = outputPath / pathlib.Path("slide-" + officeToMarkdownLib.padInt(slideCount, 5) + ".png")
-            if scriptUpdated or (not outputFilePath.is_file()) or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
-                with PIL.Image.open(theInputPath) as img:
-                    # Ensure image is RGB if converting formats that don't support alpha/transparency
-                    if img.mode in ("RGBA", "P"):
-                        img = img.convert("RGB")
-                    img.save(outputFilePath)
-                    os.utime(outputFilePath, (inputPathStat.st_atime, inputPathStat.st_mtime))
+for inputPath in args["input"].iterdir():
+    outputPath.mkdir(parents=True, exist_ok=True)
+    inputPathStr = str(inputPath)
+    inputPathStat = inputPath.stat()
+    inputPathSuffix = inputPath.suffix.lower()
+    # Handle any bitmap image, converting it to a PNG file.
+    if inputPathSuffix in officeToMarkdownLib.bitmapSuffixes:
+        outputFilePath = outputPath / pathlib.Path("slide-" + officeToMarkdownLib.padInt(slideCount, 5) + ".png")
+        if scriptUpdated or (not outputFilePath.is_file()) or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
+            with PIL.Image.open(theInputPath) as img:
+                # Ensure image is RGB if converting formats that don't support alpha/transparency
+                if img.mode in ("RGBA", "P"):
+                    img = img.convert("RGB")
+                img.save(outputFilePath)
+                os.utime(outputFilePath, (inputPathStat.st_atime, inputPathStat.st_mtime))
+            officeToMarkdownLib.ifVerbose(args["verbose"], "processSlideshow - " + officeToMarkdownLib.prePadWithSpaces(inputPathSuffix, 7) + ": " + inputPathStr + " to " + str(outputFilePath))
+        filesProcessed[inputPathStr] = (str(outputFilePath), str(inputPathStat.st_mtime))
+        slideCount = slideCount + 1
+    elif inputPathSuffix in [".pptx"]:
+        if scriptUpdated or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
+            # Use (external application) LibreOffice (this can be the headless or GUI version) to convert the PPTX file to PDF...
+            libreofficeExec = "soffice" if sys.platform != "win32" else "libreoffice"
+            libreofficeCmd = [libreofficeExec, "--headless", "--convert-to", "pdf", "--outdir", str(outputPath), inputPathStr]
+            try:
+                libreofficeResult = subprocess.run(libreofficeCmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            except FileNotFoundError:
+                raise RuntimeError("LibreOffice command line tool ('soffice' or 'libreoffice') not found in PATH.")
+            except subprocess.CalledProcessError as e:
+                raise RuntimeError(f"LibreOffice conversion failed:\n{e.stderr}")
+            tempPDFPath = outputPath / pathlib.Path(theInputPath.stem + ".pdf")
+            if not tempPDFPath.exists():
+                raise FileNotFoundError("Expected intermediate PDF was not created: " + str(tempPDFPath))
+
+            # ...then render PDF pages as individual PNG images using the pdf2image Python library.
+            slideshowImages = pdf2image.convert_from_path(str(tempPDFPath), dpi=300)
+            slideshowOutputs = []
+            for slideshowImage in slideshowImages:
+                outputFilePath = outputPath / pathlib.Path("slide-" + officeToMarkdownLib.padInt(slideCount, 5) + ".png")
                 officeToMarkdownLib.ifVerbose(args["verbose"], "processSlideshow - " + officeToMarkdownLib.prePadWithSpaces(inputPathSuffix, 7) + ": " + inputPathStr + " to " + str(outputFilePath))
-            filesProcessed[inputPathStr] = (str(outputFilePath), str(inputPathStat.st_mtime))
-            slideCount = slideCount + 1
-        elif inputPathSuffix in [".pptx"]:
-            if scriptUpdated or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
-                # Use (external application) LibreOffice (this can be the headless or GUI version) to convert the PPTX file to PDF...
-                libreofficeExec = "soffice" if sys.platform != "win32" else "libreoffice"
-                libreofficeCmd = [libreofficeExec, "--headless", "--convert-to", "pdf", "--outdir", str(outputPath), inputPathStr]
-                try:
-                    libreofficeResult = subprocess.run(libreofficeCmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-                except FileNotFoundError:
-                    raise RuntimeError("LibreOffice command line tool ('soffice' or 'libreoffice') not found in PATH.")
-                except subprocess.CalledProcessError as e:
-                    raise RuntimeError(f"LibreOffice conversion failed:\n{e.stderr}")
-                tempPDFPath = outputPath / pathlib.Path(theInputPath.stem + ".pdf")
-                if not tempPDFPath.exists():
-                    raise FileNotFoundError("Expected intermediate PDF was not created: " + str(tempPDFPath))
+                slideshowImage.save(outputFilePath)
+                os.utime(outputFilePath, (inputPathStat.st_atime, inputPathStat.st_mtime))
+                slideshowOutputs.append(str(outputFilePath))
+                slideCount = slideCount + 1
+            filesProcessed[inputPathStr] = (slideshowOutputs, str(inputPathStat.st_mtime))
 
-                # ...then render PDF pages as individual PNG images using the pdf2image Python library.
-                slideshowImages = pdf2image.convert_from_path(str(tempPDFPath), dpi=300)
-                slideshowOutputs = []
-                for slideshowImage in slideshowImages:
-                    outputFilePath = outputPath / pathlib.Path("slide-" + officeToMarkdownLib.padInt(slideCount, 5) + ".png")
-                    officeToMarkdownLib.ifVerbose(args["verbose"], "processSlideshow - " + officeToMarkdownLib.prePadWithSpaces(inputPathSuffix, 7) + ": " + inputPathStr + " to " + str(outputFilePath))
-                    slideshowImage.save(outputFilePath)
-                    os.utime(outputFilePath, (inputPathStat.st_atime, inputPathStat.st_mtime))
-                    slideshowOutputs.append(str(outputFilePath))
-                    slideCount = slideCount + 1
-                filesProcessed[inputPathStr] = (slideshowOutputs, str(inputPathStat.st_mtime))
-
-                # Cleanup intermediate PDF file.
-                if tempPDFPath.exists():
-                    tempPDFPath.unlink()
-        elif inputPathSuffix in officeToMarkdownLib.videoSuffixes:
-            print("Video...", flush=True, file=sys.stderr)
-    else:
-        officeToMarkdownLib.ifVerbose(args["verbose"], "ProcessSlideshow -  folder: " + str(theInputPath))
-        outputFolderPath = theOutputPath / pathlib.Path(theInputPath.name)
-        for item in theInputPath.iterdir():
-            processFiles(item, outputFolderPath)
-processFiles(args["input"], args["output"])
+            # Cleanup intermediate PDF file.
+            if tempPDFPath.exists():
+                tempPDFPath.unlink()
+    elif inputPathSuffix in officeToMarkdownLib.videoSuffixes:
+        print("Video...", flush=True, file=sys.stderr)
 
 # Report the input filenames, with current update timestamp, back to the calling script, along with the output filenames.
 officeToMarkdownLib.printFilesProcessed(filesProcessed)
