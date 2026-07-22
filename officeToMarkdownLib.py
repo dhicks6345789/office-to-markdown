@@ -227,7 +227,10 @@ def readDataFile(theFilePath):
             if returnScalars:
                 result[row[0]] = row[1]
             else:
-                result[row[0]] = row.values.flatten().tolist()[1:]
+                result[row[0]] = []
+                for px in range(1, pandasData.shape[1]):
+                    result[row[0]].append(row[px])
+                #result[row[0]] = row.values.flatten().tolist()[1:]
     return result
     
 # Reads a CSV file containing filenames along with their last-modified timetsamps.
