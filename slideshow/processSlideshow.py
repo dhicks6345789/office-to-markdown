@@ -29,7 +29,7 @@ officeToMarkdownLib.ifVerbose(args["verbose"], "ProcessSlideshow -  folder: " + 
 
 outputPath = args["output"]
 if outputPath.name == "slideshow":
-    outputPath = theOutputPath.parent
+    outputPath = outputPath.parent
 
 slideCount = 1
 filesProcessed = {}
@@ -42,7 +42,7 @@ for inputPath in args["input"].iterdir():
     if inputPathSuffix in officeToMarkdownLib.bitmapSuffixes:
         outputFilePath = outputPath / pathlib.Path("slide-" + officeToMarkdownLib.padInt(slideCount, 5) + ".png")
         if scriptUpdated or (not outputFilePath.is_file()) or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
-            with PIL.Image.open(theInputPath) as img:
+            with PIL.Image.open(inputPath) as img:
                 # Ensure image is RGB if converting formats that don't support alpha/transparency
                 if img.mode in ("RGBA", "P"):
                     img = img.convert("RGB")
@@ -62,7 +62,7 @@ for inputPath in args["input"].iterdir():
                 raise RuntimeError("LibreOffice command line tool ('soffice' or 'libreoffice') not found in PATH.")
             except subprocess.CalledProcessError as e:
                 raise RuntimeError(f"LibreOffice conversion failed:\n{e.stderr}")
-            tempPDFPath = outputPath / pathlib.Path(theInputPath.stem + ".pdf")
+            tempPDFPath = outputPath / pathlib.Path(inputPath.stem + ".pdf")
             if not tempPDFPath.exists():
                 raise FileNotFoundError("Expected intermediate PDF was not created: " + str(tempPDFPath))
 
