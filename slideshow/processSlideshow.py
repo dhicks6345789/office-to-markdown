@@ -49,7 +49,7 @@ def processFiles(theInputPath, theOutputPath):
         outputFolderPath = theOutputPath / pathlib.Path(theInputPath.name)
         for item in theInputPath.iterdir():
             processFiles(item, outputFolderPath)
-processFiles(args["input"], args["output"])
+processFiles(args["input"], args["output"].parent)
 
 # Report the input filenames, with current update timestamp, back to the calling script, along with the output filenames.
 officeToMarkdownLib.printFilesProcessed(filesProcessed)
