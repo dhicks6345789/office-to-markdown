@@ -25,6 +25,8 @@ scriptUpdated = officeToMarkdownLib.checkIfScriptUpdated(__file__, args["scriptT
 slideCount = 1
 filesProcessed = {}
 def processFiles(theInputPath, theOutputPath):
+    global slideCount
+    
     if theInputPath.is_file():
         outputPath = theOutputPath
         if theOutputPath.name == "slideshow":
