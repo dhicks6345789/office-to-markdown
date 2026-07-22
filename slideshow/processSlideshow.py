@@ -44,7 +44,7 @@ def processFiles(theInputPath, theOutputPath):
                         img = img.convert("RGB")
                     img.save(outputFilePath)
                     os.utime(outputFilePath, (inputPathStat.st_atime, inputPathStat.st_mtime))
-                officeToMarkdownLib.ifVerbose(args["verbose"], "processSlideshow - " + officeToMarkdownLib.postPadWithSpaces(inputPathSuffix, 7) + ": " + inputPathStr + " to " + str(outputFilePath))
+                officeToMarkdownLib.ifVerbose(args["verbose"], "processSlideshow - " + officeToMarkdownLib.prePadWithSpaces(inputPathSuffix, 7) + ": " + inputPathStr + " to " + str(outputFilePath))
             filesProcessed[inputPathStr] = (str(outputFilePath), str(inputPathStat.st_mtime))
             slideCount = slideCount + 1
         elif inputPathSuffix in [".pptx"]:
