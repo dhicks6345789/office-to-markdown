@@ -25,10 +25,21 @@ def processFiles(theInputPath, theOutputPath):
         inputPathStr = str(theInputPath)
         inputPathStat = theInputPath.stat()
         inputPathSuffix = theInputPath.suffix.lower()
-        if inputPathSuffix in [".pptx"]:
-            print("PPTX...")
-        elif inputPathSuffix in [".mp4"]:
-            print("MP4...")
+        if inputPathSuffix in docsToMarkdownLib.bitmapSuffixes:
+            outputFilePath = theOutputPath / pathlib.Path(args["input"].stem + ".png")
+            if scriptUpdated or (not outputFilePath.is_file()) or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
+                with Image.open(theInputPath) as img:
+                    # Ensure image is RGB if converting formats that don't support alpha/transparency
+                    if img.mode in ("RGBA", "P"):
+                        img = img.convert("RGB")
+                    img.save(outputFilePath)
+                    os.utime(outputFilePath, (inputPathStat.st_atime, inputPathStat.st_mtime))
+                officeToMarkdownLib.ifVerbose(args["verbose"], "processSlideshow -   " + inputPathSuffix + ": " + inputPathStr + " to " + str(outputFilePath))
+            filesProcessed[inputPathStr] = (str(outputFilePath), str(inputPathStat.st_mtime))
+        elif inputPathSuffix in [".pptx"]:
+            print("Presentation...", flush=True, file=sys.stderr)
+        elif inputPathSuffix in docsToMarkdownLib.videoSuffixes:
+            print("Video...", flush=True, file=sys.stderr)
     else:
         officeToMarkdownLib.ifVerbose(args["verbose"], "ProcessSlideshow -  folder: " + str(theInputPath))
         outputFolderPath = theOutputPath / pathlib.Path(theInputPath.name)
@@ -38,6 +49,8 @@ processFiles(args["input"], args["output"])
 
 # Report the input filenames, with current update timestamp, back to the calling script, along with the output filenames.
 officeToMarkdownLib.printFilesProcessed(filesProcessed)
+
+sys.exit(0)
 
 
 
