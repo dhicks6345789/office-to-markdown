@@ -35,6 +35,7 @@ def processFiles(theInputPath, theOutputPath):
         outputPath = theOutputPath
         if theOutputPath.name == "slideshow":
             outputPath = theOutputPath.parent
+        outputPath.mkdir(parents=True, exist_ok=True)
         inputPathStr = str(theInputPath)
         inputPathStat = theInputPath.stat()
         inputPathSuffix = theInputPath.suffix.lower()
