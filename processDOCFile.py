@@ -43,7 +43,6 @@ def processFiles(theInputPath, theOutputPath):
             trimmedMarkdown = trimmedMarkdown + markdownLine + "\n"
           
         # Write out the Markdown file, matching the modification date with the original input document so we can skip next time if the input is unmodified.
-        theOutputPath.mkdir(parents=True, exist_ok=True)
         officeToMarkdownLib.putFile(outputFilePath, officeToMarkdownLib.frontMatterToString(docFrontmatter) + trimmedMarkdown.strip())
         os.utime(outputFilePath, (inputPathStat.st_atime, inputPathStat.st_mtime))
       filesProcessed[inputPathStr] = (str(outputFilePath), str(inputPathStat.st_mtime))
