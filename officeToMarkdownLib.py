@@ -28,17 +28,17 @@ import pandas
 markdownReplace = {"\\[":"[","\\]":"]","\\!":"!","\\`\\`\\`":"```"}
 
 # An array of "image file" types.
-bitmapTypes = ["jpg", "jpeg", "png", "ico"]
-imageTypes =  bitmapTypes + ["svg"]
+bitmapSuffixes = [".jpg", ".jpeg", ".png", ".ico"]
+imageSuffixes =  bitmapSuffixes + [".svg"]
 
 # An array of "video file" types.
-videoTypes = ["mp4"]
+videoSuffixes = [".mp4"]
 
 # An array of "url file" types.
-urlTypes = ["url", "txt"]
+urlSuffixes = [".url", ".txt"]
 
 # An array of "audio file" types.
-audioTypes = ["mp3", "ogg", "wav"]
+audioSuffixes = [".mp3", ".ogg", ".wav"]
 
 # Files / folders to exclude from directory listings.
 fileIgnores = [".git", ".gitignore", "__pycache__", ".venv", "assets"]
