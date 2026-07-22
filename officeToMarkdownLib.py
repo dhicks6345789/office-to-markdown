@@ -59,12 +59,9 @@ def getBinaryFile(theFilename):
     
 # A utility function to write the contents of the given string to the given file.
 def putFile(theFilename, theContent):
-    theFilename = str(theFilename)
-    if os.sep in theFilename:
-        parentFolderName = theFilename.rsplit(os.sep, 1)[0]
-        if not os.path.exists(parentFolderName):
-            os.makedirs(parentFolderName)
-    outfile = open(theFilename, "wt", encoding="utf-8")
+    filePath = pathlib.Path(str(theFilename))
+    filePath.parent.mkdir(parents=True, exist_ok=True)
+    outfile = open(filePath, "wt", encoding="utf-8")
     outfile.write(theContent)
     outfile.close()
 
