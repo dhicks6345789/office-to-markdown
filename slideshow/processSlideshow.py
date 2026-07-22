@@ -79,8 +79,8 @@ for inputPath in args["input"].iterdir():
             filesProcessed[inputPathStr] = (slideshowOutputs, str(inputPathStat.st_mtime))
 
             # Cleanup intermediate PDF file.
-            #if tempPDFPath.exists():
-                #tempPDFPath.unlink()
+            if tempPDFPath.exists():
+                tempPDFPath.unlink()
     elif inputPathSuffix in officeToMarkdownLib.videoSuffixes:
         print("Video...", flush=True, file=sys.stderr)
 
