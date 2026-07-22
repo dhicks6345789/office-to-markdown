@@ -67,7 +67,7 @@ def processFiles(theInputPath, theOutputPath):
                     raise FileNotFoundError("Expected intermediate PDF was not created: " + str(tempPDFPath))
 
                 # ...then render PDF pages as individual PNG images using the pdf2image Python library.
-                slideshowImages = pdf2image.convert_from_path(str(tempPDFPath), dpi=dpi)
+                slideshowImages = pdf2image.convert_from_path(str(tempPDFPath), dpi=300)
                 slideshowOutputs = []
                 for slideshowImage in slideshowImages:
                     outputFilePath = outputPath / pathlib.Path("slide-" + officeToMarkdownLib.padInt(slideCount, 5) + ".png")
