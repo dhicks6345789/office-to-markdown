@@ -71,6 +71,7 @@ def processFiles(theInputPath, theOutputPath):
                 slideshowOutputs = []
                 for slideshowImage in slideshowImages:
                     outputFilePath = outputPath / pathlib.Path("slide-" + officeToMarkdownLib.padInt(slideCount, 5) + ".png")
+                    officeToMarkdownLib.ifVerbose(args["verbose"], "processSlideshow - " + officeToMarkdownLib.prePadWithSpaces(inputPathSuffix, 7) + ": " + inputPathStr + " to " + str(outputFilePath))
                     slideshowImage.save(outputFilePath)
                     os.utime(outputFilePath, (inputPathStat.st_atime, inputPathStat.st_mtime))
                     slideshowOutputs.append(str(outputFilePath))
