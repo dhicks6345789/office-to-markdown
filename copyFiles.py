@@ -28,6 +28,7 @@ def copyFiles(theInputPath, theOutputPath):
     inputPathStat = theInputPath.stat()
     if scriptUpdated or (not outputFilePath.is_file()) or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
       officeToMarkdownLib.ifVerbose(args["verbose"], "copyFile         - copying: " + str(theInputPath) + " to " + str(outputFilePath))
+      theOutputPath.mkdir(parents=True, exist_ok=True)
       shutil.copy(theInputPath, outputFilePath)
       os.utime(outputFilePath, (inputPathStat.st_atime, inputPathStat.st_mtime))
     filesProcessed[inputPathStr] = (str(outputFilePath), str(inputPathStat.st_mtime))
