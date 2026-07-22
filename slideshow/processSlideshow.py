@@ -56,7 +56,7 @@ for inputPath in args["input"].iterdir():
             # Use (external application) LibreOffice (this can be the headless or GUI version) to convert the PPTX file to PDF...
             libreofficeExec = "soffice" if sys.platform != "win32" else "libreoffice"
             libreofficeCmd = [libreofficeExec, "--headless", "--convert-to", "pdf", "--outdir", str(outputPath), inputPathStr]
-            officeToMarkdownLib.ifVerbos(verbose, "ProcessSlideshow - running: " + " ".join([f"{value}" for value in libreofficeCmd]))
+            officeToMarkdownLib.ifVerbose(args["verbose"], "ProcessSlideshow - running: " + " ".join([f"{value}" for value in libreofficeCmd]))
             try:
                 libreofficeResult = subprocess.run(libreofficeCmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             except FileNotFoundError:
