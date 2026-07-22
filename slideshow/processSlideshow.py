@@ -4,6 +4,9 @@ import sys
 import pathlib
 import argparse
 
+# The Pillow bitmap-image-handling library.
+import PIL
+
 # Our own Office To Markdown library.
 import officeToMarkdownLib
 
@@ -28,7 +31,7 @@ def processFiles(theInputPath, theOutputPath):
         if inputPathSuffix in officeToMarkdownLib.bitmapSuffixes:
             outputFilePath = theOutputPath / pathlib.Path(args["input"].stem + ".png")
             if scriptUpdated or (not outputFilePath.is_file()) or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
-                with Image.open(theInputPath) as img:
+                with PIL.Image.open(theInputPath) as img:
                     # Ensure image is RGB if converting formats that don't support alpha/transparency
                     if img.mode in ("RGBA", "P"):
                         img = img.convert("RGB")
