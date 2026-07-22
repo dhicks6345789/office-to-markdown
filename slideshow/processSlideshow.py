@@ -43,6 +43,7 @@ def processFiles(theInputPath, theOutputPath):
                     os.utime(outputFilePath, (inputPathStat.st_atime, inputPathStat.st_mtime))
                 officeToMarkdownLib.ifVerbose(args["verbose"], "processSlideshow -   " + inputPathSuffix + ": " + inputPathStr + " to " + str(outputFilePath))
             filesProcessed[inputPathStr] = (str(outputFilePath), str(inputPathStat.st_mtime))
+            slideCount = slideCount + 1
         elif inputPathSuffix in [".pptx"]:
             print("Presentation...", flush=True, file=sys.stderr)
         elif inputPathSuffix in officeToMarkdownLib.videoSuffixes:
