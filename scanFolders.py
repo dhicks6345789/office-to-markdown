@@ -26,11 +26,6 @@ for arg in args:
 
 # Read the "matches.csv" file, which describes which transform script to run for each file type / sub folder in the input folder structure.
 matches = officeToMarkdownLib.readDataFile(args["dataRoot"] / pathlib.Path("matches.csv"))
-#scriptPaths = []
-#for item in matches:
-#    scriptPath = args["scriptRoot"] / pathlib.Path(matches[item][1]))
-#    if not scriptPath in scriptPaths:
-#        scriptPaths.append(scriptPath)
 
 # Read the matchChanges cache file, a list of the script files used to do the transforms along with their last-updated timestamps...
 matchChangesPath = args["dataRoot"] / pathlib.Path("matchChanges.csv")
@@ -68,7 +63,7 @@ def copyFolder(inputFolder, outputFolder):
         outputFiles.append(str(outputItem))
         if inputItem.is_file():
             if not inputItem.stat().st_mtime == outputItem.stat().st_mtime:
-                officeToMarkdownLib.ifVerbose(args["verbose"], "Copying file: " + inputItem + " to " + outputItem, flush=True)
+                officeToMarkdownLib.ifVerbose(args["verbose"], "ScanFolder       - copyIn: " + inputItem + " to " + outputItem, flush=True)
                 shutil.copyfile(str(inputItem), str(outputItem))
                 officeToMarkdownLib.makeModDatesMatch(str(inputItem), str(outputItem))
         else:
@@ -84,7 +79,7 @@ def deleteExtraFiles(theFolder):
     for item in theFolder.iterdir():
         if item.is_file():
             if not str(item) in outputFiles:
-                officeToMarkdownLib.ifVerbose(args["verbose"], "Removing extra file: " + str(item))
+                officeToMarkdownLib.ifVerbose(args["verbose"], "ScanFolder       -  delete: " + str(item))
                 os.remove(str(item))
         else:
             deleteExtraFiles(item)
