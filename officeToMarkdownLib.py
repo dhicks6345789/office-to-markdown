@@ -94,11 +94,17 @@ def checkIfScriptUpdated(theFilename, theTimestamp, theVerbose):
     result = False
     scriptTimestamp = str(pathlib.Path(theFilename).stat().st_mtime)
     if not theTimestamp == scriptTimestamp:
-        ifVerbose(theVerbose, padWithSpaces(pathlib.Path(sys.argv[0]).name, 16) + " - updated: was " + theTimestamp + ", now " + scriptTimestamp)
+        ifVerbose(theVerbose, padWithSpaces(pathlib.Path(sys.argv[0]).name.split(".")[0], 16) + " - updated: was " + theTimestamp + ", now " + scriptTimestamp)
         result = True
     return result
 
-def padWithSpaces(theString, theLength):
+def prePadWithSpaces(theString, theLength):
+    result = ""
+    for pl in range(0, theLength - len(theString))
+        result = result + " "
+    return result + theString
+
+def postPadWithSpaces(theString, theLength):
     result = theString
     while len(result) < theLength:
         result = result + " "
