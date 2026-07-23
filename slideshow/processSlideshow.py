@@ -110,9 +110,9 @@ for inputPath in args["input"].iterdir():
     else:
         outputFilePath = outputPath / pathlib.Path("slide-" + officeToMarkdownLib.padInt(slideCount, 5) + inputPathSuffix)
         if scriptUpdated or (not outputFilePath.is_file()) or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
-            officeToMarkdownLib.ifVerbose(args["verbose"], "processSlideshow -    copy: " + str(theInputPath) + " to " + str(outputFilePath))
+            officeToMarkdownLib.ifVerbose(args["verbose"], "processSlideshow -    copy: " + str(inputPath) + " to " + str(outputFilePath))
             outputPath.mkdir(parents=True, exist_ok=True)
-            shutil.copy(theInputPath, outputFilePath)
+            shutil.copy(inputPath, outputFilePath)
             os.utime(outputFilePath, (inputPathStat.st_atime, inputPathStat.st_mtime))
         filesProcessed[inputPathStr] = (str(outputFilePath), str(inputPathStat.st_mtime))
         slideCount = slideCount + 1
