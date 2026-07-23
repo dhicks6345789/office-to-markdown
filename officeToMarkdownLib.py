@@ -302,7 +302,7 @@ def writeChangesFile(theFilename, theData):
 
 
 # Parse arguments from a config file. Accepts CSV, Excel and YAML formats.
-def processArgsFile(theInputPath):
+def processArgsFile(theInputPath, defaultArgs={}):
     args = {}
     argsData = {}
     for item in theInputPath.iterdir():
@@ -319,6 +319,12 @@ def processArgsFile(theInputPath):
     for argName in argsData.keys():
         argName = argName.strip()
         args[argName] = str(argsData[argName])
+
+    # If we have any default argument values defined, and those arguments
+    # aren't already present, add the default values in to the result.
+    for argName in defaultArgs.keys():
+        if not argName in args.keys():
+            args[argName] = defaultArgs[argName]
     return args
 
 
