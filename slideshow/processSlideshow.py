@@ -37,7 +37,7 @@ filesProcessed = {}
 # Recursivly copy the contents of the input folder to the output folder. Replicates last-modified times on files.
 # Note: shutil's copy2 function fails on rclone-mounted volumes (Google Drive, etc) which don't implement all metadata
 # features (chmod / chown permissions in particular). We also need to add each item to the fileProcessed dict.
-def copyFolder(theInputPath, theOutputPath)):
+def copyFolder(theInputPath, theOutputPath):
     theOutputPath.mkdir(parents=True, exist_ok=True)
     for item in theInputPath.iterdir():
         outputFilePath = theOutputPath / pathlib.Path(item.name)
