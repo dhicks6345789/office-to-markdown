@@ -494,7 +494,7 @@ def ifVerbose(theVerbose, theOutput):
 # Looks through the contents of the input folder, applying a transform script to each file or folder found.
 # A cache of file paths with checksum details is maintained, this is used to avoid processing a file if it (and the associated processing script) hasn't been changed since the last run.
 # Folders are recursed into. Some matches might match whole sub-folders, in which case that sub-folder's processing will be handled by the transform script.
-def scanFolder(verbose, theScriptRoot, theMatches, theMatchTimestamps, thePreviousInputFileTimestamps, theInputFolder, theOutputFolder):
+def scanFolder(verbose, theScriptRoot, theMatches, theMatchTimestamps, thePreviousInputFileTimestamps, theInputFolder, theOutputRoot, theOutputFolder):
     ifVerbose(verbose, "ScanFolder       -  folder: " + str(theInputFolder))
     outputFiles = []
     unmatchedItems = []
@@ -517,7 +517,7 @@ def scanFolder(verbose, theScriptRoot, theMatches, theMatchTimestamps, thePrevio
                 inputTimestamp = "0"
                 if str(item) in thePreviousInputFileTimestamps:
                     inputTimestamp = thePreviousInputFileTimestamps[str(item)]
-                commandLine = [scriptExec, scriptPathStr, "--scriptTimestamp", scriptTimestamp, "--input", str(item), "--output", str(theOutputFolder)]
+                commandLine = [scriptExec, scriptPathStr, "--scriptTimestamp", scriptTimestamp, "--input", str(item), "--outputRoot", str(theOutputRoot), "--output", str(theOutputFolder)]
                 if verbose:
                     commandLine.append("--verbose")
                 matchInputItems = {}
@@ -555,7 +555,7 @@ def scanFolder(verbose, theScriptRoot, theMatches, theMatchTimestamps, thePrevio
             for matchInputItem in thePreviousInputFileTimestamps:
                 if matchInputItem.startswith(str(item)):
                     matchInputItems[matchInputItem] = thePreviousInputFileTimestamps[matchInputItem]
-            subNewInputFileTimestamps, subOutputFiles = scanFolder(verbose, theScriptRoot, theMatches, theMatchTimestamps, matchInputItems, item, theOutputFolder / pathlib.Path(item.name))
+            subNewInputFileTimestamps, subOutputFiles = scanFolder(verbose, theScriptRoot, theMatches, theMatchTimestamps, matchInputItems, item, theOutputRoot, theOutputFolder / pathlib.Path(item.name))
             newInputFileTimestamps.update(subNewInputFileTimestamps)
             outputFiles.extend(subOutputFiles)
     return newInputFileTimestamps, outputFiles
