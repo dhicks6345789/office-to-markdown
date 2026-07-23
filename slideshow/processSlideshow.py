@@ -18,7 +18,15 @@ import officeToMarkdownLib
 
 
 # Parse command-line arguments.
-args = vars(officeToMarkdownLib.setArgsForSubScript(argparse.ArgumentParser(description="Process the given folder and turn any images files (PNG, SVG), videos (MP4) or presentations (PPTX) into a slideshow (a folder containing index.html and a set of normalised assets).")).parse_args())
+args = vars(officeToMarkdownLib.setArgsForSubScript(argparse.ArgumentParser(description=(
+    "Process the given folder and add any files found into a slideshow (a folder containing index.html and a set of normalised assets). Some files will "
+    "be normalised: bitmap images (" + ", ".join(officeToMarkdownLib.bitmapSuffixes) + ") will be converted to PNG, "
+    "videos (" + ", ".join(officeToMarkdownLib.bitmapSuffixes) + ") will be convert3d to MP4, "
+    "PowerPoint files (.PPTX) will be converted to a set of PNG images. All other files at the top folder level will be copied bvut renamed as slides, "
+    "sub-folders and their files will simply be copied unchanged."
+))).parse_args())
+
+args.update(docsToMarkdownLib.processArgsFile(args["input"]))
 
 # The calling script provides a list of any input files, along with last-modified timestamps, via stdin as simple set of comma-separated "filename,timestamp" values.
 previousInputFileTimestamps = officeToMarkdownLib.readInputFilesAndTimestamps()
