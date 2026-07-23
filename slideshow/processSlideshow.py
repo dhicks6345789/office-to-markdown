@@ -27,7 +27,7 @@ args = vars(officeToMarkdownLib.setArgsForSubScript(argparse.ArgumentParser(desc
 ))).parse_args())
 
 # Pick up any additional arguments from a config file if present.
-args.update(docsToMarkdownLib.processArgsFile(args["input"], defaultArgs={"width":1024, "height":768}))
+args.update(officeToMarkdownLib.processArgsFile(args["input"], defaultArgs={"width":1024, "height":768}))
 
 # The calling script provides a list of any input files, along with last-modified timestamps, via stdin as simple set of comma-separated "filename,timestamp" values.
 previousInputFileTimestamps = officeToMarkdownLib.readInputFilesAndTimestamps()
