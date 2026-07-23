@@ -35,7 +35,7 @@ def copyFiles(theInputPath, theOutputPath):
   else:
     for item in theInputPath.iterdir():
       copyFiles(item, outputFilePath)
-copyFiles(args["input"], args["output"])
+copyFiles(args["input"], args["output"] / pathlib.Path("content"))
 
 # Report the input filenames, with current update timestamp, back to the calling script, along with the output filenames.
 officeToMarkdownLib.printFilesProcessed(filesProcessed)
