@@ -71,7 +71,7 @@ def putFile(theFilename, theContent):
 # Parse command-line input arguments. Since we have a set of scripts that take the same baseline arguments we have a central library function that adds our standard
 # arguments to an argparse.ArgumentParser object.
 def setArgsForGeneral(theParser):
-    theParser.add_argument("--input", type=pathlib.Path, help="Input folder.")
+    theParser.add_argument("--input", type=pathlib.Path, help="Input folder. Absolute path.")
     theParser.add_argument("--output", type=pathlib.Path, help="Output folder.")
     theParser.add_argument("--scriptRoot", type=pathlib.Path, default=str(pathlib.Path.cwd()), help="The root of the script folder. Defaults to the current working directory.")
     theParser.add_argument("--dataRoot", type=pathlib.Path, default=str(pathlib.Path.cwd()), help="The root of the script folder. Defaults to the current working directory.")
@@ -82,6 +82,7 @@ def setArgsForGeneral(theParser):
 def setArgsForSubScript(theParser):
     theParser = setArgsForGeneral(theParser)
     theParser.add_argument("--scriptTimestamp", help="The previous last-modified timestamp value (as a floating point number) for this script.")
+    theParser.add_argument("--outputRoot", help="The root output folder, tpyically a 'Hugo' folder.")
     return theParser
 
 # Read the list of input files, along with last-modified timestamps, from stdin. Returns as a dict of filename:timestamp values, with all values as strings.
