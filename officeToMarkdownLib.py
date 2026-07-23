@@ -405,6 +405,23 @@ def thumbnailVideo(theInputVideo, theOutputVideo, theBlockWidth, theBlockHeight)
             
         ffmpegLine = "ffmpeg -hide_banner -loglevel error -y -i \"" + str(theInputVideo) + "\" -vf \"scale=" + str(scaledWidth) + ":" + str(scaledHeight) + ",pad=" + str(resultWidth) + ":" + str(resultHeight) + ":" + str(pasteX) + ":" + str(pasteY) + ":#FFFFFF@1,format=rgb24\" -vcodec libx264 -crf 18 \"" + str(theOutputVideo) + "\" 2>&1"
         print(ffmpegLine, flush=True, file=sys.stderr)
+        
+        (
+            ffmpeg
+            .input(theInputVideo)
+            .filter("scale", scaledWidth, scaledHeight)
+            .filter("pad", resultWidth, resultHeight, pasteX, pasteY, color="#FFFFFF@1")
+            .filter("format", "rgb24")
+            .output(
+                theOutputVideo,
+                vcodec="libx264",
+                crf=18,
+                loglevel="error",
+                hide_banner=None
+            )
+            .overwrite_output()
+            .run(capture_stderr=True)
+        )
 
 
 
