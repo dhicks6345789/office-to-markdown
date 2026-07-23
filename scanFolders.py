@@ -63,7 +63,7 @@ def copyFolder(inputFolder, outputFolder):
         outputItem = outputFolder / pathlib.Path(inputItem.name)
         outputFiles.append(str(outputItem))
         if inputItem.is_file():
-            if not inputItem.stat().st_mtime == outputItem.stat().st_mtime:
+            if (not outputItem.is_file()) or (not inputItem.stat().st_mtime == outputItem.stat().st_mtime):
                 officeToMarkdownLib.ifVerbose(args["verbose"], "ScanFolder       - copyIn: " + inputItem + " to " + outputItem, flush=True)
                 shutil.copyfile(str(inputItem), str(outputItem))
                 officeToMarkdownLib.makeModDatesMatch(str(inputItem), str(outputItem))
