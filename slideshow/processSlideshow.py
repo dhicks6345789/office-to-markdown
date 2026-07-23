@@ -147,7 +147,7 @@ for inputPath in args["input"].iterdir():
 indexFileInputPath = pathlib.Path.cwd() / pathlib.Path("slideshow/slideshowIndex.html")
 indexFileInputPathStr = str(indexFileInputPath)
 indexFileInputPathStat = indexFileInputPath.stat()
-indexFileOutputPath = args["outputRoot"] / pathlib.Path("static") / args["output"] / pathlib.Path("index.html")
+indexFileOutputPath = outputPath / pathlib.Path("index.html")
 if scriptUpdated or (not indexFileOutputPath.is_file()) or (not indexFileInputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[indexFileInputPathStr]):
     officeToMarkdownLib.putFile(indexFileOutputPath, officeToMarkdownLib.getFile(indexFileInputPath).replace("var resources = [];", str("var resources = " + str(slideList) + ";")))
 filesProcessed[indexFileInputPathStr] = (str(indexFileOutputPath), str(indexFileInputPathStat.st_mtime))
