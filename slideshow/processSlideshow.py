@@ -42,6 +42,7 @@ def copyFolder(theInputPath, theOutputPath)):
     for item in theInputPath.iterdir():
         outputFilePath = theOutputPath / pathlib.Path(item.name)
         if item.is_file():
+            officeToMarkdownLib.ifVerbose(args["verbose"], "processSlideshow -    copy: " + str(item) + " to " + str(outputFilePath))
             itemStat = item.stat()
             shutil.copy(item, outputFilePath)
             os.utime(outputFilePath, (itemStat.st_atime, itemStat.st_mtime))
