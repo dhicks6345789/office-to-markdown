@@ -58,6 +58,7 @@ officeToMarkdownLib.writeChangesFile(inputChangesPath, currentInputChanges)
 # This happens after "scan folders", so for any conflicting filenames, the copy process will take precedence.
 # This is an inline function which adds files copied to the "outputFiles" list.
 def copyFolder(inputFolder, outputFolder):
+    print("copyFolder" + str(inputFolder) + " to " + str(outputFolder)), flush=True, file=sys.stderr)
     for inputItem in inputFolder.iterdir():
         outputItem = outputFolder / item
         outputFiles.append(str(outputItem))
