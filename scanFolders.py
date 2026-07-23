@@ -68,7 +68,7 @@ def copyFolder(inputFolder, outputFolder):
                 shutil.copyfile(str(inputItem), str(outputItem))
                 officeToMarkdownLib.makeModDatesMatch(str(inputItem), str(outputItem))
         else:
-            os.mkdir(str(outputItem))
+            outputItem.mkdir(parents=True, exist_ok=True)
             copyFolder(inputItem, outputItem)
 if "copyIn" in args and not str(args["copyIn"]) == "":
     copyFolder(args["copyIn"], args["output"])
