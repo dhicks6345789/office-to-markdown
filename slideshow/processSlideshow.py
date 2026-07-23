@@ -1,4 +1,4 @@
-args["outputRoot"]# Standard libraries.
+# Standard libraries.
 import os
 import sys
 import shutil
