@@ -119,7 +119,7 @@ def printFilesProcessed(theFilesProcessed):
     for fileProcessed in theFilesProcessed:
         if isinstance(theFilesProcessed[fileProcessed][0], str):
             print(theFilesProcessed[fileProcessed][0], flush=True, file=sys.stdout)
-            print(theFilesProcessed[fileProcessed][0], flush=True, file=sys.sterr)
+            print(theFilesProcessed[fileProcessed][0], flush=True, file=sys.stderr)
         else:
             for item in theFilesProcessed[fileProcessed][0]:
                 print(item, flush=True, file=sys.stdout)
