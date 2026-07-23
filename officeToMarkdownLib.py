@@ -267,37 +267,61 @@ def writeChangesFile(theFilename, theData):
         outputString = outputString + item + "," + theData[item] + "\n"
     putFile(theFilename, outputString[:-1])
 
+## Parse arguments from a config file. Accepts CSV, Excel and YAML formats.
+#def processArgsFile(theFilename, defaultArgs={}, requiredArgs=[], optionalArgs=[], optionalArgLists=[]):
+#    args = {}
+#    argsData = {}
+#    # Figure out what format the file is in and use the appropriate loader.
+#    if theFilename.endswith(".csv"):
+#        argsData = pandas.read_csv(theFilename, header=0).to_dict(index=False)
+#    elif theFilename.endswith(".xlsx") or theFilename.endswith(".xls"):
+#        argsData = pandas.read_excel(theFilename, header=0).to_dict(index=False)
+#    elif theFilename.endswith(".yaml"):
+#        argsData = yaml.safe_load(getFile(theFilename))
+#    
+#    # Process any read arguments - check each key/value pair is a valid argument name.
+#    for argName in argsData.keys():
+#        argName = argName.strip()
+#        if argName in requiredArgs + optionalArgs:
+#            if not argName in args:
+#                args[argName] = str(argsData[argName])
+#                
+#    # If we have any default argument values defined, and those arguments
+#    # aren't already present, add the default values in to the result.
+#    for argName in defaultArgs.keys():
+#        if not argName in args.keys():
+#            args[argName] = defaultArgs[argName]
+#
+#    # If any required arguments are missing, stop.
+#    for argName in requiredArgs:
+#        if not argName in args:
+#            print("ERROR: Required argument not present: " + argName, flush=True)
+#            quit
+#    return args
+
+
+
 # Parse arguments from a config file. Accepts CSV, Excel and YAML formats.
-def processArgsFile(theFilename, defaultArgs={}, requiredArgs=[], optionalArgs=[], optionalArgLists=[]):
+def processArgsFile(theInputPath):
     args = {}
     argsData = {}
-    # Figure out what format the file is in and use the appropriate loader.
-    if theFilename.endswith(".csv"):
-        argsData = pandas.read_csv(theFilename, header=0).to_dict(index=False)
-    elif theFilename.endswith(".xlsx") or theFilename.endswith(".xls"):
-        argsData = pandas.read_excel(theFilename, header=0).to_dict(index=False)
-    elif theFilename.endswith(".yaml"):
-        argsData = yaml.safe_load(getFile(theFilename))
+    for item in theInputPath.iterdir():
+        if item.name == "config":
+            # Figure out what format the file is in and use the appropriate loader.
+            if item.suffix.lower() == ".csv":
+                argsData = pandas.read_csv(theFilename, header=0).to_dict(index=False)
+            elif item.suffix.lower() in [".xlsx", ".xls"]:
+                argsData = pandas.read_excel(theFilename, header=0).to_dict(index=False)
+            if item.suffix.lower() == ".yaml":
+                argsData = yaml.safe_load(getFile(theFilename))
     
     # Process any read arguments - check each key/value pair is a valid argument name.
     for argName in argsData.keys():
         argName = argName.strip()
-        if argName in requiredArgs + optionalArgs:
-            if not argName in args:
-                args[argName] = str(argsData[argName])
-                
-    # If we have any default argument values defined, and those arguments
-    # aren't already present, add the default values in to the result.
-    for argName in defaultArgs.keys():
-        if not argName in args.keys():
-            args[argName] = defaultArgs[argName]
-
-    # If any required arguments are missing, stop.
-    for argName in requiredArgs:
-        if not argName in args:
-            print("ERROR: Required argument not present: " + argName, flush=True)
-            quit
+        args[argName] = str(argsData[argName])
     return args
+
+
 
 # Returns a dict of filePath:last-updated values for the given path. Both the file path value and the last-updated value are stored as strings. Sub-folders are
 # recursed into, the last-updated value for a folder will simply be the most recent value of all the files and sub-folders found in that folder.
