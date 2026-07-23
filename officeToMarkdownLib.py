@@ -408,12 +408,12 @@ def thumbnailVideo(theInputVideo, theOutputVideo, theBlockWidth, theBlockHeight)
         
         (
             ffmpeg
-            .input(theInputVideo)
+            .input(str(theInputVideo))
             .filter("scale", scaledWidth, scaledHeight)
             .filter("pad", resultWidth, resultHeight, pasteX, pasteY, color="#FFFFFF@1")
             .filter("format", "rgb24")
             .output(
-                theOutputVideo,
+                str(theOutputVideo),
                 vcodec="libx264",
                 crf=18,
                 loglevel="error",
