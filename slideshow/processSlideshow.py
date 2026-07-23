@@ -33,13 +33,32 @@ if outputPath.name == "slideshow":
 
 slideCount = 1
 filesProcessed = {}
+
+# Recursivly copy the contents of the input folder to the output folder. Replicates last-modified times on files.
+# Note: shutil's copy2 function fails on rclone-mounted volumes (Google Drive, etc) which don't implement all metadata
+# features (chmod / chown permissions in particular). We also need to add each item to the fileProcessed dict.
+def copyFolder(theInputPath, theOutputPath)):
+    theOutputPath.mkdir(parents=True, exist_ok=True)
+    for item in theInputPath.iterdir():
+        outputFilePath = theOutputPath / pathlib.Path(item.name)
+        if item.is_file():
+            itemStat = item.stat()
+            shutil.copy(item, outputFilePath)
+            os.utime(outputFilePath, (itemStat.st_atime, itemStat.st_mtime))
+            filesProcessed[str(item)] = (str(outputFilePath), str(itemStat.st_mtime))
+        else:
+            copyFolder(item, outputFilePath)
+
 for inputPath in args["input"].iterdir():
     outputPath.mkdir(parents=True, exist_ok=True)
     inputPathStr = str(inputPath)
     inputPathStat = inputPath.stat()
     inputPathSuffix = inputPath.suffix.lower()
+    # Handle any sub-folders - simply copy them, maintaining permissions and adding them to the output items list.
+    if inputPath.is_dir():
+        copyFolder(inputPath, outputPath / pathlib.Path(inputPath.name))
     # Handle any bitmap image, converting it to a PNG file.
-    if inputPathSuffix in officeToMarkdownLib.bitmapSuffixes:
+    elif inputPathSuffix in officeToMarkdownLib.bitmapSuffixes:
         outputFilePath = outputPath / pathlib.Path("slide-" + officeToMarkdownLib.padInt(slideCount, 5) + ".png")
         if scriptUpdated or (not outputFilePath.is_file()) or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
             with PIL.Image.open(inputPath) as img:
@@ -51,6 +70,7 @@ for inputPath in args["input"].iterdir():
             officeToMarkdownLib.ifVerbose(args["verbose"], "processSlideshow - " + officeToMarkdownLib.prePadWithSpaces(inputPathSuffix, 7) + ": " + inputPathStr + " to " + str(outputFilePath))
         filesProcessed[inputPathStr] = (str(outputFilePath), str(inputPathStat.st_mtime))
         slideCount = slideCount + 1
+    # Handle PowerPoint (PPTX) files - convert to a series of images.
     elif inputPathSuffix in [".pptx"]:
         if scriptUpdated or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
             # Use (external application) LibreOffice (this can be the headless or GUI version) to convert the PPTX file to PDF...
@@ -82,8 +102,19 @@ for inputPath in args["input"].iterdir():
             # Cleanup intermediate PDF file.
             if tempPDFPath.exists():
                 tempPDFPath.unlink()
+    # Handle video files - use FFMpeg to convert to a common format before saving to the destination.
     elif inputPathSuffix in officeToMarkdownLib.videoSuffixes:
         print("Video...", flush=True, file=sys.stderr)
+    # Handle any other file type - simply copy the original file, but with a rename to "slide-xxxxxx".
+    else:
+        outputFilePath = outputPath / pathlib.Path("slide-" + officeToMarkdownLib.padInt(slideCount, 5) + inputPathSuffix)
+        if scriptUpdated or (not outputFilePath.is_file()) or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
+            officeToMarkdownLib.ifVerbose(args["verbose"], "processSlideshow - " + str(theInputPath) + " to " + str(outputFilePath))
+            outputPath.mkdir(parents=True, exist_ok=True)
+            shutil.copy(theInputPath, outputFilePath)
+            os.utime(outputFilePath, (inputPathStat.st_atime, inputPathStat.st_mtime))
+        filesProcessed[inputPathStr] = (str(outputFilePath), str(inputPathStat.st_mtime))
+        slideCount = slideCount + 1
 
 # Report the input filenames, with current update timestamp, back to the calling script, along with the output filenames.
 officeToMarkdownLib.printFilesProcessed(filesProcessed)
