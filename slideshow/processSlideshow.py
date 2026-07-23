@@ -26,7 +26,8 @@ args = vars(officeToMarkdownLib.setArgsForSubScript(argparse.ArgumentParser(desc
     "sub-folders and their files will simply be copied unchanged."
 ))).parse_args())
 
-args.update(docsToMarkdownLib.processArgsFile(args["input"]))
+# Pick up any additional arguments from a config file if present.
+args.update(docsToMarkdownLib.processArgsFile(args["input"], defaultArgs={"width":1024, "height":768}))
 
 # The calling script provides a list of any input files, along with last-modified timestamps, via stdin as simple set of comma-separated "filename,timestamp" values.
 previousInputFileTimestamps = officeToMarkdownLib.readInputFilesAndTimestamps()
