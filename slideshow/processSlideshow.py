@@ -150,7 +150,7 @@ indexFileOutputPath = args["output"] / pathlib.Path("_index.html")
 if scriptUpdated or (not indexFileOutputPath.is_file()) or (not indexFileInputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[indexFileInputPathStr]):
     frontMatter = (
         "---\n"
-        "title: \"" + args["input"].name + "\"\n"
+        "title: \"" + args["input"].parent.name + "\"\n"
         "---\n"
     )
     officeToMarkdownLib.putFile(indexFileOutputPath, frontMatter + officeToMarkdownLib.getFile(indexFileInputPath).replace("var resources = [];", str("var resources = " + str(slideList) + ";")))
