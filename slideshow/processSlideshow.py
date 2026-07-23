@@ -151,6 +151,7 @@ indexFileOutputPath = args["outputRoot"] / args["output"] / pathlib.Path("index.
 if scriptUpdated or (not indexFileOutputPath.is_file()) or (not indexFileInputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[indexFileInputPathStr]):
     officeToMarkdownLib.putFile(indexFileOutputPath, officeToMarkdownLib.getFile(indexFileInputPath).replace("var resources = [];", str("var resources = " + str(slideList) + ";")))
 filesProcessed[indexFileInputPathStr] = (str(indexFileOutputPath), str(indexFileInputPathStat.st_mtime))
+print("Out: " + str(indexFileOutputPath), flush=True, file=sys.stderr)
 
 # Report the input filenames, with current update timestamp, back to the calling script, along with the output filenames.
 officeToMarkdownLib.printFilesProcessed(filesProcessed)
