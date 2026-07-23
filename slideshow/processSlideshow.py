@@ -110,7 +110,7 @@ for inputPath in args["input"].iterdir():
             outputFilePath = outputPath / pathlib.Path("slide-" + officeToMarkdownLib.padInt(slideCount, 5) + ".png")
             slideList.append(outputFilePath.name)
             if scriptUpdated or (not outputFilePath.is_file()) or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
-                officeToMarkdownLib.ifVerbose(args["verbose"], "processSlideshow - " + officeToMarkdownLib.prePadWithSpaces(inputPathSuffix, 7) + ": " + inputPathStr + " to " + str(outputFilePath))
+                officeToMarkdownLib.ifVerbose(args["verbose"], "processSlideshow - " + officeToMarkdownLib.prePadWithSpaces(inputPathSuffix, 7) + ": " + inputPathStr + " to " + str(outputPath / outputFilePath))
                 slideshowImage.save(outputFilePath)
                 os.utime(outputFilePath, (inputPathStat.st_atime, inputPathStat.st_mtime))
             slideshowOutputs.append(str(outputFilePath))
@@ -125,7 +125,7 @@ for inputPath in args["input"].iterdir():
         outputFilePath = outputPath / pathlib.Path("slide-" + officeToMarkdownLib.padInt(slideCount, 5) + ".mp4")
         slideList.append(outputFilePath.name)
         if scriptUpdated or (not outputFilePath.is_file()) or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
-            officeToMarkdownLib.ifVerbose(args["verbose"], "processSlideshow -   video: " + str(inputPath) + " to " + str(outputFilePath))
+            officeToMarkdownLib.ifVerbose(args["verbose"], "processSlideshow -   video: " + str(inputPath) + " to " + str(outputPath / outputFilePath))
             outputPath.mkdir(parents=True, exist_ok=True)
             officeToMarkdownLib.thumbnailVideo(inputPath, outputFilePath, args["width"], args["height"])
             os.utime(outputFilePath, (inputPathStat.st_atime, inputPathStat.st_mtime))
@@ -136,7 +136,7 @@ for inputPath in args["input"].iterdir():
         outputFilePath = outputPath / pathlib.Path("slide-" + officeToMarkdownLib.padInt(slideCount, 5) + inputPathSuffix)
         slideList.append(outputFilePath.name)
         if scriptUpdated or (not outputFilePath.is_file()) or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
-            officeToMarkdownLib.ifVerbose(args["verbose"], "processSlideshow -    copy: " + str(inputPath) + " to " + str(outputFilePath))
+            officeToMarkdownLib.ifVerbose(args["verbose"], "processSlideshow -    copy: " + str(inputPath) + " to " + str(outputPath / outputFilePath))
             outputPath.mkdir(parents=True, exist_ok=True)
             shutil.copy(inputPath, outputFilePath)
             os.utime(outputFilePath, (inputPathStat.st_atime, inputPathStat.st_mtime))
