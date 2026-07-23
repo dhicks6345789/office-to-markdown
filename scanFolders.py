@@ -60,7 +60,7 @@ officeToMarkdownLib.writeChangesFile(inputChangesPath, currentInputChanges)
 def copyFolder(inputFolder, outputFolder):
     print("copyFolder" + str(inputFolder) + " to " + str(outputFolder), flush=True, file=sys.stderr)
     for inputItem in inputFolder.iterdir():
-        outputItem = outputFolder / item
+        outputItem = outputFolder / pathlib.Path("inputItem.name")
         outputFiles.append(str(outputItem))
         if inputItem.is_file():
             if not inputItem.stat().st_mtime == outputItem.stat().st_mtime:
