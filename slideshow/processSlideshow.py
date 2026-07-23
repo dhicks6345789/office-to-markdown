@@ -1,4 +1,4 @@
-# Standard libraries.
+args["outputRoot"]# Standard libraries.
 import os
 import sys
 import shutil
@@ -66,13 +66,13 @@ def copyFolder(theInputPath, theOutputPath):
             copyFolder(item, outputFilePath)
 
 for inputPath in args["input"].iterdir():
-    outputPath.mkdir(parents=True, exist_ok=True)
+    (args["outputRoot"] / outputPath).mkdir(parents=True, exist_ok=True)
     inputPathStr = str(inputPath)
     inputPathStat = inputPath.stat()
     inputPathSuffix = inputPath.suffix.lower()
     # Handle any sub-folders - simply copy them, maintaining permissions and adding them to the output items list.
     if inputPath.is_dir():
-        copyFolder(inputPath, outputPath / pathlib.Path(inputPath.name))
+        copyFolder(inputPath, args["outputRoot"] / outputPath / pathlib.Path(inputPath.name))
     # Handle any bitmap image, converting it to a PNG file.
     elif inputPathSuffix in officeToMarkdownLib.bitmapSuffixes:
         outputFilePath = args["outputRoot"] / outputPath / pathlib.Path("slide-" + officeToMarkdownLib.padInt(slideCount, 5) + ".png")
@@ -126,7 +126,7 @@ for inputPath in args["input"].iterdir():
         slideList.append(outputFilePath.name)
         if scriptUpdated or (not outputFilePath.is_file()) or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
             officeToMarkdownLib.ifVerbose(args["verbose"], "processSlideshow -   video: " + str(inputPath) + " to " + str(outputFilePath))
-            outputPath.mkdir(parents=True, exist_ok=True)
+            (args["outputRoot"] / outputPath).mkdir(parents=True, exist_ok=True)
             officeToMarkdownLib.thumbnailVideo(inputPath, outputFilePath, args["width"], args["height"])
             os.utime(outputFilePath, (inputPathStat.st_atime, inputPathStat.st_mtime))
         filesProcessed[inputPathStr] = (str(outputFilePath), str(inputPathStat.st_mtime))
@@ -137,7 +137,7 @@ for inputPath in args["input"].iterdir():
         slideList.append(outputFilePath.name)
         if scriptUpdated or (not outputFilePath.is_file()) or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
             officeToMarkdownLib.ifVerbose(args["verbose"], "processSlideshow -    copy: " + str(inputPath) + " to " + str(outputFilePath))
-            outputPath.mkdir(parents=True, exist_ok=True)
+            (args["outputRoot"] / outputPath).mkdir(parents=True, exist_ok=True)
             shutil.copy(inputPath, outputFilePath)
             os.utime(outputFilePath, (inputPathStat.st_atime, inputPathStat.st_mtime))
         filesProcessed[inputPathStr] = (str(outputFilePath), str(inputPathStat.st_mtime))
