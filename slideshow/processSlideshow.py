@@ -149,7 +149,7 @@ indexFileInputPathStr = str(indexFileInputPath)
 indexFileInputPathStat = indexFileInputPath.stat()
 indexFileOutputPath = args["output"] / pathlib.Path("index.html")
 if scriptUpdated or (not indexFileOutputPath.is_file()) or (not indexFileInputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[indexFileInputPathStr]):
-    officeToMarkdownLib.putFile(indexFilePath, officeToMarkdownLib.getFile(indexFileInputPath).replace("var resources = [];", str("var resources = " + str(slideList) + ";")))
+    officeToMarkdownLib.putFile(indexFileOutputPath, officeToMarkdownLib.getFile(indexFileInputPath).replace("var resources = [];", str("var resources = " + str(slideList) + ";")))
 filesProcessed[indexFileInputPathStr] = (str(indexFileOutputPath), str(indexFileInputPathStat.st_mtime))
 
 # Report the input filenames, with current update timestamp, back to the calling script, along with the output filenames.
