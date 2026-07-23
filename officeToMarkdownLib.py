@@ -12,6 +12,9 @@ import subprocess
 # The Pillow image-handling library.
 import PIL.Image
 
+# The ffmpeg video-handling library.
+import ffmpeg
+
 # Mammoth converts .DOCX file to HTML...
 import mammoth
 # ...and Markdownify can convert HTML to Markdown.
@@ -353,6 +356,59 @@ def reduceInts(theRange, leftInt, rightInt):
             return (int(leftDivide), int(rightDivide))
     return (leftInt, rightInt)
 
+
+
+def thumbnailVideo(theInputVideo, theOutputVideo, theBlockWidth, theBlockHeight):
+    # Figure out the video's dimensions.
+    probe = ffmpeg.probe(theInputVideo)
+    videoStream = next((stream for stream in probe['streams'] if stream['codec_type'] == 'video'), None)
+    if videoStream:
+        videoWidth = int(videoStream['width'])
+        videoHeight = int(videoStream['height'])
+        
+        # Scale the dimensions given as the output to match the input video.
+        width, height = getRatioedDimensions(videoWidth, videoHeight, theBlockWidth, theBlockHeight)
+        
+        # Figure out the ratio of width to height of the input video clip...
+        pictureRatio = float(videoWidth) / float(videoHeight)
+        # ...and of the output video.
+        outputRatio = float(width) / float(height)
+        
+        resultWidth = videoWidth
+        scaledWidth = resultWidth
+        resultHeight = videoHeight
+        scaledHeight = resultHeight
+        pasteX = 0
+        pasteY = 0
+        if pictureRatio < outputRatio:
+            padHeightRatio = 1 + (outputRatio - pictureRatio)
+            resultHeight = int(videoHeight / padHeightRatio)
+            scaledWidth = int(videoWidth / padHeightRatio)
+            pasteX = int((resultWidth - scaledWidth) / 2)
+        elif pictureRatio > outputRatio:
+            padWidthRatio = 1 + (pictureRatio - outputRatio)
+            resultWidth = int(videoWidth / padWidthRatio)
+            scaledHeight = int(videoHeight / padWidthRatio)
+            pasteX = int((resultHeight - scaledHeight) / 2)
+        
+        if (scaledWidth % 2) == 1:
+            scaledWidth = scaledWidth - 1
+        if (scaledHeight % 2) == 1:
+            scaledHeight = scaledHeight - 1
+    
+        if resultWidth < videoWidth:
+            resultWidth = videoWidth
+            scaledWidth = videoWidth
+        if resultHeight < videoHeight:
+            resultHeight = videoHeight
+            scaledHeight = videoHeight
+            
+        ffmpegLine = "ffmpeg -hide_banner -loglevel error -y -i \"" + str(theInputVideo) + "\" -vf \"scale=" + str(scaledWidth) + ":" + str(scaledHeight) + ",pad=" + str(resultWidth) + ":" + str(resultHeight) + ":" + str(pasteX) + ":" + str(pasteY) + ":#FFFFFF@1,format=rgb24\" -vcodec libx264 -crf 18 \"" + str(theOutputVideo) + "\" 2>&1"
+        print(ffmpegLine, flush=True, file=sys.stderr)
+
+
+
+"""
 def thumbnailVideo(theInputVideo, theOutputVideo, theBlockWidth, theBlockHeight):
     # Figure out the video's dimensions.
     videoDimensions = os.popen("ffprobe -v error -select_streams v -show_entries stream=width,height -of csv=p=0:s=x \"" + theInputVideo + "\" 2>&1").read().strip()
@@ -401,6 +457,7 @@ def thumbnailVideo(theInputVideo, theOutputVideo, theBlockWidth, theBlockHeight)
     ffmpegLine = "ffmpeg -hide_banner -loglevel error -y -i \"" + theInputVideo + "\" -vf \"scale=" + str(scaledWidth) + ":" + str(scaledHeight) + ",pad=" + str(resultWidth) + ":" + str(resultHeight) + ":" + str(pasteX) + ":" + str(pasteY) + ":#FFFFFF@1,format=rgb24\" -vcodec libx264 -crf 18 \"" + theOutputVideo + "\" 2>&1"
     print(ffmpegLine)
     os.system(ffmpegLine)
+"""
     
 # Produce a thumbnail of an image. Differs from PIL.thumbnail() in that thumbnails are returned in a new image padded to match the aspect ratio of
 # the given block width and height.
