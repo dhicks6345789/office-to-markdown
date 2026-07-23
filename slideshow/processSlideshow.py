@@ -53,7 +53,6 @@ def copyFolder(theInputPath, theOutputPath):
     theOutputPath.mkdir(parents=True, exist_ok=True)
     for item in theInputPath.iterdir():
         outputFilePath = theOutputPath / pathlib.Path(item.name)
-        slideList.append(outputFilePath.name)
         if item.is_file():
             itemStr = str(item)
             itemStat = item.stat()
