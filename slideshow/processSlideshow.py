@@ -195,7 +195,5 @@ for slide in slides:
         elif doProcessVideo and fileType in docsToMarkdownLib.videoTypes:
             docsToMarkdownLib.thumbnailVideo(inputFile, args["output"] + os.sep + fileName + ".mp4", args["width"], args["height"])
             slideList.append(fileName + ".mp4")
-        else:
             
-
 docsToMarkdownLib.putFile(args["output"] + os.sep + "index.html", docsToMarkdownLib.getFile("slideshow/slideshowIndex.html").replace("var resources = [];", str("var resources = " + str(slideList) + ";")).replace("<<TIMESTAMP>>",str(timestamp)).replace("<<DATETIMEFORMATTED>>",dateTimeFormatted).replace("\'", "\""))
