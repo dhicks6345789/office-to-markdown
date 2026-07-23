@@ -49,7 +49,7 @@ previousInputChanges = officeToMarkdownLib.readChangesFile(inputChangesPath)
 
 # Start the scanFolders process. This scans the given folder, using the passed-in dicts of last-updated timestamps to spot any changed files so we can avoid re-doing work if we don't need to.
 # The function returns a dict of updated last-updated timestamps for input files and a list of output files.
-currentInputChanges, outputFiles = officeToMarkdownLib.scanFolder(args["verbose"], args["scriptRoot"], matches, previousMatchChanges, previousInputChanges, args["input"], args["output"])
+currentInputChanges, outputFiles = officeToMarkdownLib.scanFolder(args["verbose"], args["scriptRoot"], matches, previousMatchChanges, previousInputChanges, args["input"], args["output"], pathlib.Path(""))
 
 # Write the updated last-updated file timestamps the the "inputChanges" file.
 officeToMarkdownLib.writeChangesFile(inputChangesPath, currentInputChanges)
