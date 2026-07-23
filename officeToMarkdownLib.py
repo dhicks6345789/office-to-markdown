@@ -119,9 +119,11 @@ def printFilesProcessed(theFilesProcessed):
     for fileProcessed in theFilesProcessed:
         if isinstance(theFilesProcessed[fileProcessed][0], str):
             print(theFilesProcessed[fileProcessed][0], flush=True, file=sys.stdout)
+            print(theFilesProcessed[fileProcessed][0], flush=True, file=sys.sterr)
         else:
             for item in theFilesProcessed[fileProcessed][0]:
                 print(item, flush=True, file=sys.stdout)
+                print(item, flush=True, file=sys.stderr)
 
 def checkModDatesMatch(theInputItem, theOutputItem):
     if os.path.isfile(theOutputItem):
