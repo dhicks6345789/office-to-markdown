@@ -1,6 +1,8 @@
-# Core CLI and Data Manipulation
-#click==8.1.8
+# Pandas, the data-handling library.
 pandas
+
+# The Python interface to the ffmpeg video handling library.
+ffmpeg-python
 
 # Office Document Generation & Parsing
 mammoth
