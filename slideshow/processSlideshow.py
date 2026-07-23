@@ -109,7 +109,14 @@ for inputPath in args["input"].iterdir():
             tempPDFPath.unlink()
     # Handle video files - use FFMpeg to convert to a common format before saving to the destination.
     elif inputPathSuffix in officeToMarkdownLib.videoSuffixes:
-        print("Video...", flush=True, file=sys.stderr)
+        outputFilePath = outputPath / pathlib.Path("slide-" + officeToMarkdownLib.padInt(slideCount, 5) + ".mp4")
+        if scriptUpdated or (not outputFilePath.is_file()) or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
+            officeToMarkdownLib.ifVerbose(args["verbose"], "processSlideshow -   video: " + str(inputPath) + " to " + str(outputFilePath))
+            outputPath.mkdir(parents=True, exist_ok=True)
+            officeToMarkdownLib.thumbnailVideo(inputPath, outputFilePath, args["width"], args["height"])
+            os.utime(outputFilePath, (inputPathStat.st_atime, inputPathStat.st_mtime))
+        filesProcessed[inputPathStr] = (str(outputFilePath), str(inputPathStat.st_mtime))
+        slideCount = slideCount + 1
     # Handle any other file type - simply copy the original file, but with a rename to "slide-xxxxxx".
     else:
         outputFilePath = outputPath / pathlib.Path("slide-" + officeToMarkdownLib.padInt(slideCount, 5) + inputPathSuffix)
@@ -131,32 +138,7 @@ sys.exit(0)
 
 
 
-# Check through items in the given input folder, recursing into sub-folders.
-# Produces an array (in the global "slides" variable) containing tuples of file names and an array of extensions found.
-slides = {}
-inputFolder = docsToMarkdownLib.normalisePath(args["input"])
-def listFileNames(theSubFolder):
-    global inputFolder
-    global slides
-    
-    inputPath = inputFolder + os.sep + theSubFolder
-    for inputItem in sorted(os.listdir(inputPath)):
-        if os.path.isdir(docsToMarkdownLib.normalisePath(inputPath + os.sep + inputItem)):
-            listFileNames(docsToMarkdownLib.normalisePath(theSubFolder + os.sep + inputItem))
-        else:
-            fileType = ""
-            fileSplit = inputItem.rsplit(".", 1)
-            fileName = fileSplit[0]
-            if not theSubFolder == "":
-                fileName = theSubFolder + os.sep + fileName
-            if len(fileSplit) == 2:
-                fileType = fileSplit[1]
-            if not fileName in slides.keys():
-                slides[fileName] = []
-            slides[fileName].append(fileType)
-listFileNames("")
-print("List of slides:")
-print(slides)
+
 
 config = []
 # Check through the files found above to see if the special "config" file is found anywhere, and if so deal with it and remove it from the list.
@@ -205,10 +187,6 @@ for slide in slides:
             docsToMarkdownLib.thumbnailVideo(inputFile, args["output"] + os.sep + fileName + ".mp4", args["width"], args["height"])
             slideList.append(fileName + ".mp4")
         else:
-            outputFile = args["output"] + os.sep + fileName + "." + fileType.lower()
-            print("Copying unprocessed file: " + inputFile + " to " + outputFile)
-            shutil.copyfile(inputFile, outputFile)
-            slideList.append(fileName + "." + fileType.lower())
-        slideCount = slideCount + 1
+            
 
 docsToMarkdownLib.putFile(args["output"] + os.sep + "index.html", docsToMarkdownLib.getFile("slideshow/slideshowIndex.html").replace("var resources = [];", str("var resources = " + str(slideList) + ";")).replace("<<TIMESTAMP>>",str(timestamp)).replace("<<DATETIMEFORMATTED>>",dateTimeFormatted).replace("\'", "\""))
