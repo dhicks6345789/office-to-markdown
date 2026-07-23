@@ -358,6 +358,8 @@ def reduceInts(theRange, leftInt, rightInt):
 
 
 
+# Given an input video file, produce an output MP4 version thumbnailed to the given width and height. If the original video is of a different aspect ratio
+# the sides will be padded with blank space accordingly to fit the given output dimensions.
 def thumbnailVideo(theInputVideo, theOutputVideo, theBlockWidth, theBlockHeight):
     # Figure out the video's dimensions.
     probe = ffmpeg.probe(theInputVideo)
@@ -402,10 +404,8 @@ def thumbnailVideo(theInputVideo, theOutputVideo, theBlockWidth, theBlockHeight)
         if resultHeight < videoHeight:
             resultHeight = videoHeight
             scaledHeight = videoHeight
-            
-        ffmpegLine = "ffmpeg -hide_banner -loglevel error -y -i \"" + str(theInputVideo) + "\" -vf \"scale=" + str(scaledWidth) + ":" + str(scaledHeight) + ",pad=" + str(resultWidth) + ":" + str(resultHeight) + ":" + str(pasteX) + ":" + str(pasteY) + ":#FFFFFF@1,format=rgb24\" -vcodec libx264 -crf 18 \"" + str(theOutputVideo) + "\" 2>&1"
-        print(ffmpegLine, flush=True, file=sys.stderr)
         
+        # Use ffmpeg to do the video conversion.
         (
             ffmpeg
             .input(str(theInputVideo))
@@ -423,59 +423,6 @@ def thumbnailVideo(theInputVideo, theOutputVideo, theBlockWidth, theBlockHeight)
             .run(capture_stderr=True)
         )
 
-
-
-"""
-def thumbnailVideo(theInputVideo, theOutputVideo, theBlockWidth, theBlockHeight):
-    # Figure out the video's dimensions.
-    videoDimensions = os.popen("ffprobe -v error -select_streams v -show_entries stream=width,height -of csv=p=0:s=x \"" + theInputVideo + "\" 2>&1").read().strip()
-    videoWidth = int(videoDimensions.split("x")[0])
-    videoHeight = int(videoDimensions.split("x")[1])
-    print("Thumbnailing video: " + theInputVideo + ", Width: " + str(videoWidth) + ", Height: " + str(videoHeight))
-    
-    # Scale the dimensions given as the output to match the input video.
-    width, height = getRatioedDimensions(videoWidth, videoHeight, theBlockWidth, theBlockHeight)
-    print("Scaling video to Width: " + str(width) + ", Height: " + str(height))
-    
-    # Figure out the ratio of width to height of the input video clip...
-    pictureRatio = float(videoWidth) / float(videoHeight)
-    # ...and of the output video.
-    outputRatio = float(width) / float(height)
-    
-    resultWidth = videoWidth
-    scaledWidth = resultWidth
-    resultHeight = videoHeight
-    scaledHeight = resultHeight
-    pasteX = 0
-    pasteY = 0
-    if pictureRatio < outputRatio:
-        padHeightRatio = 1 + (outputRatio - pictureRatio)
-        resultHeight = int(videoHeight / padHeightRatio)
-        scaledWidth = int(videoWidth / padHeightRatio)
-        pasteX = int((resultWidth - scaledWidth) / 2)
-    elif pictureRatio > outputRatio:
-        padWidthRatio = 1 + (pictureRatio - outputRatio)
-        resultWidth = int(videoWidth / padWidthRatio)
-        scaledHeight = int(videoHeight / padWidthRatio)
-        pasteX = int((resultHeight - scaledHeight) / 2)
-    
-    if (scaledWidth % 2) == 1:
-        scaledWidth = scaledWidth - 1
-    if (scaledHeight % 2) == 1:
-        scaledHeight = scaledHeight - 1
-
-    if resultWidth < videoWidth:
-        resultWidth = videoWidth
-        scaledWidth = videoWidth
-    if resultHeight < videoHeight:
-        resultHeight = videoHeight
-        scaledHeight = videoHeight
-
-    ffmpegLine = "ffmpeg -hide_banner -loglevel error -y -i \"" + theInputVideo + "\" -vf \"scale=" + str(scaledWidth) + ":" + str(scaledHeight) + ",pad=" + str(resultWidth) + ":" + str(resultHeight) + ":" + str(pasteX) + ":" + str(pasteY) + ":#FFFFFF@1,format=rgb24\" -vcodec libx264 -crf 18 \"" + theOutputVideo + "\" 2>&1"
-    print(ffmpegLine)
-    os.system(ffmpegLine)
-"""
-    
 # Produce a thumbnail of an image. Differs from PIL.thumbnail() in that thumbnails are returned in a new image padded to match the aspect ratio of
 # the given block width and height.
 def thumbnailImage(theImage, theBlockWidth, theBlockHeight):
