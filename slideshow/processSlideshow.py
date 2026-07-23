@@ -40,6 +40,7 @@ officeToMarkdownLib.ifVerbose(args["verbose"], "ProcessSlideshow -  folder: " + 
 outputPath = args["output"]
 if outputPath.name == "slideshow":
     outputPath = outputPath.parent
+outputPath = outputPath / pathlib.Path("static")
 
 slideCount = 1
 slideList = []
