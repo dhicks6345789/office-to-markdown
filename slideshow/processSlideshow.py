@@ -144,7 +144,7 @@ for inputPath in args["input"].iterdir():
         slideCount = slideCount + 1
 
 # Copy the "index.html" single-page, self-contained slideshow viewer to the output folder, adding in a list of the slides generated.
-officeToMarkdownLib.putFile(args["output"] / pathlib.Path("index.html"), officeToMarkdownLib.getFile("slideshowIndex.html").replace("var resources = [];", str("var resources = " + str(slideList) + ";")))
+officeToMarkdownLib.putFile(args["output"] / pathlib.Path("index.html"), officeToMarkdownLib.getFile("slideshow/slideshowIndex.html").replace("var resources = [];", str("var resources = " + str(slideList) + ";")))
 
 # Report the input filenames, with current update timestamp, back to the calling script, along with the output filenames.
 officeToMarkdownLib.printFilesProcessed(filesProcessed)
