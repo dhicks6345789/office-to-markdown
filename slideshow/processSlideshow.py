@@ -35,11 +35,6 @@ args.update(officeToMarkdownLib.processArgsFile(args["input"], defaultArgs={"wid
 # The calling script provides a list of any input files, along with last-modified timestamps, via stdin as simple set of comma-separated "filename,timestamp" values.
 previousInputFileTimestamps = officeToMarkdownLib.readInputFilesAndTimestamps()
 
-print("previousInputFileTimestamps:", flush=True, file=sys.stderr)
-for item in previousInputFileTimestamps:
-    print(item + ":" + previousInputFileTimestamps[item], flush=True, file=sys.stderr)
-print("---", flush=True, file=sys.stderr)
-
 # If this script itself (or associated additional resource or config file) has been updated we re-run the operation, just to make sure all output is up to date.
 scriptUpdatedFiles = []
 for item in officeToMarkdownLib.configFileNames:
