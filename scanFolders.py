@@ -40,7 +40,7 @@ for item in ["scanFolders.py", "officeToMarkdownLib.py"]:
     itemPath = args["scriptRoot"] / pathlib.Path(item)
     itemPathStr = str(itemPath)
     if (not itemPathStr in previousMatchChanges) or (not previousMatchChanges[itemPathStr] == currentMatchChanges[itemPathStr]):
-        officeToMarkdownLib.ifVerbose(args["verbose"], itemPathStr + " updated - re-running all scripts.")
+        officeToMarkdownLib.ifVerbose(args["verbose"], "ScanFolders      - update:" + itemPathStr + " - re-running all scripts.")
         previousMatchChanges = {}
 
 # Read the inputChanges cache file, a list of previously-seen input files and their last-updated filestamps.
