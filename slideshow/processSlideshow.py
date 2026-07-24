@@ -39,7 +39,6 @@ previousInputFileTimestamps = officeToMarkdownLib.readInputFilesAndTimestamps()
 scriptUpdatedFiles = officeToMarkdownLib.generateScriptUpdatedFilesList(args["input"], args["verbose"])
 scriptUpdatedFiles.append(__file__)
 scriptUpdatedFiles.append(__file__.replace("processSlideshow.py", "slideshowIndex.html"))
-print("scriptUpdatedFiles: " + str(scriptUpdatedFiles), flush=True, file=sys.stderr)
 scriptUpdated = officeToMarkdownLib.checkIfScriptUpdated(previousInputFileTimestamps, scriptUpdatedFiles, args["verbose"])
 
 # A message for the user.
