@@ -101,16 +101,9 @@ def checkIfScriptUpdated(theFilenames, theTimestamps, theVerbose):
     scriptUpdated = False
     for item in theFilenames:
         if (not item in theTimestamps) or (not str(pathlib.Path(item).stat().st_mtime) == theTimestamps[item]):
-            ifVerbose(theVerbose, "          script - updated: " + item)
+            ifVerbose(theVerbose, "script           - updated: " + item)
         scriptUpdated = True
     return scriptUpdated
-#def checkIfScriptUpdated(theFilename, theTimestamp, theVerbose):
-#    result = False
-#    scriptTimestamp = str(pathlib.Path(theFilename).stat().st_mtime)
-#    if not theTimestamp == scriptTimestamp:
-#        ifVerbose(theVerbose, postPadWithSpaces(pathlib.Path(sys.argv[0]).name.split(".")[0], 16) + " - updated: was " + theTimestamp + ", now " + scriptTimestamp)
-#        result = True
-#    return result
 
 def prePadWithSpaces(theString, theLength):
     result = ""
