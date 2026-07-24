@@ -111,13 +111,13 @@ def generateScriptUpdatedFilesList(inputPath, verbose):
 
 # Returns True if the current executing script has been updated, when compared to the given timestamp value.
 def checkIfScriptUpdated(timestamps, filenames, verbose=False):
-    scriptUpdated = False
+    result = False
     for item in filenames:
         itemPath = pathlib.Path(item)
         if (itemPath.exists()) and ((not item in timestamps) or (not str(itemPath.stat().st_mtime) == timestamps[item])):
             ifVerbose(verbose, "script           - updated: " + item)
-            scriptUpdated = True
-    return scriptUpdated
+            result = True
+    return result
 
 def prePadWithSpaces(theString, theLength):
     result = ""
