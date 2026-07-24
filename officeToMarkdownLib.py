@@ -104,7 +104,7 @@ def generateScriptUpdatedFilesList(inputPath, verbose):
     for item in configFileNames:
         itemPath = inputPath / pathlib.Path(item)
         if itemPath.is_file():
-            ifVerbose(verbose, pathlib.Path(__file__).name + " -  config: " + str(itemPath))
+            ifVerbose(verbose, postPadWithSpaces(pathlib.Path(sys.argv[0]).stem, 16) + " - config: " + str(itemPath))
             scriptUpdatedFiles.append(str(itemPath))
     scriptUpdatedFiles.append(__file__)
     return scriptUpdatedFiles
