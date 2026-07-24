@@ -147,6 +147,7 @@ for inputPath in args["input"].iterdir():
         slideCount = slideCount + 1
     elif inputPath.name.lower() in officeToMarkdownLib.configFileNames:
         officeToMarkdownLib.ifVerbose(args["verbose"], "processSlideshow -  config: " + str(inputPath))
+        filesProcessed[inputPathStr] = (str(args["outputRoot"]), str(inputPathStat.st_mtime))
     # Handle any other file type - simply copy the original file, but with a rename to "slide-xxxxxx".
     else:
         outputFilePath = args["outputRoot"] / outputPath / pathlib.Path("slide-" + officeToMarkdownLib.padInt(slideCount, 5) + inputPathSuffix)
