@@ -36,6 +36,7 @@ args.update(officeToMarkdownLib.processArgsFile(args["input"], defaultArgs={"wid
 previousInputFileTimestamps = officeToMarkdownLib.readInputFilesAndTimestamps()
 
 # If this script itself has been updated we re-run the operation, just to make sure all output is up to date.
+print("File: " + __file__, flush=True, file=sys.stderr)
 scriptUpdated = officeToMarkdownLib.checkIfScriptUpdated(__file__, args["scriptTimestamp"], args["verbose"])
 
 officeToMarkdownLib.ifVerbose(args["verbose"], "ProcessSlideshow -  folder: " + str(args["input"]))
