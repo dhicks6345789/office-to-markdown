@@ -99,6 +99,16 @@ def readInputFilesAndTimestamps():
         result[lineSplit[0]] = lineSplit[1]
     return result
 
+def generateScriptUpdatedFilesList(inputPath, verbose):
+    scriptUpdatedFiles = []
+    for item in configFileNames:
+        itemPath = inputPath / pathlib.Path(item)
+        if itemPath.is_file():
+            officeToMarkdownLib.ifVerbose(verbose, pathlib.Path(__file__).name + " -  config: " + str(itemPath))
+            scriptUpdatedFiles.append(str(itemPath))
+    scriptUpdatedFiles.append(__file__)
+    return scriptUpdatedFiles
+
 # Returns True if the current executing script has been updated, when compared to the given timestamp value.
 def checkIfScriptUpdated(timestamps, filenames, verbose=False):
     scriptUpdated = False
