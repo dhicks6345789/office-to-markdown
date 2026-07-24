@@ -104,7 +104,7 @@ def generateScriptUpdatedFilesList(inputPath, verbose):
     for item in configFileNames:
         itemPath = inputPath / pathlib.Path(item)
         if itemPath.is_file():
-            officeToMarkdownLib.ifVerbose(verbose, pathlib.Path(__file__).name + " -  config: " + str(itemPath))
+            ifVerbose(verbose, pathlib.Path(__file__).name + " -  config: " + str(itemPath))
             scriptUpdatedFiles.append(str(itemPath))
     scriptUpdatedFiles.append(__file__)
     return scriptUpdatedFiles
