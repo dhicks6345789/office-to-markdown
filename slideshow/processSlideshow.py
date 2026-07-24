@@ -40,7 +40,7 @@ scriptUpdated = officeToMarkdownLib.checkIfScriptUpdated(__file__, args["scriptT
 
 officeToMarkdownLib.ifVerbose(args["verbose"], "ProcessSlideshow -  folder: " + str(args["input"]))
 
-outputPath = pathlib.Path(slugify.slugify(str(args["output"])))
+outputPath = args["output"]
 if outputPath.name == "slideshow":
     outputPath = outputPath.parent
 outputPath = pathlib.Path("static") / outputPath
@@ -56,7 +56,7 @@ filesProcessed = {}
 def copyFolder(theInputPath, theOutputPath):
     theOutputPath.mkdir(parents=True, exist_ok=True)
     for item in theInputPath.iterdir():
-        outputFilePath = args["outputRoot"] / theOutputPath / pathlib.Path(item.name)
+        outputFilePath = args["outputRoot"] / theOutputPath / pathlib.Path(slugify.slugify(item.name))
         if item.is_file():
             itemStr = str(item)
             itemStat = item.stat()
@@ -75,7 +75,7 @@ for inputPath in args["input"].iterdir():
     inputPathSuffix = inputPath.suffix.lower()
     # Handle any sub-folders - simply copy them, maintaining permissions and adding them to the output items list.
     if inputPath.is_dir():
-        copyFolder(inputPath, args["outputRoot"] / outputPath / pathlib.Path(inputPath.name))
+        copyFolder(inputPath, args["outputRoot"] / outputPath / pathlib.Path(slugify.slugify(inputPath.name)))
     # Handle any bitmap image, converting it to a PNG file.
     elif inputPathSuffix in officeToMarkdownLib.bitmapSuffixes:
         outputFilePath = args["outputRoot"] / outputPath / pathlib.Path("slide-" + officeToMarkdownLib.padInt(slideCount, 5) + ".png")
