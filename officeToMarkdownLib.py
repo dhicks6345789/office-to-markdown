@@ -84,7 +84,7 @@ def setArgsForGeneral(theParser):
 # Add arguments to an argparse.ArgumentParser object to handle the options for a Python sub-script.
 def setArgsForSubScript(theParser):
     theParser = setArgsForGeneral(theParser)
-    theParser.add_argument("--scriptTimestamp", help="The previous last-modified timestamp value (as a floating point number) for this script.")
+    #theParser.add_argument("--scriptTimestamp", help="The previous last-modified timestamp value (as a floating point number) for this script.")
     theParser.add_argument("--outputRoot", help="The root output folder, tpyically a 'Hugo' folder.")
     return theParser
 
