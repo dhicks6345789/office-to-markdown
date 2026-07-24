@@ -40,7 +40,7 @@ scriptUpdated = officeToMarkdownLib.checkIfScriptUpdated(__file__, args["scriptT
 
 officeToMarkdownLib.ifVerbose(args["verbose"], "ProcessSlideshow -  folder: " + str(args["input"]))
 
-outputPath = pathlib.path(slugify.slugify(str(args["output"])))
+outputPath = pathlib.Path(slugify.slugify(str(args["output"])))
 if outputPath.name == "slideshow":
     outputPath = outputPath.parent
 outputPath = pathlib.Path("static") / outputPath
