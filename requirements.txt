@@ -1,8 +1,11 @@
 # Pandas, the data-handling library.
 pandas
 
-# The Python interface to the ffmpeg video handling library.
+# The Python interface to the ffmpeg video-handling library.
 ffmpeg-python
+
+# The Python Slugify library, used to turn folder / file names into URL-safe strings.
+python-slugify
 
 # Office Document Generation & Parsing
 mammoth
