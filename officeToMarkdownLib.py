@@ -315,16 +315,24 @@ def writeChangesFile(theFilename, theData):
 def processArgsFile(theInputPath, defaultArgs={}):
     args = {}
     argsData = {}
-    for item in theInputPath.iterdir():
-        if item.is_file() and item.name in configFileNames:
-            # Figure out what format the file is in and use the appropriate loader.
-            if item.suffix.lower() == ".csv":
-                argsData = pandas.read_csv(theFilename, header=0).to_dict(index=False)
-            elif item.suffix.lower() in [".xlsx", ".xls"]:
-                argsData = pandas.read_excel(theFilename, header=0).to_dict(index=False)
-            if item.suffix.lower() == ".yaml":
-                argsData = yaml.safe_load(getFile(theFilename))
     
+    inputPath = None
+    if theInputPath.is_file():
+        inputPath = theInputPath
+    if theInputPath.is_dir():
+        for item in theInputPath.iterdir():
+            if item.is_file() and item.name in configFileNames:
+                inputPath = item
+                
+    if not inputPath == None:
+        # Figure out what format the file is in and use the appropriate loader.
+        if item.suffix.lower() == ".csv":
+            argsData = pandas.read_csv(item, header=0).to_dict(index=False)
+        elif item.suffix.lower() in [".xlsx", ".xls"]:
+            argsData = pandas.read_excel(item, header=0).to_dict(index=False)
+        if item.suffix.lower() == ".yaml":
+            argsData = yaml.safe_load(getFile(item))
+        
     # Process any read arguments - check each key/value pair is a valid argument name.
     for argName in argsData.keys():
         argName = argName.strip()
