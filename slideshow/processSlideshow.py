@@ -36,7 +36,7 @@ args.update(officeToMarkdownLib.processArgsFile(args["input"], defaultArgs={"wid
 previousInputFileTimestamps = officeToMarkdownLib.readInputFilesAndTimestamps()
 
 # If this script itself (or associated additional resource or config file) has been updated we re-run the operation, just to make sure all output is up to date.
-scriptUpdatedFiles = generateScriptUpdatedFilesList(args["input"], args["verbose"])
+scriptUpdatedFiles = officeToMarkdownLib.generateScriptUpdatedFilesList(args["input"], args["verbose"])
 scriptUpdatedFiles.append(__file__.replace("processSlideshow.py", "slideshowIndex.html"))
 scriptUpdated = officeToMarkdownLib.checkIfScriptUpdated(previousInputFileTimestamps, scriptUpdatedFiles, args["verbose"])
 
