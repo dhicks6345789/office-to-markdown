@@ -39,7 +39,11 @@ print(previousInputFileTimestamps, flush=True, file=sys.stderr)
 
 # If this script itself has been updated we re-run the operation, just to make sure all output is up to date.
 print("File: " + __file__, flush=True, file=sys.stderr)
-scriptUpdated = officeToMarkdownLib.checkIfScriptUpdated(__file__, args["scriptTimestamp"], args["verbose"])
+#scriptUpdated = officeToMarkdownLib.checkIfScriptUpdated(__file__, args["scriptTimestamp"], args["verbose"])
+scriptUpdated = False
+for item in [__file__, __file__.replace("processSlideshow.py", "slideshowIndex.html")]:
+    if (not item in previousInputFileTimestamps) or (not str(pathlib.Path(item).stat().st_mtime) == previousInputFileTimestamps[item]):
+        scriptUpdated = True
 
 officeToMarkdownLib.ifVerbose(args["verbose"], "ProcessSlideshow -  folder: " + str(args["input"]))
 
