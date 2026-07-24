@@ -117,7 +117,7 @@ def checkIfScriptUpdated(timestamps, filenames, verbose=False):
         if (itemPath.exists()) and ((not item in timestamps) or (not str(itemPath.stat().st_mtime) == timestamps[item])):
             ifVerbose(verbose, "script           - updated: " + item)
             result = True
-    print("scriptUpdated: " + str(result), flush=True, file=sys.stdout)
+    print("scriptUpdated: " + str(result), flush=True, file=sys.stderr)
     return result
 
 def prePadWithSpaces(theString, theLength):
