@@ -36,10 +36,7 @@ args.update(officeToMarkdownLib.processArgsFile(args["input"], defaultArgs={"wid
 previousInputFileTimestamps = officeToMarkdownLib.readInputFilesAndTimestamps()
 
 # If this script itself (or associated additional resource or config file) has been updated we re-run the operation, just to make sure all output is up to date.
-scriptUpdatedFiles = []
-for item in officeToMarkdownLib.configFileNames:
-    scriptUpdatedFiles.append(str(args["input"]) + os.sep + item)
-scriptUpdatedFiles.append(__file__)
+scriptUpdatedFiles = generateScriptUpdatedFilesList(args["input"], args["verbose"])
 scriptUpdatedFiles.append(__file__.replace("processSlideshow.py", "slideshowIndex.html"))
 scriptUpdated = officeToMarkdownLib.checkIfScriptUpdated(previousInputFileTimestamps, scriptUpdatedFiles, args["verbose"])
 
@@ -141,7 +138,6 @@ for inputPath in args["input"].iterdir():
         filesProcessed[inputPathStr] = (str(outputFilePath), str(inputPathStat.st_mtime))
         slideCount = slideCount + 1
     elif inputPath.name.lower() in officeToMarkdownLib.configFileNames:
-        officeToMarkdownLib.ifVerbose(args["verbose"], "processSlideshow -  config: " + str(inputPath))
         filesProcessed[inputPathStr] = (str(args["outputRoot"]), str(inputPathStat.st_mtime))
     # Handle any other file type - simply copy the original file, but with a rename to "slide-xxxxxx".
     else:
