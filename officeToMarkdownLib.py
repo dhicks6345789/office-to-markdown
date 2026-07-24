@@ -411,6 +411,8 @@ def thumbnailVideo(theInputVideo, theOutputVideo, theBlockWidth, theBlockHeight)
         if resultHeight < videoHeight:
             resultHeight = videoHeight
             scaledHeight = videoHeight
+
+        print("Scaled width,height: " + str(scaledWidth) + "," + str(scaledHeight), flush=True, file=sys.stderr)
         
         # Use ffmpeg to do the video conversion.
         (
