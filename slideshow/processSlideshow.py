@@ -35,8 +35,13 @@ args.update(officeToMarkdownLib.processArgsFile(args["input"], defaultArgs={"wid
 # The calling script provides a list of any input files, along with last-modified timestamps, via stdin as simple set of comma-separated "filename,timestamp" values.
 previousInputFileTimestamps = officeToMarkdownLib.readInputFilesAndTimestamps()
 
-# If this script itself (or associated additional file) has been updated we re-run the operation, just to make sure all output is up to date.
-scriptUpdated = officeToMarkdownLib.checkIfScriptUpdated([__file__, __file__.replace("processSlideshow.py", "slideshowIndex.html")], previousInputFileTimestamps, args["verbose"])
+# If this script itself (or associated additional resource or config file) has been updated we re-run the operation, just to make sure all output is up to date.
+scriptUpdatedFiles = []
+for item in officeToMarkdownLib.configFileNames:
+    scriptUpdatedFiles.append(str(args["input"]) + os.sep + item)
+scriptUpdatedFiles.append(__file__)
+scriptUpdatedFiles.append.(__file__.replace("processSlideshow.py", "slideshowIndex.html"))
+scriptUpdated = officeToMarkdownLib.checkIfScriptUpdated(scriptUpdatedFiles, previousInputFileTimestamps, args["verbose"])
 
 # A message for the user.
 officeToMarkdownLib.ifVerbose(args["verbose"], "ProcessSlideshow -  folder: " + str(args["input"]))
