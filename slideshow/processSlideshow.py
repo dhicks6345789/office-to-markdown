@@ -56,8 +56,8 @@ filesProcessed = {}
 def copyFolder(theInputPath, theOutputPath):
     theOutputPath.mkdir(parents=True, exist_ok=True)
     for item in theInputPath.iterdir():
-        outputFilePath = args["outputRoot"] / theOutputPath / pathlib.Path(slugify.slugify(item.name))
         if item.is_file():
+            outputFilePath = args["outputRoot"] / theOutputPath / pathlib.Path(item.name)
             itemStr = str(item)
             itemStat = item.stat()
             if scriptUpdated or (not outputFilePath.is_file()) or (not itemStr in previousInputFileTimestamps) or (not str(itemStat.st_mtime) == previousInputFileTimestamps[itemStr]):
@@ -66,7 +66,7 @@ def copyFolder(theInputPath, theOutputPath):
                 os.utime(outputFilePath, (itemStat.st_atime, itemStat.st_mtime))
             filesProcessed[itemStr] = (str(outputFilePath), str(itemStat.st_mtime))
         else:
-            copyFolder(item, outputFilePath)
+            copyFolder(item, args["outputRoot"] / theOutputPath / pathlib.Path(slugify.slugify(item.name)))
 
 for inputPath in args["input"].iterdir():
     (args["outputRoot"] / outputPath).mkdir(parents=True, exist_ok=True)
