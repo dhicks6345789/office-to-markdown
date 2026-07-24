@@ -101,7 +101,7 @@ def checkIfScriptUpdated(theFilenames, theTimestamps, theVerbose):
     scriptUpdated = False
     for item in theFilenames:
         if (not item in theTimestamps) or (not str(pathlib.Path(item).stat().st_mtime) == theTimestamps[item]):
-            ifVerbose(args["verbose"], "          script - updated: " + item)
+            ifVerbose(theVerbose, "          script - updated: " + item)
         scriptUpdated = True
     return scriptUpdated
 #def checkIfScriptUpdated(theFilename, theTimestamp, theVerbose):
