@@ -135,6 +135,8 @@ for inputPath in args["input"].iterdir():
             os.utime(outputFilePath, (inputPathStat.st_atime, inputPathStat.st_mtime))
         filesProcessed[inputPathStr] = (str(outputFilePath), str(inputPathStat.st_mtime))
         slideCount = slideCount + 1
+    elif inputPath.name.lower() in ["config.yaml", "config.xlsx", "config.csv"]:
+        officeToMarkdownLib.ifVerbose(args["verbose"], "processSlideshow -  config: " + str(inputPath))
     # Handle any other file type - simply copy the original file, but with a rename to "slide-xxxxxx".
     else:
         outputFilePath = args["outputRoot"] / outputPath / pathlib.Path("slide-" + officeToMarkdownLib.padInt(slideCount, 5) + inputPathSuffix)
