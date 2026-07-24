@@ -241,18 +241,19 @@ on browsers in kiosk mode. -->
                     newSlideDiv = slideDiv.cloneNode();
                     newSlideDiv.id = "slide-" + slideNum;
                     newSlideDiv.style.display = "none";
+                    resourceURL = window.location.pathname + "/" + resources[slideNum] + cacheBustString;
                     if (resources[slideNum].endsWith(".png") || resources[slideNum].endsWith(".jpg")) {
-                        newSlideDiv.innerHTML = "<div style=\"display:flex; justify-content:center; align-items:center; height: 100vh; width: 100vw;\"><img style=\"max-width:100%; max-height:100%; object-fit:contain;\" src=\"" + window.location.pathname + "/" + resources[slideNum] + cacheBustString + "\"/></div>";
+                        newSlideDiv.innerHTML = "<div style=\"display:flex; justify-content:center; align-items:center; height: 100vh; width: 100vw;\"><img style=\"max-width:100%; max-height:100%; object-fit:contain;\" src=\"" + resourceURL + "\"/></div>";
                     } else if (resources[slideNum].endsWith(".svg")) {
-                        newSlideDiv.innerHTML = "<img src=\"" + resources[slideNum] + cacheBustString + "\" width=\"100%\"/>";
+                        newSlideDiv.innerHTML = "<img src=\"" + resourceURL + "\" width=\"100%\"/>";
                     } else if (resources[slideNum].endsWith(".mp4")) {
                         if (clickRequired) {
-                            newSlideDiv.innerHTML = "<video width=\"100%\" height=\"100%\"><source src=\"" + resources[slideNum] + cacheBustString + "\" type=\"video/mp4\"></video>";
+                            newSlideDiv.innerHTML = "<video width=\"100%\" height=\"100%\"><source src=\"" + resourceURL + "\" type=\"video/mp4\"></video>";
                         } else {
-                            newSlideDiv.innerHTML = "<video width=\"100%\" height=\"100%\" autoplay loop><source src=\"" + resources[slideNum] + cacheBustString + "\" type=\"video/mp4\"></video>";
+                            newSlideDiv.innerHTML = "<video width=\"100%\" height=\"100%\" autoplay loop><source src=\"" + resourceURL + "\" type=\"video/mp4\"></video>";
                         }
                     } else {
-                        newSlideDiv.innerHTML = "<iframe src=\"" + resources[slideNum] + cacheBustString + "\" style=\"width:100vw; height:100vh; overflow-y:hidden; overflow-x:hidden;\"></iframe>";
+                        newSlideDiv.innerHTML = "<iframe src=\"" + resourceURL + "\" style=\"width:100vw; height:100vh; overflow-y:hidden; overflow-x:hidden;\"></iframe>";
                     }
                     slidesDiv.appendChild(newSlideDiv);
                     if (resources[slideNum].endsWith(".mp4") && clickRequired) {
