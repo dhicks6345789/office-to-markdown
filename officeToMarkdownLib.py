@@ -100,10 +100,11 @@ def readInputFilesAndTimestamps():
     return result
 
 # Returns True if the current executing script has been updated, when compared to the given timestamp value.
-def checkIfScriptUpdated(theFilenames, theTimestamps, theVerbose):
+def checkIfScriptUpdated(theFilenames, theOptionalFilenames=[], theTimestamps, theVerbose):
     scriptUpdated = False
     for item in theFilenames:
-        if (not item in theTimestamps) or (not str(pathlib.Path(item).stat().st_mtime) == theTimestamps[item]):
+        itemPath = pathlib.Path(item)
+        if (itemPath.exists()) and ((not item in theTimestamps) or (not str(itemPath.stat().st_mtime) == theTimestamps[item])):
             ifVerbose(theVerbose, "script           - updated: " + item)
             scriptUpdated = True
     return scriptUpdated
