@@ -106,7 +106,6 @@ def generateScriptUpdatedFilesList(inputPath, verbose):
         if itemPath.is_file():
             ifVerbose(verbose, postPadWithSpaces(pathlib.Path(sys.argv[0]).stem, 16) + " -  config: " + str(itemPath))
             scriptUpdatedFiles.append(str(itemPath))
-    scriptUpdatedFiles.append(__file__)
     return scriptUpdatedFiles
 
 # Returns True if the current executing script has been updated, when compared to the given timestamp value.
