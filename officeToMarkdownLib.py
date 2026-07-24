@@ -515,13 +515,15 @@ def scanFolder(verbose, theScriptRoot, theMatches, theMatchTimestamps, thePrevio
                 scriptExec = (theMatches[match])[0]
                 scriptPath = theScriptRoot / pathlib.Path((theMatches[match])[1])
                 scriptPathStr = str(scriptPath)
+                scriptPathParentStr = str(scriptPath.parent)
                 scriptTimestamp = "0"
                 if scriptPathStr in theMatchTimestamps:
                     scriptTimestamp = theMatchTimestamps[scriptPathStr]
                 inputTimestamp = "0"
                 if str(item) in thePreviousInputFileTimestamps:
                     inputTimestamp = thePreviousInputFileTimestamps[str(item)]
-                commandLine = [scriptExec, scriptPathStr, "--scriptTimestamp", scriptTimestamp, "--input", str(item), "--outputRoot", str(theOutputRoot), "--output", str(theOutputFolder) + os.sep + slugify.slugify(item.name)]
+                #commandLine = [scriptExec, scriptPathStr, "--scriptTimestamp", scriptTimestamp, "--input", str(item), "--outputRoot", str(theOutputRoot), "--output", str(theOutputFolder) + os.sep + slugify.slugify(item.name)]
+                commandLine = [scriptExec, scriptPathStr, "--input", str(item), "--outputRoot", str(theOutputRoot), "--output", str(theOutputFolder) + os.sep + slugify.slugify(item.name)]
                 if verbose:
                     commandLine.append("--verbose")
                 matchInputItems = {}
@@ -532,6 +534,9 @@ def scanFolder(verbose, theScriptRoot, theMatches, theMatchTimestamps, thePrevio
                     for matchInputItem in thePreviousInputFileTimestamps:
                         if matchInputItem.startswith(itemStr):
                             matchInputItems[matchInputItem] = thePreviousInputFileTimestamps[matchInputItem]
+                for matchScriptItem in theMatchTimestamps:
+                    if matchScriptItem.startswith(scriptPathParentStr):
+                        matchInputItems[matchScriptItem] = theMatchTimestamps[matchScriptItem]
                 ifVerbose(verbose, "ScanFolder       - running: " + " ".join([f"{value}" for value in commandLine]))
                 commandLineResult = subprocess.run(commandLine, input="\n".join([f"{key},{value}" for key, value in matchInputItems.items()]), capture_output=True, text=True)
                 state = 0
