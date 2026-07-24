@@ -40,7 +40,7 @@ scriptUpdatedFiles = []
 for item in officeToMarkdownLib.configFileNames:
     scriptUpdatedFiles.append(str(args["input"]) + os.sep + item)
 scriptUpdatedFiles.append(__file__)
-scriptUpdatedFiles.append.(__file__.replace("processSlideshow.py", "slideshowIndex.html"))
+scriptUpdatedFiles.append(__file__.replace("processSlideshow.py", "slideshowIndex.html"))
 scriptUpdated = officeToMarkdownLib.checkIfScriptUpdated(scriptUpdatedFiles, previousInputFileTimestamps, args["verbose"])
 
 # A message for the user.
