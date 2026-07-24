@@ -49,6 +49,9 @@ audioSuffixes = [".mp3", ".ogg", ".wav"]
 # Files / folders to exclude from directory listings.
 fileIgnores = [".git", ".gitignore", "__pycache__", ".venv", "assets"]
 
+# Valid config file filenames.
+configFileNames = ["config.yaml", "config.xlsx", "config.csv"]
+
 # A utility function to return the contents of the given file.
 def getFile(theFilename):
     infile = open(theFilename)
