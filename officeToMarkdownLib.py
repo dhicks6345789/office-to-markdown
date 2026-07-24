@@ -316,7 +316,7 @@ def processArgsFile(theInputPath, defaultArgs={}):
     args = {}
     argsData = {}
     for item in theInputPath.iterdir():
-        if item.name == "config":
+        if item.is_file() and item.name in configFileNames:
             # Figure out what format the file is in and use the appropriate loader.
             if item.suffix.lower() == ".csv":
                 argsData = pandas.read_csv(theFilename, header=0).to_dict(index=False)
