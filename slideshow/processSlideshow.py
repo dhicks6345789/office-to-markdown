@@ -12,6 +12,9 @@ import PIL
 # The PDF2Image library for handling conversions from PDF to images.
 import pdf2image
 
+# The Slugify library for making URL-safe strings.
+import slugify
+
 # Our own Office To Markdown library.
 import officeToMarkdownLib
 
@@ -37,7 +40,7 @@ scriptUpdated = officeToMarkdownLib.checkIfScriptUpdated(__file__, args["scriptT
 
 officeToMarkdownLib.ifVerbose(args["verbose"], "ProcessSlideshow -  folder: " + str(args["input"]))
 
-outputPath = args["output"]
+outputPath = pathlib.path(slugify.slugify(str(args["output"])))
 if outputPath.name == "slideshow":
     outputPath = outputPath.parent
 outputPath = pathlib.Path("static") / outputPath
