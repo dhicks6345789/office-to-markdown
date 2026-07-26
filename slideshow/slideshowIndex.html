@@ -74,6 +74,8 @@ on browsers in kiosk mode. -->
                 if (nextSlide == resources.length) {
                     nextSlide = 0;
                 }
+
+                console.log("Show next slide: " + nextSlide);
                 
                 // Clear the current next-slide transition time...
                 clearInterval(nextSlideInterval);
