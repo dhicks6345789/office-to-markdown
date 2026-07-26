@@ -82,6 +82,7 @@ on browsers in kiosk mode. -->
                 
                 // If there's only one slide and we're already showing it then skip setting up any more transitions, just keep showing the one slide.
                 if (resources.length == 1 && currentSlide == 0) {
+                    console.log("Only one rsource - returning.");
                     return;
                 }
                 
@@ -109,10 +110,15 @@ on browsers in kiosk mode. -->
                 }
 
                 // Set up the fade effect between the current slide and the next. Skip if the next resource is a video.
-                if (!resources[nextSlide].endsWith(".mp4")) {
+                fadeStartSlide = document.getElementById("slide-" + currentSlide);
+                fadeEndSlide = document.getElementById("slide-" + nextSlide);
+                if (resources[nextSlide].endsWith(".mp4")) {
+                    fadeStartSlide.style.opacity = 0;
+                    fadeStartSlide.style.display = "none";
+                    fadeEndSlide.style.opacity = 1;
+                }
+                else {
                     opacity = 1;
-                    fadeStartSlide = document.getElementById("slide-" + currentSlide);
-                    fadeEndSlide = document.getElementById("slide-" + nextSlide);
                     fadeEndSlide.style.opacity = 0;
                     fadeEndSlide.style.display = "block";
                     fadeInterval = setInterval(fadeSlides, 200);
