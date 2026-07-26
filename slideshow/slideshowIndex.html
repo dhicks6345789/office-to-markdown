@@ -81,7 +81,7 @@ on browsers in kiosk mode. -->
                 // the next slide transition yet, we wait until the user clicks on the current slide.
                 if (!clickRequired) {
                     // If the next slide is a video we need to trigger something.
-                    (resources[nextSlide].endsWith(".mp4")) {
+                    if (resources[nextSlide].endsWith(".mp4")) {
                         nextSlideInterval = 0
                         nextVideoElement = document.getElementById("slide-" + nextSlide).childNodes[0];
                         nextVideoElement.currentTime = 0;
