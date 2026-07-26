@@ -588,11 +588,15 @@ def scanFolder(verbose, theScriptRoot, theMatches, theMatchTimestamps, thePrevio
                                 print(line)
 
                 # Start a sub-process script, streaming its stdout and stderr concurrently in background threads.
-                commandLineProcess = subprocess.Popen(commandLine, input="\n".join([f"{key},{value}" for key, value in matchInputItems.items()]), stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1)
+                commandLineProcess = subprocess.Popen(commandLine, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1)
                 with ThreadPoolExecutor(max_workers=2) as executor:
                     executor.submit(streamOouPipe, commandLineProcess.stdout, "STDOUT")
                     executor.submit(streamErrPipe, commandLineProcess.stderr, "STDERR")
-                
+                    
+                    # Pass the matchInputItems data to the sub-process.
+                    process.stdin.write("\n".join([f"{key},{value}" for key, value in matchInputItems.items()]))
+                    process.stdin.flush()  # Ensure data is sent immediately.
+                    process.stdin.close()  # Signal EOF (End of File) to child process.
                 # Wait for the process to exit.
                 commandLineProcess.wait()
         if (matched == False):
