@@ -267,7 +267,7 @@ on browsers in kiosk mode. -->
                             newVideoElement = document.createElement("video");
                             newVideoElement.src = resourceURL;
                             newVideoElement.controls = false; // Show playback controls (play/pause/volume)
-                            newVideoElement.loop = true;
+                            newVideoElement.loop = false;
                             newVideoElement.muted = true;
                             newVideoElement.autoplay = true;
                             newVideoElement.addEventListener("ended", showNextSlide);
