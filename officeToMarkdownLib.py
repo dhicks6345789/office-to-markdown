@@ -564,7 +564,6 @@ def scanFolder(verbose, theScriptRoot, theMatches, theMatchTimestamps, thePrevio
                     if matchScriptItem.startswith(scriptPathParentStr):
                         matchInputItems[matchScriptItem] = theMatchTimestamps[matchScriptItem]
                 ifVerbose(verbose, "ScanFolder       - running: " + " ".join([f"{value}" for value in commandLine]))
-                #commandLineResult = subprocess.run(commandLine, input="\n".join([f"{key},{value}" for key, value in matchInputItems.items()]), capture_output=True, text=True)
 
                 # We expect the output (on stdout) from a sub-script to be a list of input file filename,timestamp pairs, then a "---", then a list of output files.
                 def streamOutPipe(pipe, label):
@@ -581,28 +580,23 @@ def scanFolder(verbose, theScriptRoot, theMatches, theMatchTimestamps, thePrevio
                             elif state == 1:
                                 outputFiles.append(outputLine)
                 
-                # Any output on stderr from a child process we simply re-print to the main stdout.
+                # Any output on stderr from a child process we simply re-write to the main stdout.
                 def streamErrPipe(pipe, label):
                     for line in pipe:
                         if verbose:
                             if not line.strip() == "":
-                                print(line)
+                                sys.stdout.write(line)
 
                 # Start a sub-process script, streaming its stdout and stderr concurrently in background threads.
                 commandLineProcess = subprocess.Popen(commandLine, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1)
-                ifVerbose(verbose, "One!")
                 with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
-                    ifVerbose(verbose, "Two!")
                     executor.submit(streamOutPipe, commandLineProcess.stdout, "STDOUT")
-                    ifVerbose(verbose, "Three!")
                     executor.submit(streamErrPipe, commandLineProcess.stderr, "STDERR")
-                    
                     # Pass the matchInputItems data to the sub-process.
                     commandLineProcess.stdin.write("\n".join([f"{key},{value}" for key, value in matchInputItems.items()]))
                     commandLineProcess.stdin.flush()
                     # Signal EOF (End of File) to child process.
                     commandLineProcess.stdin.close()
-                    ifVerbose(verbose, "Four!")
                 # Wait for the process to exit.
                 commandLineProcess.wait()
         if (matched == False):
