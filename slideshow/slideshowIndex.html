@@ -91,6 +91,7 @@ on browsers in kiosk mode. -->
                 if (!clickRequired) {
                     // If the next slide is a video it will already call this showNextSlide function when its "ended" event triggers...
                     if (resources[nextSlide].endsWith(".mp4")) {
+                        console.log("Setting up video slide: " + nextSlide);
                         nextSlideInterval = 0
                         nextVideoElement = document.getElementById("slide-" + nextSlide).childNodes[0];
                         nextVideoElement.currentTime = 0;
