@@ -75,15 +75,15 @@ on browsers in kiosk mode. -->
                     nextSlide = 0;
                 }
 
-                console.log("showNextSlide: currentSlide: " + currentSlide + ", nextSlide: " + nextSlide)
+                console.log("showNextSlide: currentSlide: " + currentSlide + ", nextSlide: " + nextSlide);
                 
                 // Clear the current next-slide transition time.
                 clearInterval(nextSlideInterval);
                 
                 // If there's only one slide and we're already showing it then skip setting up any more transitions, just keep showing the one slide.
-                if ((resources.length == 1 && currentSlide == 0)) {
+                if (resources.length == 1 && currentSlide == 0) {
                 {
-                    return
+                    return;
                 }
                 
                 // Set up the next slide's transition. If the "clickRequired" parameter is set, we don't set up
