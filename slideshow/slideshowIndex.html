@@ -69,19 +69,29 @@ on browsers in kiosk mode. -->
             
             // Display the next slide.
             function showNextSlide() {
+                // Advance the slide counter, wrap around to 0 if we hit the end.
+                nextSlide = currentSlide + 1;
+                if (nextSlide == resources.length) {
+                    nextSlide = 0;
+                }
+                
                 // Clear the current next-slide transition time...
                 clearInterval(nextSlideInterval);
                 // ...and set up the next one. If the "clickRequired" parameter is set, we don't set up
                 // the next slide transition yet, we wait until the user clicks on the current slide.
                 if (!clickRequired) {
-                    nextSlideInterval = setInterval(showNextSlide, slideTransitionTime);
+                    // If the next slide is a video we need to trigger something.
+                    (resources[nextSlide].endsWith(".mp4")) {
+                        nextSlideInterval = 0
+                        nextVideoElement = document.getElementById("slide-" + nextSlide).childNodes[0];
+                        nextVideoElement.currentTime = 0;
+                        nextVideoElement.play();
+                    // Otherwise, we set up a timed transition.
+                    } else {
+                        nextSlideInterval = setInterval(showNextSlide, slideTransitionTime);
+                    }
                 }
                 
-                nextSlide = currentSlide + 1;
-                if (nextSlide == resources.length) {
-                    nextSlide = 0;
-                }
-
                 // If the next slide is a video, and "clickRequired" is set, make sure the video is
                 // stopped and ready to play from the start.
                 if (resources[nextSlide].endsWith(".mp4") && clickRequired) {
@@ -250,7 +260,16 @@ on browsers in kiosk mode. -->
                         if (clickRequired) {
                             newSlideDiv.innerHTML = "<video width=\"100%\" height=\"100%\"><source src=\"" + resourceURL + "\" type=\"video/mp4\"></video>";
                         } else {
-                            newSlideDiv.innerHTML = "<video width=\"100%\" height=\"100%\" autoplay loop muted playsinline><source src=\"" + resourceURL + "\" type=\"video/mp4\"></video>";
+                            // resources[nextSlide].addEventListener("ended", showNextSlide)
+                            // newSlideDiv.innerHTML = "<video width=\"100%\" height=\"100%\" autoplay loop muted playsinline><source src=\"" + resourceURL + "\" type=\"video/mp4\"></video>";
+                            newVideoElement = document.createElement("video");
+                            newVideoElement.src = resourceURL;
+                            newVideoElement.controls = false; // Show playback controls (play/pause/volume)
+                            newVideoElement.loop = true;
+                            newVideoElement.muted = true;
+                            newVideoElement.autoplay = true;
+                            newVideoElement.addEventListener("ended", showNextSlide);
+                            newSlideDiv.appendChild(newVideoElement);
                         }
                     } else {
                         newSlideDiv.innerHTML = "<iframe src=\"" + resourceURL + "\" style=\"width:100vw; height:100vh; overflow-y:hidden; overflow-x:hidden;\"></iframe>";
