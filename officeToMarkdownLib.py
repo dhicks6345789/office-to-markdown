@@ -563,24 +563,38 @@ def scanFolder(verbose, theScriptRoot, theMatches, theMatchTimestamps, thePrevio
                     if matchScriptItem.startswith(scriptPathParentStr):
                         matchInputItems[matchScriptItem] = theMatchTimestamps[matchScriptItem]
                 ifVerbose(verbose, "ScanFolder       - running: " + " ".join([f"{value}" for value in commandLine]))
-                commandLineResult = subprocess.run(commandLine, input="\n".join([f"{key},{value}" for key, value in matchInputItems.items()]), capture_output=True, text=True)
-                state = 0
+                #commandLineResult = subprocess.run(commandLine, input="\n".join([f"{key},{value}" for key, value in matchInputItems.items()]), capture_output=True, text=True)
+
                 # We expect the output (on stdout) from a sub-script to be a list of input file filename,timestamp pairs, then a "---", then a list of output files.
-                for outputLine in commandLineResult.stdout.split("\n"):
-                    outputLine = outputLine.strip()
-                    if not outputLine == "":
-                        if state == 0:
-                            if outputLine == "---":
-                                state = 1
-                            else:
-                                outputLineSplit = outputLine.split(",")
-                                newInputFileTimestamps[outputLineSplit[0]] = outputLineSplit[1]
-                        elif state == 1:
-                            outputFiles.append(outputLine)
-                if verbose:
-                    stderrOutput = commandLineResult.stderr.strip()
-                    if not stderrOutput == "":
-                        print(stderrOutput)
+                def streamOutPipe(pipe, label):
+                    state = 0
+                    for outputLine in pipe:
+                        outputLine = outputLine.strip()
+                        if not outputLine == "":
+                            if state == 0:
+                                if outputLine == "---":
+                                    state = 1
+                                else:
+                                    outputLineSplit = outputLine.split(",")
+                                    newInputFileTimestamps[outputLineSplit[0]] = outputLineSplit[1]
+                            elif state == 1:
+                                outputFiles.append(outputLine)
+                
+                # Any output on stderr from a child process we simply re-print to the main stdout.
+                def streamErrPipe(pipe, label):
+                    for line in pipe:
+                        if verbose:
+                            if not line.strip() == "":
+                                print(line)
+
+                # Start a sub-process script, streaming its stdout and stderr concurrently in background threads.
+                commandLineProcess = subprocess.Popen(commandLine, input="\n".join([f"{key},{value}" for key, value in matchInputItems.items()]), stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1)
+                with ThreadPoolExecutor(max_workers=2) as executor:
+                    executor.submit(streamOouPipe, commandLineProcess.stdout, "STDOUT")
+                    executor.submit(streamErrPipe, commandLineProcess.stderr, "STDERR")
+                
+                # Wait for the process to exit.
+                commandLineProcess.wait()
         if (matched == False):
             unmatchedItems.append(item)
     for item in unmatchedItems:
