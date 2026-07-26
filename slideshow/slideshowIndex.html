@@ -113,13 +113,14 @@ on browsers in kiosk mode. -->
                 // Set up the fade effect between the current slide and the next. Skip if the next resource is a video.
                 fadeStartSlide = document.getElementById("slide-" + currentSlide);
                 fadeEndSlide = document.getElementById("slide-" + nextSlide);
+                opacity = 1;
                 if (resources[nextSlide].endsWith(".mp4")) {
                     fadeStartSlide.style.opacity = 0;
                     fadeStartSlide.style.display = "none";
+                    fadeEndSlide.style.display = "block";
                     fadeEndSlide.style.opacity = 1;
                 }
                 else {
-                    opacity = 1;
                     fadeEndSlide.style.opacity = 0;
                     fadeEndSlide.style.display = "block";
                     fadeInterval = setInterval(fadeSlides, 200);
