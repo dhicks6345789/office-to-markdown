@@ -74,15 +74,12 @@ on browsers in kiosk mode. -->
                 if (nextSlide == resources.length) {
                     nextSlide = 0;
                 }
-
-                console.log("showNextSlide: currentSlide: " + currentSlide + ", nextSlide: " + nextSlide);
                 
                 // Clear the current next-slide transition time.
                 clearInterval(nextSlideInterval);
                 
                 // If there's only one slide and we're already showing it then skip setting up any more transitions, just keep showing the one slide.
                 if (resources.length == 1 && currentSlide == 0) {
-                    console.log("Only one rsource - returning.");
                     return;
                 }
                 
@@ -91,7 +88,6 @@ on browsers in kiosk mode. -->
                 if (!clickRequired) {
                     // If the next slide is a video it will already call this showNextSlide function when its "ended" event triggers...
                     if (resources[nextSlide].endsWith(".mp4")) {
-                        console.log("Setting up video slide: " + nextSlide);
                         nextSlideInterval = 0
                         nextVideoElement = document.getElementById("slide-" + nextSlide).childNodes[0];
                         nextVideoElement.currentTime = 0;
@@ -281,11 +277,11 @@ on browsers in kiosk mode. -->
                             newVideoElement.controls = false;
                             // Normally, we don't want the video resource to loop...
                             if (!(resources.length == 1 && currentSlide == 0)) {
-                                newVideoElement.loop = true;
-                            // ...however, if there's only the one resource (i.e. this video) then we simply show it on loop, never triggering showNextSlide.
-                            } else {
                                 newVideoElement.loop = false;
                                 newVideoElement.addEventListener("ended", showNextSlide);
+                            // ...however, if there's only the one resource (i.e. this video) then we simply show it on loop, never triggering showNextSlide.
+                            } else {
+                                newVideoElement.loop = true;
                             }
                             newVideoElement.muted = true;
                             newVideoElement.autoplay = true;
