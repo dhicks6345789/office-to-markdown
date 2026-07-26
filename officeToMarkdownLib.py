@@ -598,9 +598,10 @@ def scanFolder(verbose, theScriptRoot, theMatches, theMatchTimestamps, thePrevio
                     executor.submit(streamErrPipe, commandLineProcess.stderr, "STDERR")
                     
                     # Pass the matchInputItems data to the sub-process.
-                    process.stdin.write("\n".join([f"{key},{value}" for key, value in matchInputItems.items()]))
-                    process.stdin.flush()  # Ensure data is sent immediately.
-                    process.stdin.close()  # Signal EOF (End of File) to child process.
+                    commandLineProcess.stdin.write("\n".join([f"{key},{value}" for key, value in matchInputItems.items()]))
+                    commandLineProcess.stdin.flush()
+                    # Signal EOF (End of File) to child process.
+                    commandLineProcess.stdin.close()
                     ifVerbose(verbose, "Four!")
                 # Wait for the process to exit.
                 commandLineProcess.wait()
