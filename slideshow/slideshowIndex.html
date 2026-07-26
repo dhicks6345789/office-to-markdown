@@ -106,11 +106,11 @@ on browsers in kiosk mode. -->
                     nextVideoElement.currentTime = 0;
                 }
 
-                // Set up the fade effect between the current slide and the next. Skip if the next resource is a video.
+                // Set up the fade effect between the current slide and the next. Skip if the next resource is a video or if we're on (special starting slide) slide -1.
                 fadeStartSlide = document.getElementById("slide-" + currentSlide);
                 fadeEndSlide = document.getElementById("slide-" + nextSlide);
                 opacity = 1;
-                if (resources[nextSlide].endsWith(".mp4")) {
+                if (resources[nextSlide].endsWith(".mp4") || currentSlide == -1) {
                     fadeStartSlide.style.opacity = 0;
                     fadeStartSlide.style.display = "none";
                     fadeEndSlide.style.display = "block";
