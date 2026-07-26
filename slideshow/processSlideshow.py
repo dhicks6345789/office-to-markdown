@@ -85,10 +85,6 @@ for inputPath in args["input"].iterdir():
         outputFilePath = args["outputRoot"] / outputPath / pathlib.Path("slide-" + officeToMarkdownLib.padInt(slideCount, 5) + ".png")
         slideList.append(outputFilePath.name)
         if scriptUpdated or (not outputFilePath.is_file()) or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
-            print(scriptUpdated, flush=True, file=sys.stderr)
-            print(not outputFilePath.is_file(), flush=True, file=sys.stderr)
-            print(not inputPathStr in previousInputFileTimestamps, flush=True, file=sys.stderr)
-            print(str(inputPathStat.st_mtime) + " == " + previousInputFileTimestamps[inputPathStr], flush=True, file=sys.stderr)
             with PIL.Image.open(inputPath) as img:
                 # Ensure image is RGB if converting formats that don't support alpha/transparency
                 if img.mode in ("RGBA", "P"):
