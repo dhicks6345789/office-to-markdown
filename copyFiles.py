@@ -5,6 +5,9 @@ import shutil
 import pathlib
 import argparse
 
+# The Slugify library for making URL-safe strings.
+import slugify
+
 # Our own Office To Markdown library.
 import officeToMarkdownLib
 
@@ -27,14 +30,14 @@ scriptUpdated = officeToMarkdownLib.checkIfScriptUpdated(previousInputFileTimest
 # Copy individual files. If the input given is a folder, recurse into that folder and copy any files (or sub-folders) found.
 filesProcessed = {}
 def copyFiles(theInputPath, theOutputPath):
-  outputFilePath =  args["outputRoot"] / theOutputPath / theInputPath.name
   if theInputPath.is_file():
+    outputFilePath =  args["outputRoot"] / officeToMarkdownLib.pathSlugify(theOutputPath / theInputPath.name)
     inputPathStr = str(theInputPath)
     inputPathStat = theInputPath.stat()
     if scriptUpdated or (not outputFilePath.is_file()) or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
       officeToMarkdownLib.ifVerbose(args["verbose"], "copyFile         - copying: " + str(theInputPath) + " to " + str(outputFilePath))
       theOutputPath.mkdir(parents=True, exist_ok=True)
-      # Note: shutil's copy2 function does preserve file attributes, but breaks on some cloud filesystems (e.g. Google DRive) mounted as volumes by rclone as copy2 tries to copy
+      # Note: shutil's copy2 function does preserve file attributes, but breaks on some cloud filesystems (e.g. Google Drive) mounted as volumes by rclone as copy2 tries to copy
       # over chmod / chown attributes, which aren't supported and the operation fails. Instead, we copy the file and copy over just the last-modified attribute instead.
       shutil.copy(theInputPath, outputFilePath)
       os.utime(outputFilePath, (inputPathStat.st_atime, inputPathStat.st_mtime))
