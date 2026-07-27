@@ -511,6 +511,11 @@ def checkTimestampsMatch(theTimestamp, thePath):
         return True
     return False
 
+def filePathSlugify(thePath):
+    if thePath.is_file():
+        return pathlib.Path(slugify.slugify(thePath.with_suffix("")) + thePath.suffix)
+    return pathlib.Path(slugify.slugify(thePath))
+
 def ifVerbose(theVerbose, theOutput):
     if type(theVerbose).__name__ == "str":
         if theVerbose.lower() == "true":
