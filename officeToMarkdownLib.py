@@ -16,9 +16,6 @@ import PIL.Image
 # The ffmpeg video-handling library.
 import ffmpeg
 
-# The Slugify library for making URL-safe strings.
-import slugify
-
 # Mammoth converts .DOCX file to HTML...
 import mammoth
 # ...and Markdownify can convert HTML to Markdown.
@@ -513,9 +510,6 @@ def checkTimestampsMatch(theTimestamp, thePath):
     if str(thePath.stat().st_mtime) == str(theTimestamp):
         return True
     return False
-
-def filePathSlugify(thePath):
-    return pathlib.Path(slugify.slugify(str(thePath.with_suffix(""))) + thePath.suffix)
 
 def ifVerbose(theVerbose, theOutput):
     if type(theVerbose).__name__ == "str":
