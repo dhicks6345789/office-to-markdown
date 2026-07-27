@@ -27,7 +27,7 @@ scriptUpdated = officeToMarkdownLib.checkIfScriptUpdated(previousInputFileTimest
 # Copy individual files. If the input given is a folder, recurse into that folder and copy any files (or sub-folders) found.
 filesProcessed = {}
 def copyFiles(theInputPath, theOutputPath):
-  outputFilePath = args["outputRoot"] / theOutputPath / theInputPath.name
+  outputFilePath =  args["outputRoot"] / theOutputPath / theInputPath.name
   if theInputPath.is_file():
     inputPathStr = str(theInputPath)
     inputPathStat = theInputPath.stat()
@@ -41,8 +41,8 @@ def copyFiles(theInputPath, theOutputPath):
     filesProcessed[inputPathStr] = (str(outputFilePath), str(inputPathStat.st_mtime))
   else:
     for item in theInputPath.iterdir():
-      copyFiles(item, outputFilePath)
-copyFiles(args["input"], pathlib.Path("content") / args["output"])
+      copyFiles(item, theOutputPath / theInputPath.name)
+copyFiles(args["input"], args["output"])
 
 # Report the input filenames, with current update timestamp, back to the calling script, along with the output filenames.
 officeToMarkdownLib.printFilesProcessed(filesProcessed)
