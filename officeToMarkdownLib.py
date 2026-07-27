@@ -16,9 +16,6 @@ import PIL.Image
 # The ffmpeg video-handling library.
 import ffmpeg
 
-# The Slugify library for making URL-safe strings.
-import slugify
-
 # Mammoth converts .DOCX file to HTML...
 import mammoth
 # ...and Markdownify can convert HTML to Markdown.
@@ -548,8 +545,7 @@ def scanFolder(verbose, theScriptRoot, theMatches, theMatchTimestamps, thePrevio
                 inputTimestamp = "0"
                 if str(item) in thePreviousInputFileTimestamps:
                     inputTimestamp = thePreviousInputFileTimestamps[str(item)]
-                #commandLine = [scriptExec, scriptPathStr, "--scriptTimestamp", scriptTimestamp, "--input", str(item), "--outputRoot", str(theOutputRoot), "--output", str(theOutputFolder) + os.sep + slugify.slugify(item.name)]
-                commandLine = [scriptExec, scriptPathStr, "--input", str(item), "--outputRoot", str(theOutputRoot), "--output", str(theOutputFolder) + os.sep + slugify.slugify(item.name)]
+                commandLine = [scriptExec, scriptPathStr, "--input", str(item), "--outputRoot", str(theOutputRoot), "--output", str(theOutputFolder) + os.sep + item.name]
                 if verbose:
                     commandLine.append("--verbose")
                 matchInputItems = {}
@@ -607,7 +603,7 @@ def scanFolder(verbose, theScriptRoot, theMatches, theMatchTimestamps, thePrevio
             for matchInputItem in thePreviousInputFileTimestamps:
                 if matchInputItem.startswith(str(item)):
                     matchInputItems[matchInputItem] = thePreviousInputFileTimestamps[matchInputItem]
-            subNewInputFileTimestamps, subOutputFiles = scanFolder(verbose, theScriptRoot, theMatches, theMatchTimestamps, matchInputItems, item, theOutputRoot, theOutputFolder / pathlib.Path(slugify.slugify(item.name)))
+            subNewInputFileTimestamps, subOutputFiles = scanFolder(verbose, theScriptRoot, theMatches, theMatchTimestamps, matchInputItems, item, theOutputRoot, theOutputFolder / pathlib.Path(item.name))
             newInputFileTimestamps.update(subNewInputFileTimestamps)
             outputFiles.extend(subOutputFiles)
     return newInputFileTimestamps, outputFiles
