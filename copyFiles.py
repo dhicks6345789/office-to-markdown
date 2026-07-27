@@ -31,7 +31,8 @@ scriptUpdated = officeToMarkdownLib.checkIfScriptUpdated(previousInputFileTimest
 filesProcessed = {}
 def copyFiles(theInputPath, theOutputPath):
   if theInputPath.is_file():
-    outputFilePath = args["outputRoot"] / pathlib.Path(slugify.slugify(str(theOutputPath.with_suffix("").parent)) + theOutputPath.name)
+    #outputFilePath = args["outputRoot"] / pathlib.Path(slugify.slugify(str(theOutputPath.with_suffix("").parent)) + theOutputPath.name)
+    outputFilePath = args["outputRoot"] / theOutputPath
     inputPathStr = str(theInputPath)
     inputPathStat = theInputPath.stat()
     if scriptUpdated or (not outputFilePath.is_file()) or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
@@ -43,9 +44,10 @@ def copyFiles(theInputPath, theOutputPath):
       os.utime(outputFilePath, (inputPathStat.st_atime, inputPathStat.st_mtime))
     filesProcessed[inputPathStr] = (str(outputFilePath), str(inputPathStat.st_mtime))
   else:
+    outputFolderPath = theOutputPath / pathlib.Path(slugify.slugify(theInputPath.name))
     for item in theInputPath.iterdir():
-      copyFiles(item, theOutputPath / theInputPath.name)
-copyFiles(args["input"], args["output"])
+      copyFiles(item, outputFolderPath)
+copyFiles(args["input"], pathlib.Path("content") / args["output"])
 
 # Report the input filenames, with current update timestamp, back to the calling script, along with the output filenames.
 officeToMarkdownLib.printFilesProcessed(filesProcessed)
