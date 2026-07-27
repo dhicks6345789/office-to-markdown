@@ -515,6 +515,8 @@ def checkTimestampsMatch(theTimestamp, thePath):
     return False
 
 def filePathSlugify(thePath):
+    print("filePathSlugify:")
+    print(thePath.with_suffix(""), flush=True, file=sys.stderr)
     if thePath.is_file():
         return pathlib.Path(slugify.slugify(str(thePath.with_suffix(""))) + thePath.suffix)
     return pathlib.Path(slugify.slugify(str(thePath)))
