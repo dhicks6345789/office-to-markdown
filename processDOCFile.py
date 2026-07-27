@@ -12,11 +12,16 @@ import officeToMarkdownLib
 # Parse command-line arguments.
 args = vars(officeToMarkdownLib.setArgsForSubScript(argparse.ArgumentParser(description="Process the given DOCX input file into a matching Markdown file in the output folder. If a directory is given as the input it will process all DOCX files in the folder, recursing into any sub-folders found.")).parse_args())
 
+# Pick up any additional arguments from a config file if present.
+args.update(officeToMarkdownLib.processArgsFile(args["input"], defaultArgs={}))
+
 # The calling script provides a list of any input files, along with last-modified timestamps, via stdin as simple set of comma-separated "filename,timestamp" values.
 previousInputFileTimestamps = officeToMarkdownLib.readInputFilesAndTimestamps()
 
-# If this script itself has been updated we re-run the operation, just to make sure all output is up to date.
-scriptUpdated = officeToMarkdownLib.checkIfScriptUpdated(__file__, args["scriptTimestamp"], args["verbose"])
+# If this script itself (or associated additional resource or config file) has been updated we re-run the operation, just to make sure all output is up to date.
+scriptUpdatedFiles = officeToMarkdownLib.generateScriptUpdatedFilesList(args["input"], args["verbose"])
+scriptUpdatedFiles.append(__file__)
+scriptUpdated = officeToMarkdownLib.checkIfScriptUpdated(previousInputFileTimestamps, scriptUpdatedFiles, args["verbose"])
 
 # Process individual DOCX files into Markdown. If the input given is a folder, recurse into that folder and process any files (or sub-folders) found.
 filesProcessed = {}
