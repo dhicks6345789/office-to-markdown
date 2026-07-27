@@ -16,6 +16,9 @@ import PIL.Image
 # The ffmpeg video-handling library.
 import ffmpeg
 
+# The Slugify library for making URL-safe strings.
+import slugify
+
 # Mammoth converts .DOCX file to HTML...
 import mammoth
 # ...and Markdownify can convert HTML to Markdown.
