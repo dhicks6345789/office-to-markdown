@@ -7,7 +7,7 @@ The "scanFolders.py" Python script acts as an overall starting point, triggering
 Download / clone the Git repository. These scripts are written in Python 3 and, as such, should be cross-platform. On Linux, there's a Bash script that will set up and activate a Python venv to run the script:
 
 ```
-bash scanFolders.sh --input ~/Documents/websiteContent --copyIn ~/Documents/Hugo/content --output ~/.cache/Hugo/content --verbose true
+bash scanFolders.sh --input ~/Documents/www --output ~/.cache/Hugo --verbose
 ```
 
 ## Requirements
