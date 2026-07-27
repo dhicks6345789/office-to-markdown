@@ -337,11 +337,11 @@ def processArgsFile(theInputPath, defaultArgs={}):
                 
     if not inputPath == None:
         # Figure out what format the file is in and use the appropriate loader.
-        if item.suffix.lower() == ".csv":
+        if inputPath.suffix.lower() == ".csv":
             argsData = pandas.read_csv(item, header=0).to_dict(index=False)
-        elif item.suffix.lower() in [".xlsx", ".xls"]:
+        elif inputPath.suffix.lower() in [".xlsx", ".xls"]:
             argsData = pandas.read_excel(item, header=0).to_dict(index=False)
-        if item.suffix.lower() == ".yaml":
+        if inputPath.suffix.lower() == ".yaml":
             argsData = yaml.safe_load(getFile(item))
         
     # Process any read arguments - check each key/value pair is a valid argument name.
