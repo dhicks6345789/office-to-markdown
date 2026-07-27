@@ -7,7 +7,7 @@ The "scanFolders.py" Python script acts as an overall starting point, triggering
 Download / clone the Git repository. These scripts are written in Python 3 and, as such, should be cross-platform. On Linux, there's a Bash script that will set up and activate a Python venv to run the script:
 
 ```
-bash scanFolders.sh --input ~/Documents/websiteContent pyIn ~/Documents/Hugo/content --output ~/.cache/Hugo/content --verbose true
+bash scanFolders.sh --input ~/Documents/websiteContent --copyIn ~/Documents/Hugo/content --output ~/.cache/Hugo/content --verbose true
 ```
 
 ## Requirements
@@ -20,7 +20,6 @@ The scripts are intended to be run over a simple folder tree. They should work w
 If you're on a Linux or MacOS system (or Windows), we can recommend [rclone](https://rclone.org/) as being an excellent way of mounting / cloning over 50 cloud provider's filesystems as a local filesystem.
 
 ## Usage
-
 Command-line Options:
 
 ## The Scripts
@@ -31,7 +30,6 @@ Command-line Options:
 - [Image Gallery](imageGallery/processImageGallery.md)
 
 ## Extending
-
-If you want to extend the functionality of this project, just write a script that accepts the same (very simple) format of paramaeters at the command line. There is a docsToMarkdownLib Python library that contains handy functions if you happen to be writing your script in Python, but really you can write a command line application in any language you prefer.
+If you want to extend the functionality of this project, just write a script that accepts the same set of paramaeters at the command line. There is a docsToMarkdownLib Python library that contains handy functions if you happen to be writing your script in Python, but really you can write a command line application in any language you prefer.
 
 The scripts should all work just fine from the command line, but as an added feature they might be used with the [Web Console](https://github.com/dhicks6345789/web-console) project to produce a very simple front end. Therefore, when writing additional scripts it would be best to include formatting in any output (progress / error messages, progress bars, etc) suitible for Web Console to use - see the project's page for more details.
