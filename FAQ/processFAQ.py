@@ -23,6 +23,15 @@ scriptUpdatedFiles = officeToMarkdownLib.generateScriptUpdatedFilesList(args["in
 scriptUpdatedFiles.append(__file__)
 scriptUpdated = officeToMarkdownLib.checkIfScriptUpdated(previousInputFileTimestamps, scriptUpdatedFiles, args["verbose"])
 
+# A message for the user.
+officeToMarkdownLib.ifVerbose(args["verbose"], "ProcessFAQ       -  folder: " + str(args["input"]))
+
+outputPath = args["output"]
+if outputPath.name == "faq":
+    outputPath = outputPath.parent
+outputPath = pathlib.Path("content") / outputPath
+
+
 filesProcessed = {}
 def processFiles(theInputPath, theOutputPath):
   if theInputPath.is_file():
@@ -30,7 +39,7 @@ def processFiles(theInputPath, theOutputPath):
     inputPathStat = theInputPath.stat()
     inputPathSuffix = theInputPath.suffix.lower()
     if inputPathSuffix in [".docx"]:
-      outputFilePath = theOutputPath / pathlib.Path(args["input"].stem + ".md")
+      outputFilePath = theOutputPath / pathlib.Path(theInputPath.stem + ".md")
       if scriptUpdated or (not outputFilePath.is_file()) or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
         officeToMarkdownLib.ifVerbose(args["verbose"], "processFAQ       -   " + inputPathSuffix + ": " + inputPathStr + " to " + str(outputFilePath))
         
@@ -70,9 +79,10 @@ def processFiles(theInputPath, theOutputPath):
   else:
     officeToMarkdownLib.ifVerbose(args["verbose"], "ProcessFAQ       -  folder: " + str(theInputPath))
     outputFolderPath = theOutputPath / pathlib.Path(theInputPath.name)
+    outputFolderPath.mkdir(parents=True, exist_ok=True)
     for item in theInputPath.iterdir():
       processFiles(item, outputFolderPath)
-processFiles(args["input"], args["output"] / pathlib.Path("content"))
+processFiles(args["input"], args["outputRoot"] / outputPath)
 
 # Report the input filenames, with current update timestamp, back to the calling script, along with the output filenames.
 officeToMarkdownLib.printFilesProcessed(filesProcessed)
