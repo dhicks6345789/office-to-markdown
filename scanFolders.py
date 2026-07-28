@@ -77,7 +77,7 @@ def scanFolder(theInputFolder, theOutputFolder):
                 if str(item) in previousInputChanges:
                     inputTimestamp = previousInputChanges[str(item)]
                 commandLine = [scriptExec, scriptPathStr, "--input", str(item), "--outputRoot", str(args["output"]), "--output", str(theOutputFolder) + os.sep + item.name]
-                if verbose:
+                if args["verbose"]:
                     commandLine.append("--verbose")
                 matchInputItems = {}
                 if item.is_file():
