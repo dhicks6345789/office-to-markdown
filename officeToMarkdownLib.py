@@ -42,8 +42,8 @@ urlSuffixes = [".url", ".txt"]
 # An array of "audio file" types.
 audioSuffixes = [".mp3", ".ogg", ".wav"]
 
-# Files / folders to exclude from directory listings.
-fileIgnores = [".git", ".gitignore", "__pycache__", ".venv", "assets"]
+# Files / folders to exclude from directory listings / copy operations.
+fileIgnores = [".git", ".gitignore", "__pycache__", ".venv"]
 
 # Valid config file filenames.
 configFileNames = ["config.yaml", "config.xlsx", "config.csv"]
