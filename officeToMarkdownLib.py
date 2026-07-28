@@ -509,7 +509,10 @@ def checkTimestampsMatch(theTimestamp, thePath):
         return True
     return False
 
-def ifVerbose(theVerbose, theOutput):
+# If the "verbose" value (can be either a string or a boolean) is true, then print the output string to STDERR.
+# Note the output to STDERR here, not STDOUT - this function is designed to be called from sub-scripts so that their messages
+# don't get mixed in with other data they need to pass via STDOUT.
+def printIfVerbose(verbose, output):
     if type(theVerbose).__name__ == "str":
         if theVerbose.lower() == "true":
             print(theOutput, flush=True, file=sys.stderr)
