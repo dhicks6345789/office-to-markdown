@@ -17,7 +17,7 @@ Output is designed to be used by the Hugo static-site generation tool, so output
 Every transformer sub-script must adhere to a strict interface contract so the main scanner can invoke it via CLI subprocesses. Sub-scripts do not have to be written in Python, they can be in any language.
 
 ### Sub-Script Contract Rules
-Sub-scripts (which do not have to be written in Python) should accept standard CLI arguments as defined by the Python argparse.ArgumentParser library:
+Sub-scripts (which do not have to be written in Python) should accept standard CLI arguments as defined by the Python `argparse.ArgumentParser` library:
 - **--input**: Input file or folder. An absolute path.
 - **--outputRoot**: The root output folder, an absolute path, typically a 'Hugo' folder ready to be processed by the Hugo static site utility.
 - **--output**: The output folder, relative to the outputRoot.
@@ -34,7 +34,7 @@ Any other output (including error messages) from the sub-script should be to std
 
 ## Instructions for AI Agents Creating New Sub-Scripts
 When asked to create a new document transformer:
-1. Create a new module inside `src/transformers/` named `transform_<format>.py`.
-2. Implement the standard transformer signature (see `src/transformers/base.py` or `transform_docx.py` as an example).
-3. Register the trigger rule in `config.py` (or ensure the script exposes its own `MATCH_PATTERN` string).
+1. Unless a different language is specified, create a new Python script inside a folder in the main project root.
+2. Implement the standard transformer signature (simply using the `setArgsForSubScript` function from `officeToMarkdownLib.py` to set the command-line options for a `argparse.ArgumentParser` object)
+3. Register the RE match string in `matches.csv`.
 4. Add a unit test in `tests/test_transformers.py` verifying document conversion on a sample file.
