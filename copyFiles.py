@@ -35,7 +35,7 @@ def copyFiles(theInputPath, theOutputPath):
     inputPathStr = str(theInputPath)
     inputPathStat = theInputPath.stat()
     if scriptUpdated or (not outputFilePath.is_file()) or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
-      officeToMarkdownLib.ifVerbose(args["verbose"], "copyFile         - copying: " + str(theInputPath) + " to " + str(outputFilePath))
+      officeToMarkdownLib.printIfVerbose(args["verbose"], "copyFile         - copying: " + str(theInputPath) + " to " + str(outputFilePath))
       theOutputPath.mkdir(parents=True, exist_ok=True)
       # Note: shutil's copy2 function does preserve file attributes, but breaks on some cloud filesystems (e.g. Google Drive) mounted as volumes by rclone as copy2 tries to copy
       # over chmod / chown attributes, which aren't supported and the operation fails. Instead, we copy the file and copy over just the last-modified attribute instead.
