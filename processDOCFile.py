@@ -36,7 +36,7 @@ def processFiles(theInputPath, theOutputPath):
     if inputPathSuffix in [".docx"]:
       outputFilePath = args["outputRoot"] / theOutputPath / pathlib.Path(theInputPath.stem + ".md")
       if scriptUpdated or (not outputFilePath.is_file()) or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
-        officeToMarkdownLib.ifVerbose(args["verbose"], "processDOCFile   -   " + inputPathSuffix + ": " + inputPathStr + " to " + str(outputFilePath))
+        officeToMarkdownLib.printIfVerbose(args["verbose"], "processDOCFile   -   " + inputPathSuffix + ": " + inputPathStr + " to " + str(outputFilePath))
         
         # We use our library function to convert from DOCX to Markdown.
         docMarkdown, docFrontmatter = officeToMarkdownLib.docToMarkdown(theInputPath)
