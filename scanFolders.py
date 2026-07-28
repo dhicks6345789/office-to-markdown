@@ -151,6 +151,7 @@ officeToMarkdownLib.writeChangesFile(inputChangesPath, currentInputChanges)
 def copyFolder(inputFolder, outputFolder):
     for inputItem in inputFolder.iterdir():
         if not inputItem.name in officeToMarkdownLib.fileIgnores:
+            print("copy - " + inputItem)
             outputItem = outputFolder / pathlib.Path(inputItem.name)
             outputFiles.append(str(outputItem))
             if inputItem.is_file():
