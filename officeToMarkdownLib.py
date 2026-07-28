@@ -513,8 +513,8 @@ def checkTimestampsMatch(theTimestamp, thePath):
 # Note the output to STDERR here, not STDOUT - this function is designed to be called from sub-scripts so that their messages
 # don't get mixed in with other data they need to pass via STDOUT.
 def printIfVerbose(verbose, output):
-    if type(theVerbose).__name__ == "str":
-        if theVerbose.lower() == "true":
-            print(theOutput, flush=True, file=sys.stderr)
-    elif theVerbose == True:
-        print(theOutput, flush=True, file=sys.stderr)
+    if type(verbose).__name__ == "str":
+        if verbose.lower() == "true":
+            print(output, flush=True, file=sys.stderr)
+    elif verbose == True:
+        print(output, flush=True, file=sys.stderr)
