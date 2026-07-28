@@ -100,7 +100,7 @@ def generateScriptUpdatedFilesList(inputPath, verbose):
     for item in configFileNames:
         itemPath = inputPath / pathlib.Path(item)
         if itemPath.is_file():
-            ifVerbose(verbose, postPadWithSpaces(pathlib.Path(sys.argv[0]).stem, 16) + " -  config: " + str(itemPath))
+            printIfVerbose(verbose, postPadWithSpaces(pathlib.Path(sys.argv[0]).stem, 16) + " -  config: " + str(itemPath))
             scriptUpdatedFiles.append(str(itemPath))
     return scriptUpdatedFiles
 
@@ -110,7 +110,7 @@ def checkIfScriptUpdated(timestamps, filenames, verbose=False):
     for item in filenames:
         itemPath = pathlib.Path(item)
         if (itemPath.exists()) and ((not item in timestamps) or (not str(itemPath.stat().st_mtime) == timestamps[item])):
-            ifVerbose(verbose, "script           - updated: " + item)
+            printIfVerbose(verbose, "script           - updated: " + item)
             result = True
     return result
 
