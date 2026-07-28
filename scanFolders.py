@@ -23,7 +23,11 @@ args = vars(parser.parse_args())
 # Print a config summary for the user.
 print("OfficeToMarkdown - arguments:", flush=True)
 for arg in args:
-    print(" - " + arg + ": " + str(args[arg]), flush=True)
+    if arg == "copyIn":
+        for copyIns in arg:
+            print(" - copyIn: " + str(args[arg][0]) + " --> " + str(args[arg][1]), flush=True)
+    else:
+        print(" - " + arg + ": " + str(args[arg]), flush=True)
 
 # Read the "matches.csv" file, which describes which transform script to run for each file type / sub folder in the input folder structure.
 matches = officeToMarkdownLib.readDataFile(args["dataRoot"] / pathlib.Path("matches.csv"))
