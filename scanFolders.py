@@ -15,7 +15,7 @@ import officeToMarkdownLib
 
 # Parse command-line arguments.
 parser = officeToMarkdownLib.setArgsForGeneral(argparse.ArgumentParser(description="Scans a folder structure and runs transform scripts on matched files and sub-folders."))
-parser.add_argument("--copyIn", action="append", type=pathlib.Path, help="Copy in the contents of the given folder to the output folder.")
+parser.add_argument("--copyIn", action="append", default=[], nargs=2, metavar=("SRC", "DEST"), type=pathlib.Path, help="Copy in the contents of the given folder (SRC) to the given output folder (DEST), relative to the root output folder.")
 parser.add_argument("--deleteExtraFiles", action="store_true", help="Remove any extra files from the output folder not egnerated by this script.")
 parser.add_argument("--dryRunExtraFiles", action="store_true", help="Does a dry-run of the deleteExtraFiles option, just displaying which files would be deleted by this action.")
 args = vars(parser.parse_args())
@@ -160,9 +160,8 @@ def copyFolder(inputFolder, outputFolder):
         else:
             outputItem.mkdir(parents=True, exist_ok=True)
             copyFolder(inputItem, outputItem)
-if "copyIn" in args and not args["copyIn"] == None:
-    for copyInFolder in args["copyIn"]:
-        copyFolder(copyInFolder, args["output"])
+for copyInTuple in args["copyIn"]:
+    copyFolder(copyInTuple[0], args["output"] / path.pathlib(copyInTuple[1]))
 
 # If the user has specified the "deleteExtraFiles" option then we clear any extra files out of the output destination. We define "extra files" as any files that could not have been produced as output files
 # this run, i.e. the contents of the "outputFiles" list. Note that this list should include files that would have been oputput by any sub-script, even if they weren't updated this run because non of their inputs
