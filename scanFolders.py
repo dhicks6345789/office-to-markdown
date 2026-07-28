@@ -65,7 +65,7 @@ def scanFolder(theInputFolder, theOutputFolder):
             if (matched == False) and (not re.match(match, itemStr) == None):
                 matched = True
                 if args["verbose"]:
-                    print(verbose, "ScanFolder       - matched: " + itemStr + " with " + match)
+                    print("ScanFolder       - matched: " + itemStr + " with " + match)
                 scriptExec = (matches[match])[0]
                 scriptPath = args["scriptRoot"] / pathlib.Path((matches[match])[1])
                 scriptPathStr = str(scriptPath)
@@ -90,7 +90,8 @@ def scanFolder(theInputFolder, theOutputFolder):
                 for matchScriptItem in previousMatchChanges:
                     if matchScriptItem.startswith(scriptPathParentStr):
                         matchInputItems[matchScriptItem] = previousMatchChanges[matchScriptItem]
-                ifVerbose(verbose, "ScanFolder       - running: " + " ".join([f"{value}" for value in commandLine]))
+                if args["verbose"]:
+                    print("ScanFolder       - running: " + " ".join([f"{value}" for value in commandLine]))
 
                 # We expect the output (on stdout) from a sub-script to be a list of input file filename,timestamp pairs, then a "---", then a list of output files.
                 def streamOutPipe(pipe, label):
