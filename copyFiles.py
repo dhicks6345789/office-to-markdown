@@ -31,7 +31,7 @@ scriptUpdated = officeToMarkdownLib.checkIfScriptUpdated(previousInputFileTimest
 filesProcessed = {}
 def copyFiles(theInputPath, theOutputPath):
   if theInputPath.is_file():
-    outputFilePath = args["outputRoot"] / theOutputPath
+    outputFilePath = args["outputRoot"] / theOutputPath / theInputPath.name
     inputPathStr = str(theInputPath)
     inputPathStat = theInputPath.stat()
     if scriptUpdated or (not outputFilePath.is_file()) or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
