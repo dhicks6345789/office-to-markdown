@@ -5,7 +5,7 @@
 pinch-to-zoom functionality - this page is intended to be used as a kiosk application, possibly on a touch screen, where it turns out to be too easy to
 accidently pinch-to-zoom rather than just press the screen to advance the slide. The "touch-action:none" instruction might not work on normal browsers, only
 on browsers in kiosk mode. -->
-<html lang="en" style="margin:0; padding:0; height:100%; touch-action:none;">
+<html lang="en">
     <head>
         <!-- Set this page (hopefully) to not be cached, so it gets reloaded each time the browser refreshes / reloads / reboots.
         Seems to be of particular importance for ChromeOS kisok-mode devices, which seem to cache content between reboots. -->
@@ -15,6 +15,27 @@ on browsers in kiosk mode. -->
         
         <!-- Another setting to disable pinch-to-zoom functionality. Not actually sure which setting is taking effect, suspect it's the first one at the HTML element level. -->
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+        
+        <style>
+            /* Remove body margins and hide scrollbars */
+            body {
+                margin: 0;
+                padding: 0;
+                height: 100%;
+                touch-action:none;
+                overflow: hidden;
+            }
+            
+            /* A class for a full-page video element */
+            .full-page-video {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                object-fit: cover; /* Fills screen cleanly without stretching. */
+            }
+        </style>
         
         <script>
             // The minimum refresh period, in milliseconds.
@@ -275,6 +296,7 @@ on browsers in kiosk mode. -->
                             newVideoElement = document.createElement("video");
                             newVideoElement.src = resourceURL;
                             newVideoElement.controls = false;
+                            newVideoElement.classList.add("full-page-video");
                             // Normally, we don't want the video resource to loop...
                             if (!(resources.length == 1 && currentSlide == 0)) {
                                 newVideoElement.loop = false;
