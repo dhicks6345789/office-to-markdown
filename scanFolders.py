@@ -136,9 +136,7 @@ def scanFolder(theInputFolder, theOutputFolder):
             for matchInputItem in previousInputChanges:
                 if matchInputItem.startswith(str(item)):
                     matchInputItems[matchInputItem] = previousInputChanges[matchInputItem]
-            subCurrentInputChanges, subOutputFiles = scanFolder(item, theOutputFolder / pathlib.Path(item.name))
-            currentInputChanges.update(subCurrentInputChanges)
-            outputFiles.extend(subOutputFiles)
+            scanFolder(item, theOutputFolder / pathlib.Path(item.name))
 # Start the scanFolders process.
 scanFolder(args["input"], pathlib.Path(""))
 
