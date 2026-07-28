@@ -42,7 +42,7 @@ scriptUpdatedFiles.append(__file__.replace("processSlideshow.py", "slideshowInde
 scriptUpdated = officeToMarkdownLib.checkIfScriptUpdated(previousInputFileTimestamps, scriptUpdatedFiles, args["verbose"])
 
 # A message for the user.
-officeToMarkdownLib.ifVerbose(args["verbose"], "ProcessSlideshow -  folder: " + str(args["input"]))
+officeToMarkdownLib.printIfVerbose(args["verbose"], "ProcessSlideshow -  folder: " + str(args["input"]))
 
 outputPath = args["output"]
 if outputPath.name == "slideshow":
@@ -65,7 +65,7 @@ def copyFolder(theInputPath, theOutputPath):
             itemStr = str(item)
             itemStat = item.stat()
             if scriptUpdated or (not outputFilePath.is_file()) or (not itemStr in previousInputFileTimestamps) or (not str(itemStat.st_mtime) == previousInputFileTimestamps[itemStr]):
-                officeToMarkdownLib.ifVerbose(args["verbose"], "processSlideshow -    copy: " + itemStr + " to " + str(outputFilePath))
+                officeToMarkdownLib.printIfVerbose(args["verbose"], "processSlideshow -    copy: " + itemStr + " to " + str(outputFilePath))
                 shutil.copy(item, outputFilePath)
                 os.utime(outputFilePath, (itemStat.st_atime, itemStat.st_mtime))
             filesProcessed[itemStr] = (str(outputFilePath), str(itemStat.st_mtime))
@@ -91,7 +91,7 @@ for inputPath in args["input"].iterdir():
                     img = img.convert("RGB")
                 img.save(outputFilePath)
                 os.utime(outputFilePath, (inputPathStat.st_atime, inputPathStat.st_mtime))
-            officeToMarkdownLib.ifVerbose(args["verbose"], "processSlideshow - " + officeToMarkdownLib.prePadWithSpaces(inputPathSuffix, 7) + ": " + inputPathStr + " to " + str(outputFilePath))
+            officeToMarkdownLib.printIfVerbose(args["verbose"], "processSlideshow - " + officeToMarkdownLib.prePadWithSpaces(inputPathSuffix, 7) + ": " + inputPathStr + " to " + str(outputFilePath))
         filesProcessed[inputPathStr] = (str(outputFilePath), str(inputPathStat.st_mtime))
         slideCount = slideCount + 1
     # Handle PowerPoint (PPTX) files - convert to a series of images.
@@ -99,7 +99,7 @@ for inputPath in args["input"].iterdir():
         # Use (external application) LibreOffice (this can be the headless or GUI version) to convert the PPTX file to PDF...
         libreofficeExec = "soffice" if sys.platform != "win32" else "libreoffice"
         libreofficeCmd = [libreofficeExec, "--headless", "--convert-to", "pdf", "--outdir", str(outputPath), inputPathStr]
-        officeToMarkdownLib.ifVerbose(args["verbose"], "ProcessSlideshow - running: " + " ".join([f"{value}" for value in libreofficeCmd]))
+        officeToMarkdownLib.printIfVerbose(args["verbose"], "ProcessSlideshow - running: " + " ".join([f"{value}" for value in libreofficeCmd]))
         try:
             libreofficeResult = subprocess.run(libreofficeCmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         except FileNotFoundError:
@@ -117,7 +117,7 @@ for inputPath in args["input"].iterdir():
             outputFilePath = args["outputRoot"] / outputPath / pathlib.Path("slide-" + officeToMarkdownLib.padInt(slideCount, 5) + ".png")
             slideList.append(outputFilePath.name)
             if scriptUpdated or (not outputFilePath.is_file()) or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
-                officeToMarkdownLib.ifVerbose(args["verbose"], "processSlideshow - " + officeToMarkdownLib.prePadWithSpaces(inputPathSuffix, 7) + ": " + inputPathStr + " to " + str(outputFilePath))
+                officeToMarkdownLib.printIfVerbose(args["verbose"], "processSlideshow - " + officeToMarkdownLib.prePadWithSpaces(inputPathSuffix, 7) + ": " + inputPathStr + " to " + str(outputFilePath))
                 slideshowImage.save(outputFilePath)
                 os.utime(outputFilePath, (inputPathStat.st_atime, inputPathStat.st_mtime))
             slideshowOutputs.append(str(outputFilePath))
@@ -127,12 +127,12 @@ for inputPath in args["input"].iterdir():
         # Cleanup intermediate PDF file.
         if tempPDFPath.exists():
             tempPDFPath.unlink()
-    # Handle video files - use FFMpeg to convert to a common format before saving to the destination.
+    # Handle any video file - use FFMpeg to convert to a common format before saving to the destination.
     elif inputPathSuffix in officeToMarkdownLib.videoSuffixes:
         outputFilePath = args["outputRoot"] / outputPath / pathlib.Path("slide-" + officeToMarkdownLib.padInt(slideCount, 5) + ".mp4")
         slideList.append(outputFilePath.name)
         if scriptUpdated or (not outputFilePath.is_file()) or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
-            officeToMarkdownLib.ifVerbose(args["verbose"], "processSlideshow -   video: " + str(inputPath) + " to " + str(outputFilePath))
+            officeToMarkdownLib.printIfVerbose(args["verbose"], "processSlideshow -   video: " + str(inputPath) + " to " + str(outputFilePath))
             (args["outputRoot"] / outputPath).mkdir(parents=True, exist_ok=True)
             officeToMarkdownLib.thumbnailVideo(inputPath, outputFilePath, args["width"], args["height"])
             os.utime(outputFilePath, (inputPathStat.st_atime, inputPathStat.st_mtime))
@@ -145,7 +145,7 @@ for inputPath in args["input"].iterdir():
         outputFilePath = args["outputRoot"] / outputPath / pathlib.Path("slide-" + officeToMarkdownLib.padInt(slideCount, 5) + inputPathSuffix)
         slideList.append(outputFilePath.name)
         if scriptUpdated or (not outputFilePath.is_file()) or (not inputPathStr in previousInputFileTimestamps) or (not str(inputPathStat.st_mtime) == previousInputFileTimestamps[inputPathStr]):
-            officeToMarkdownLib.ifVerbose(args["verbose"], "processSlideshow -    copy: " + str(inputPath) + " to " + str(outputFilePath))
+            officeToMarkdownLib.printIfVerbose(args["verbose"], "processSlideshow -    copy: " + str(inputPath) + " to " + str(outputFilePath))
             (args["outputRoot"] / outputPath).mkdir(parents=True, exist_ok=True)
             shutil.copy(inputPath, outputFilePath)
             os.utime(outputFilePath, (inputPathStat.st_atime, inputPathStat.st_mtime))
