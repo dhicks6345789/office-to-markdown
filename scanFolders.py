@@ -25,7 +25,7 @@ print("OfficeToMarkdown - arguments:", flush=True)
 for arg in args:
     if arg == "copyIn":
         for copyIns in arg:
-            print(" - copyIn: " + str(args[arg][0]) + " --> " + str(args[arg][1]), flush=True)
+            print(" - copyIn: " + str(args[arg][0]) + " --> " + str(args[arg][0]), flush=True)
     else:
         print(" - " + arg + ": " + str(args[arg]), flush=True)
 
