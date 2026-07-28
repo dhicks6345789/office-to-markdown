@@ -50,12 +50,12 @@ previousInputChanges = officeToMarkdownLib.readChangesFile(inputChangesPath)
 # Looks through the contents of the input folder, applying a transform script to each file or folder found.
 # A cache of file paths with checksum details is maintained, this is used to avoid processing a file if it (and the associated processing script) hasn't been changed since the last run.
 # Folders are recursed into. Some matches might match whole sub-folders, in which case that sub-folder's processing will be handled by the transform script.
+currentInputChanges = {}
+outputFiles = []
 def scanFolder(theInputFolder, theOutputFolder):
     if args["verbose"]:
         print("ScanFolder       -  folder: " + str(theInputFolder))
-    outputFiles = []
     unmatchedItems = []
-    newInputFileTimestamps = {}
     for item in theInputFolder.iterdir():
         matched = False
         itemStr = str(item)
@@ -103,7 +103,7 @@ def scanFolder(theInputFolder, theOutputFolder):
                                     state = 1
                                 else:
                                     outputLineSplit = outputLine.split(",")
-                                    newInputFileTimestamps[outputLineSplit[0]] = outputLineSplit[1]
+                                    currentInputChanges[outputLineSplit[0]] = outputLineSplit[1]
                             elif state == 1:
                                 outputFiles.append(outputLine)
                 
@@ -134,12 +134,11 @@ def scanFolder(theInputFolder, theOutputFolder):
             for matchInputItem in previousInputChanges:
                 if matchInputItem.startswith(str(item)):
                     matchInputItems[matchInputItem] = previousInputChanges[matchInputItem]
-            subNewInputFileTimestamps, subOutputFiles = scanFolder(item, theOutputFolder / pathlib.Path(item.name))
-            newInputFileTimestamps.update(subNewInputFileTimestamps)
+            subCurrentInputChanges, subOutputFiles = scanFolder(item, theOutputFolder / pathlib.Path(item.name))
+            currentInputChanges.update(subCurrentInputChanges)
             outputFiles.extend(subOutputFiles)
-    return newInputFileTimestamps, outputFiles
 # Start the scanFolders process.
-currentInputChanges, outputFiles = officeToMarkdownLib.scanFolder(args["input"], pathlib.Path(""))
+scanFolder(args["input"], pathlib.Path(""))
 
 # Write the updated last-updated file timestamps the the "inputChanges" file.
 officeToMarkdownLib.writeChangesFile(inputChangesPath, currentInputChanges)
