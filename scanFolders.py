@@ -144,22 +144,24 @@ scanFolder(args["input"], pathlib.Path(""))
 # Write the updated last-updated file timestamps the the "inputChanges" file.
 officeToMarkdownLib.writeChangesFile(inputChangesPath, currentInputChanges)
 
-# If the user has specified a "copy in" folder, copy the contens of that folder over to the destination as well.
+# If the user has specified one or more "copy in" folders and destinations, copy the contens of that folder over to the destination as well.
 # This happens after "scan folders", so for any conflicting filenames, the copy process will take precedence.
-# This is an inline function which adds files copied to the "outputFiles" list.
+# This adds files copied to the "outputFiles" list so they don't then get deleted by the subsequent "deleteExtraFiles" function.
+# Filenames specified in the "fileIgnores" list are not copied.
 def copyFolder(inputFolder, outputFolder):
     for inputItem in inputFolder.iterdir():
-        outputItem = outputFolder / pathlib.Path(inputItem.name)
-        outputFiles.append(str(outputItem))
-        if inputItem.is_file():
-            if (not outputItem.is_file()) or (not inputItem.stat().st_mtime == outputItem.stat().st_mtime):
-                if args["verbose"]:
-                    print("ScanFolder       -  copyIn: " + str(inputItem) + " to " + str(outputItem))
-                shutil.copyfile(str(inputItem), str(outputItem))
-                officeToMarkdownLib.makeModDatesMatch(str(inputItem), str(outputItem))
-        else:
-            outputItem.mkdir(parents=True, exist_ok=True)
-            copyFolder(inputItem, outputItem)
+        if not inputItem.name in officeToMarkdownLib.fileIgnores:
+            outputItem = outputFolder / pathlib.Path(inputItem.name)
+            outputFiles.append(str(outputItem))
+            if inputItem.is_file():
+                if (not outputItem.is_file()) or (not inputItem.stat().st_mtime == outputItem.stat().st_mtime):
+                    if args["verbose"]:
+                        print("ScanFolder       -  copyIn: " + str(inputItem) + " to " + str(outputItem))
+                    shutil.copyfile(str(inputItem), str(outputItem))
+                    officeToMarkdownLib.makeModDatesMatch(str(inputItem), str(outputItem))
+            else:
+                outputItem.mkdir(parents=True, exist_ok=True)
+                copyFolder(inputItem, outputItem)
 for copyInTuple in args["copyIn"]:
     copyFolder(copyInTuple[0], args["output"] / path.pathlib(copyInTuple[1]))
 
