@@ -41,7 +41,8 @@ for item in ["scanFolders.py", "officeToMarkdownLib.py"]:
     itemPath = args["scriptRoot"] / pathlib.Path(item)
     itemPathStr = str(itemPath)
     if (not itemPathStr in previousMatchChanges) or (not previousMatchChanges[itemPathStr] == currentMatchChanges[itemPathStr]):
-        officeToMarkdownLib.ifVerbose(args["verbose"], "ScanFolders      -  update: " + itemPathStr + " - re-running all scripts.")
+        if args["verbose"]:
+            print("ScanFolders      -  update: " + itemPathStr + " - re-running all scripts.")
         previousMatchChanges = {}
 
 # Read the inputChanges cache file, a list of previously-seen input files and their last-updated filestamps.
@@ -112,7 +113,7 @@ def scanFolder(theInputFolder, theOutputFolder):
                 # Any output on stderr from a child process we simply re-write to the main stdout.
                 def streamErrPipe(pipe, label):
                     for line in pipe:
-                        if verbose:
+                        if args["verbose"]:
                             if not line.strip() == "":
                                 sys.stdout.write(line)
 
@@ -152,7 +153,8 @@ def copyFolder(inputFolder, outputFolder):
         outputFiles.append(str(outputItem))
         if inputItem.is_file():
             if (not outputItem.is_file()) or (not inputItem.stat().st_mtime == outputItem.stat().st_mtime):
-                officeToMarkdownLib.ifVerbose(args["verbose"], "ScanFolder       -  copyIn: " + str(inputItem) + " to " + str(outputItem))
+                if args["verbose"]::
+                    print("ScanFolder       -  copyIn: " + str(inputItem) + " to " + str(outputItem))
                 shutil.copyfile(str(inputItem), str(outputItem))
                 officeToMarkdownLib.makeModDatesMatch(str(inputItem), str(outputItem))
         else:
@@ -168,7 +170,8 @@ def deleteExtraFiles(theFolder):
     for item in theFolder.iterdir():
         if item.is_file():
             if not str(item) in outputFiles:
-                officeToMarkdownLib.ifVerbose(args["verbose"], "ScanFolder       -  delete: " + str(item))
+                if args["verbose"]:
+                    print("ScanFolder       -  delete: " + str(item))
                 os.remove(str(item))
         else:
             deleteExtraFiles(item)
