@@ -49,4 +49,5 @@ def copyFiles(theInputPath, theOutputPath):
 copyFiles(args["input"], pathlib.Path("content") / args["output"])
 
 # Report the input filenames, with current update timestamp, back to the calling script, along with the output filenames.
+officeToMarkdownLib.printIfVerbose(args["verbose"], str(filesProcessed))
 officeToMarkdownLib.printFilesProcessed(filesProcessed)
