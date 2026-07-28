@@ -47,9 +47,99 @@ for item in ["scanFolders.py", "officeToMarkdownLib.py"]:
 inputChangesPath = args["dataRoot"] / pathlib.Path("inputChanges.csv")
 previousInputChanges = officeToMarkdownLib.readChangesFile(inputChangesPath)
 
-# Start the scanFolders process. This scans the given folder, using the passed-in dicts of last-updated timestamps to spot any changed files so we can avoid re-doing work if we don't need to.
-# The function returns a dict of updated last-updated timestamps for input files and a list of output files.
-currentInputChanges, outputFiles = officeToMarkdownLib.scanFolder(args["verbose"], args["scriptRoot"], matches, previousMatchChanges, previousInputChanges, args["input"], args["output"], pathlib.Path(""))
+# Looks through the contents of the input folder, applying a transform script to each file or folder found.
+# A cache of file paths with checksum details is maintained, this is used to avoid processing a file if it (and the associated processing script) hasn't been changed since the last run.
+# Folders are recursed into. Some matches might match whole sub-folders, in which case that sub-folder's processing will be handled by the transform script.
+def scanFolder(theInputFolder, theOutputFolder):
+    if args["verbose"]:
+        print("ScanFolder       -  folder: " + str(theInputFolder))
+    outputFiles = []
+    unmatchedItems = []
+    newInputFileTimestamps = {}
+    for item in theInputFolder.iterdir():
+        matched = False
+        itemStr = str(item)
+        if item.is_dir():
+            itemStr = itemStr + "/"
+        for match in matches:
+            if (matched == False) and (not re.match(match, itemStr) == None):
+                matched = True
+                if args["verbose"]:
+                    print(verbose, "ScanFolder       - matched: " + itemStr + " with " + match)
+                scriptExec = (matches[match])[0]
+                scriptPath = args["scriptRoot"] / pathlib.Path((matches[match])[1])
+                scriptPathStr = str(scriptPath)
+                scriptPathParentStr = str(scriptPath.parent)
+                scriptTimestamp = "0"
+                if scriptPathStr in previousMatchChanges:
+                    scriptTimestamp = previousMatchChanges[scriptPathStr]
+                inputTimestamp = "0"
+                if str(item) in previousInputChanges:
+                    inputTimestamp = previousInputChanges[str(item)]
+                commandLine = [scriptExec, scriptPathStr, "--input", str(item), "--outputRoot", str(args["output"]), "--output", str(theOutputFolder) + os.sep + item.name]
+                if verbose:
+                    commandLine.append("--verbose")
+                matchInputItems = {}
+                if item.is_file():
+                    if str(item) in previousInputChanges:
+                        matchInputItems[itemStr] = previousInputChanges[itemStr]
+                else:
+                    for matchInputItem in previousInputChanges:
+                        if matchInputItem.startswith(itemStr):
+                            matchInputItems[matchInputItem] = previousInputChanges[matchInputItem]
+                for matchScriptItem in previousMatchChanges:
+                    if matchScriptItem.startswith(scriptPathParentStr):
+                        matchInputItems[matchScriptItem] = previousMatchChanges[matchScriptItem]
+                ifVerbose(verbose, "ScanFolder       - running: " + " ".join([f"{value}" for value in commandLine]))
+
+                # We expect the output (on stdout) from a sub-script to be a list of input file filename,timestamp pairs, then a "---", then a list of output files.
+                def streamOutPipe(pipe, label):
+                    state = 0
+                    for outputLine in pipe:
+                        outputLine = outputLine.strip()
+                        if not outputLine == "":
+                            if state == 0:
+                                if outputLine == "---":
+                                    state = 1
+                                else:
+                                    outputLineSplit = outputLine.split(",")
+                                    newInputFileTimestamps[outputLineSplit[0]] = outputLineSplit[1]
+                            elif state == 1:
+                                outputFiles.append(outputLine)
+                
+                # Any output on stderr from a child process we simply re-write to the main stdout.
+                def streamErrPipe(pipe, label):
+                    for line in pipe:
+                        if verbose:
+                            if not line.strip() == "":
+                                sys.stdout.write(line)
+
+                # Start a sub-process script, streaming its stdout and stderr concurrently in background threads.
+                commandLineProcess = subprocess.Popen(commandLine, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1)
+                with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+                    executor.submit(streamOutPipe, commandLineProcess.stdout, "STDOUT")
+                    executor.submit(streamErrPipe, commandLineProcess.stderr, "STDERR")
+                    # Pass the matchInputItems data to the sub-process.
+                    commandLineProcess.stdin.write("\n".join([f"{key},{value}" for key, value in matchInputItems.items()]))
+                    commandLineProcess.stdin.flush()
+                    # Signal EOF (End of File) to child process.
+                    commandLineProcess.stdin.close()
+                # Wait for the process to exit.
+                commandLineProcess.wait()
+        if (matched == False):
+            unmatchedItems.append(item)
+    for item in unmatchedItems:
+        if item.is_dir():
+            matchInputItems = {}
+            for matchInputItem in previousInputChanges:
+                if matchInputItem.startswith(str(item)):
+                    matchInputItems[matchInputItem] = previousInputChanges[matchInputItem]
+            subNewInputFileTimestamps, subOutputFiles = scanFolder(item, theOutputFolder / pathlib.Path(item.name))
+            newInputFileTimestamps.update(subNewInputFileTimestamps)
+            outputFiles.extend(subOutputFiles)
+    return newInputFileTimestamps, outputFiles
+# Start the scanFolders process.
+currentInputChanges, outputFiles = officeToMarkdownLib.scanFolder(args["input"], pathlib.Path(""))
 
 # Write the updated last-updated file timestamps the the "inputChanges" file.
 officeToMarkdownLib.writeChangesFile(inputChangesPath, currentInputChanges)
