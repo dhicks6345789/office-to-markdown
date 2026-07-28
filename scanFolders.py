@@ -163,7 +163,7 @@ def copyFolder(inputFolder, outputFolder):
                 outputItem.mkdir(parents=True, exist_ok=True)
                 copyFolder(inputItem, outputItem)
 for copyInTuple in args["copyIn"]:
-    copyFolder(copyInTuple[0], args["output"] / path.pathlib(copyInTuple[1]))
+    copyFolder(copyInTuple[0], args["output"] / pathlib.Path(copyInTuple[1]))
 
 # If the user has specified the "deleteExtraFiles" option then we clear any extra files out of the output destination. We define "extra files" as any files that could not have been produced as output files
 # this run, i.e. the contents of the "outputFiles" list. Note that this list should include files that would have been oputput by any sub-script, even if they weren't updated this run because non of their inputs
