@@ -24,7 +24,7 @@ args = vars(parser.parse_args())
 print("OfficeToMarkdown - arguments:", flush=True)
 for arg in args:
     if arg == "copyIn":
-        for copyIns in args[arg]:
+        for copyIn in args[arg]:
             print(" - copyIn: " + str(copyIn[0]) + " --> " + str(copyIn[1]), flush=True)
     else:
         print(" - " + arg + ": " + str(args[arg]), flush=True)
