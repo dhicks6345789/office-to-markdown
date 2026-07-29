@@ -27,6 +27,14 @@ You are probably best off running the scanFolders.sh script, which sets up the P
 Scans a folder structure and runs transform scripts on matched files and sub-folders.
 
 ### Command-line Options
+
+<table>
+  <tr>
+    <td style="white-space: nowrap;">-h, --help</td>
+    <td>Show this help message and exit.</td>
+  </tr>
+</table>
+
 | Option                         | Action                                                                                                                |
 |--------------------------------|-----------------------------------------------------------------------------------------------------------------------|
 | `-h, --help`                   | Show this help message and exit.                                                                                      |
