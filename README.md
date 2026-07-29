@@ -16,11 +16,12 @@ bash scanFolders.sh --input ~/Documents/www --output ~/.cache/Hugo --verbose
 ## Requirements
 There's a Python requirements.txt file that should be installed into a Python venv (handled by the helper Bash script above if you use that).
 
-The scripts used for each item might have further individual requirements, possibly including supporting applications (such as ffmpeg to handle videos), see the relevant script's documentation for details.
+The scripts used for each item might have further individual requirements, including supporting applications (such as Slideshows using LibreOffice for some document conversions and ffmpeg to handle videos), see the relevant script's documentation for details.
 
-The scripts are intended to be run over a simple folder tree. They should work with pretty much anything that looks to the operating system like a local tree of folders, so if you have a utility that maps a cloud-based file system of some kind to a local path (say you're using one of the Windows Google Drive / OneDrive / Dropbox clients) you should be able to run the scripts on that path (either as input or output location) in the same way. In this way, you can set up a content publishing pipeline that allows your users to edit content directly in their usual Office editor (desktop Microsoft Word, Office 365 Word, Google Docs, Libre Office, etc) and publish directly to a website.
+## Cloud-Based Filesystems
+The scripts are intended to be run over a simple folder tree. They should work with pretty much anything that looks to the operating system like a local tree of folders, so if you have a utility that maps a cloud-based file system of some kind to a local path (the official Google Drive / OneDrive / Dropbox clients on Windows, for instance) you should be able to run the scripts on that path (both as input or output location) in the same way. In this way, you can set up a content publishing pipeline that allows your users to edit content directly in their usual Office editor (desktop Microsoft Word, Office 365 Word, Google Docs, Libre Office, etc) and publish directly to a website.
 
-If you're on a Linux or MacOS system (or Windows), we can recommend [rclone](https://rclone.org/) as being an excellent way of mounting / cloning over 50 cloud provider's filesystems as a local filesystem.
+If you're on a Linux or MacOS system (or, actually, Windows), we can recommend [rclone](https://rclone.org/) as being an excellent way of mounting / cloning over 50 cloud provider's filesystems as a local filesystem.
 
 ## Usage
 You are probably best off running the scanFolders.sh script, which sets up the Python environment (venv and environment settings variables) before passing any arguments to the scanFolders.py script.
@@ -39,11 +40,14 @@ You are probably best off running the scanFolders.sh script, which sets up the P
 | `--deleteExtraFiles`      | Remove any extra files from the output folder not egnerated by this script.                                           |
 | `--dryRunExtraFiles`      | Does a dry-run of the deleteExtraFiles option, just displaying which files would be deleted by this action.           |
 
-## The Scripts
+## The Transform Sub-Scripts
 - [FAQ](FAQ/processFAQ.md)
 - [Slideshow](slideshow/processSlideshow.md)
 
 ## Extending
-If you want to extend the functionality of this project, you'll need to write a command-line script / application that accepts a defined set of parameters at the command line. There is a docsToMarkdownLib Python library that contains handy functions if you are writing a script in Python, but really you can write a command line application in any language you prefer. You can find more details, whether for yourself or for an AI agent, in the [AGENTS](AGENTS.md) file.
+If you want to extend the functionality of this project, you'll need to write a command-line script / application that accepts a defined set of parameters at the command line and that reads in a set of data via STDIN and writes out modifications to STDOUT. There is a docsToMarkdownLib Python library that contains most of the functionality you'll need if you are writing a script in Python, but really you can write a command line application in any language you prefer. You can find more details, whether for yourself or for an AI agent, in the [AGENTS](AGENTS.md) file.
 
-The scripts should all work from the command line, but as an added feature they might be used with the [Web Console](https://github.com/dhicks6345789/web-console) project to produce a very simple front end. Therefore, when writing additional scripts it would be best to include formatting in any output (progress / error messages, progress bars, etc) suitable for Web Console to use - see the project's page for more details.
+## Other Projects
+The transform scripts should all work from the command line, but as an added feature they might be used with the [Web Console](https://github.com/dhicks6345789/web-console) project to produce a very simple front end. Therefore, when writing additional scripts it would be best to include formatting in any output (progress / error messages, progress bars, etc) suitable for Web Console to use - see the project's page for more details.
+
+If you are a systems administrator wanting a sandboxed development environment for your users, complete with a web-publishing pipeline that enables simple editing inside common Office tools and publication to the public or access-controlled web, then look at our [Per-User Website]((https://github.com/dhicks6345789/per-user-webs-erver)) project, which can turn a basic Debian server into a full multi-user development and web publishing environment.
