@@ -34,6 +34,14 @@ Scans a folder structure and runs transform scripts on matched files and sub-fol
     <td>Show this help message and exit.</td>
   </tr>
   <tr>
+    <td style="white-space:nowrap; font-family:monospace;">--input INPUT</td>
+    <td>Input folder. Absolute path</td>
+  </tr>
+  <tr>
+    <td style="white-space:nowrap; font-family:monospace;">--output OUTPUT</td>
+    <td>Output folder.</td>
+  </tr>
+  <tr>
     <td style="white-space:nowrap; font-family:monospace;">--scriptRoot SCRIPTROOT</td>
     <td>The root of the script folder. Defaults to the current working directory.</td>
   </tr>
@@ -41,10 +49,6 @@ Scans a folder structure and runs transform scripts on matched files and sub-fol
 
 | Option                         | Action                                                                                                                |
 |--------------------------------|-----------------------------------------------------------------------------------------------------------------------|
-| `-h, --help`                   | Show this help message and exit.                                                                                      |
-| `--input INPUT`                | Input folder. Absolute path.                                                                                          |
-| `--output OUTPUT`              | Output folder.                                                                                                        |
-| `<span style="white-space: nowrap;">--scriptRoot SCRIPTROOT</span>`      | The root of the script folder. Defaults to the current working directory.                                             |
 | `--dataRoot DATAROOT`          | The root of the script folder. Defaults to the current working directory.                                             |
 | `--verbose`                    | Turn on verbose output.                                                                                               |
 | `--copyIn SRC DEST`            | Copy in the contents of the given folder (SRC) to the given output folder (DEST), relative to the root output folder. |
