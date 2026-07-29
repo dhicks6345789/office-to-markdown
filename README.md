@@ -30,11 +30,11 @@ Scans a folder structure and runs transform scripts on matched files and sub-fol
 
 <table>
   <tr>
-    <td>`<span style="white-space: nowrap;">-h, --help</span>`</td>
+    <td>`<span style="white-space:nowrap; font-family:monospace;">-h, --help</span>`</td>
     <td>Show this help message and exit.</td>
   </tr>
   <tr>
-    `<td style="white-space: nowrap;">--scriptRoot SCRIPTROOT</td>`
+    `<td style="white-space:nowrap; font-family:monospace;">--scriptRoot SCRIPTROOT</td>`
     <td>The root of the script folder. Defaults to the current working directory.</td>
   </tr>
 </table>
