@@ -24,9 +24,6 @@ You are probably best off running the scanFolders.sh script, which sets up the P
 
 `scanFolders.py [-h] [--input INPUT] [--output OUTPUT] [--scriptRoot SCRIPTROOT] [--dataRoot DATAROOT] [--verbose] [--copyIn SRC DEST] [--deleteExtraFiles] [--dryRunExtraFiles]`
 
-Scans a folder structure and runs transform scripts on matched files and sub-folders.
-
-### Command-line Options
 | Option                    | Action                                                                                                                |
 |---------------------------|-----------------------------------------------------------------------------------------------------------------------|
 | `-h, --help`              | Show this help message and exit.                                                                                      |
