@@ -27,7 +27,7 @@ You are probably best off running the scanFolders.sh script, which sets up the P
 Scans a folder structure and runs transform scripts on matched files and sub-folders.
 
 ### Command-line Options
-| One                       | Two                                                                                                                   |
+|                           |                                                                                                                       |
 |---------------------------|-----------------------------------------------------------------------------------------------------------------------|
 | `-h, --help`              | Show this help message and exit.                                                                                      |
 | `--input INPUT`           | Input folder. Absolute path.                                                                                          |
