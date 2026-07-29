@@ -1,5 +1,6 @@
 # Office To Markdown
-![Project Logo](logo.svg)
+<img src="logo.svg" alt="Project Logo" width="120"/>
+
 A collection of scripts to pre-process folders of content, often in common Office formats (DOCX, XLSX, PPTX, etc) into a form ready for further processing with common static site generation tools ([Hugo](https://gohugo.io/), [Jekyll](https://jekyllrb.com/), [Eleventy](https://www.11ty.dev/), etc).
 
 The "scanFolders.py" Python script acts as an overall starting point, triggering other scripts to run conversions on a folder tree containing various content. Each script should also be able to be used as a stand-alone application should you want.
