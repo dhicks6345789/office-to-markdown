@@ -1,8 +1,8 @@
 # Office To Markdown <img src="logo.svg" alt="Project Logo" width="60"/>
 
-A collection of Python scripts to transform folders of content in common Office formats (DOCX, XLSX, PPTX, etc), image formats (JPG, PNG, SVG, etc) or video formats (MP4, MOV, etc) into websites, slideshows and so on.
+A collection of Python scripts to transform folders of content in common Office formats (DOCX, PPTX, etc), image formats (JPG, PNG, SVG, etc) or video formats (MP4, MOV, etc) into websites, slideshows and so on.
 
-Output is generally in structured Markdown designed to be used as the input for the ([Hugo](https://gohugo.io/) static site generation tool, letting users choose their own Hugo site templates.
+Output is generally in structured Markdown designed to be used as the input for the [Hugo](https://gohugo.io/) static site generation tool, letting users choose their own Hugo site templates.
 
 The "scanFolders.py" Python script acts as an overall starting point, triggering other scripts to run conversions on a folder tree containing various content. Each script should also be able to be used as a stand-alone application should you want.
 
