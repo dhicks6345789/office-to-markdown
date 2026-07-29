@@ -37,13 +37,10 @@ You are probably best off running the scanFolders.sh script, which sets up the P
 | `--dryRunExtraFiles`      | Does a dry-run of the deleteExtraFiles option, just displaying which files would be deleted by this action.           |
 
 ## The Scripts
-- [Documents](documents/processDocuments.md)
 - [FAQ](FAQ/processFAQ.md)
 - [Slideshow](slideshow/processSlideshow.md)
-- [Dashboard](dashboard/processDashboard.md)
-- [Image Gallery](imageGallery/processImageGallery.md)
 
 ## Extending
-If you want to extend the functionality of this project, just write a script that accepts the same set of paramaeters at the command line. There is a docsToMarkdownLib Python library that contains handy functions if you happen to be writing your script in Python, but really you can write a command line application in any language you prefer.
+If you want to extend the functionality of this project, you'll need to write a command-line script / application that accepts a defined set of parameters at the command line. There is a docsToMarkdownLib Python library that contains handy functions if you are writing a script in Python, but really you can write a command line application in any language you prefer. You can find more details, whether for yourself or for an AI agent, in the [AGENTS](AGENTS.md) file.
 
-The scripts should all work just fine from the command line, but as an added feature they might be used with the [Web Console](https://github.com/dhicks6345789/web-console) project to produce a very simple front end. Therefore, when writing additional scripts it would be best to include formatting in any output (progress / error messages, progress bars, etc) suitible for Web Console to use - see the project's page for more details.
+The scripts should all work from the command line, but as an added feature they might be used with the [Web Console](https://github.com/dhicks6345789/web-console) project to produce a very simple front end. Therefore, when writing additional scripts it would be best to include formatting in any output (progress / error messages, progress bars, etc) suitable for Web Console to use - see the project's page for more details.
