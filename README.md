@@ -22,23 +22,20 @@ If you're on a Linux or MacOS system (or Windows), we can recommend [rclone](htt
 ## Usage
 You are probably best off running the scanFolders.sh script, which sets up the Python environment (venv and environment settings variables) before passing any arguments to the scanFolders.py script.
 
-Usage: `scanFolders.py [-h] [--input INPUT] [--output OUTPUT] [--scriptRoot SCRIPTROOT] [--dataRoot DATAROOT] [--verbose] [--copyIn SRC DEST] [--deleteExtraFiles] [--dryRunExtraFiles]`
+`scanFolders.py [-h] [--input INPUT] [--output OUTPUT] [--scriptRoot SCRIPTROOT] [--dataRoot DATAROOT] [--verbose] [--copyIn SRC DEST] [--deleteExtraFiles] [--dryRunExtraFiles]`
 
 Scans a folder structure and runs transform scripts on matched files and sub-folders.
 
-```
-Command-line options:
-  -h, --help            show this help message and exit
-  --input INPUT         Input folder. Absolute path.
-  --output OUTPUT       Output folder.
-  --scriptRoot SCRIPTROOT
-                        The root of the script folder. Defaults to the current working directory.
-  --dataRoot DATAROOT   The root of the script folder. Defaults to the current working directory.
-  --verbose             Turn on verbose output.
-  --copyIn SRC DEST     Copy in the contents of the given folder (SRC) to the given output folder (DEST), relative to the root output folder.
-  --deleteExtraFiles    Remove any extra files from the output folder not egnerated by this script.
-  --dryRunExtraFiles    Does a dry-run of the deleteExtraFiles option, just displaying which files would be deleted by this action.
-```
+### Command-line Options
+`-h, --help`              | Show this help message and exit
+`--input INPUT`           | Input folder. Absolute path.
+`--output OUTPUT`         | Output folder.
+`--scriptRoot SCRIPTROOT` | The root of the script folder. Defaults to the current working directory.
+`--dataRoot DATAROOT`     | The root of the script folder. Defaults to the current working directory.
+`--verbose`               | Turn on verbose output.
+`--copyIn SRC DEST`       | Copy in the contents of the given folder (SRC) to the given output folder (DEST), relative to the root output folder.
+`--deleteExtraFiles`      | Remove any extra files from the output folder not egnerated by this script.
+`--dryRunExtraFiles`      | Does a dry-run of the deleteExtraFiles option, just displaying which files would be deleted by this action.
 
 ## The Scripts
 - [Documents](documents/processDocuments.md)
