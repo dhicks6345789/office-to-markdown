@@ -33,6 +33,10 @@ Scans a folder structure and runs transform scripts on matched files and sub-fol
     <td style="white-space: nowrap;">-h, --help</td>
     <td>Show this help message and exit.</td>
   </tr>
+  <tr>
+    <td style="white-space: nowrap;">--scriptRoot SCRIPTROOT</td>
+    <td>The root of the script folder. Defaults to the current working directory.</td>
+  </tr>
 </table>
 
 | Option                         | Action                                                                                                                |
