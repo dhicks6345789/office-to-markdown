@@ -47,7 +47,7 @@ You are probably best off running the scanFolders.sh script, which sets up the P
 ## Extending
 If you want to extend the functionality of this project, you'll need to write a command-line script / application that accepts a defined set of parameters at the command line and that reads in a set of data via STDIN and writes out modifications to STDOUT. There is a docsToMarkdownLib Python library that contains most of the functionality you'll need if you are writing a script in Python, but really you can write a command line application in any language you prefer. You can find more details, whether for yourself or for an AI agent, in the [AGENTS](AGENTS.md) file.
 
-## Other Projects
+## Related Projects
 The transform scripts should all work from the command line, but as an added feature they might be used with the [Web Console](https://github.com/dhicks6345789/web-console) project to produce a very simple front end. Therefore, when writing additional scripts it would be best to include formatting in any output (progress / error messages, progress bars, etc) suitable for Web Console to use - see the project's page for more details.
 
 If you are a systems administrator wanting a sandboxed development environment for your users, complete with a web-publishing pipeline that enables simple editing inside common Office tools and publication to the public or access-controlled web, then look at our [Per-User Web Server](https://github.com/dhicks6345789/per-user-web-server) project, which can turn a basic Debian server into a full multi-user, cloud-integrated development and web publishing environment suitable for corporate and educational environments.
