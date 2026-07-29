@@ -27,22 +27,21 @@ You are probably best off running the scanFolders.sh script, which sets up the P
 Scans a folder structure and runs transform scripts on matched files and sub-folders.
 
 ### Command-line Options
-
 <table>
   <tr>
-    <td><span style="white-space:nowrap; font-family:monospace;">-h, --help</span></td>
+    <td style="white-space:nowrap;">-h, --help</span></td>
     <td>Show this help message and exit.</td>
   </tr>
   <tr>
-    <td style="white-space:nowrap; font-family:monospace;">--input INPUT</td>
+    <td style="white-space:nowrap;">--input INPUT</td>
     <td>Input folder. Absolute path</td>
   </tr>
   <tr>
-    <td style="white-space:nowrap; font-family:monospace;">--output OUTPUT</td>
+    <td style="white-space:nowrap;">--output OUTPUT</td>
     <td>Output folder.</td>
   </tr>
   <tr>
-    <td style="white-space:nowrap; font-family:monospace;">--scriptRoot SCRIPTROOT</td>
+    <td style="white-space:nowrap;">--scriptRoot SCRIPTROOT</td>
     <td>The root of the script folder. Defaults to the current working directory.</td>
   </tr>
 </table>
