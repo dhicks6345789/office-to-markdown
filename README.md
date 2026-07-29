@@ -1,4 +1,4 @@
-# Office To Markdown <img src="logo.svg" alt="Project Logo" width="120"/>
+# Office To Markdown <img src="logo.svg" alt="Project Logo" width="60"/>
 
 A collection of Python scripts to transform folders of content in common Office formats (DOCX, XLSX, PPTX, etc), image formats (JPG, PNG, SVG, etc) or video formats (MP4, MOV, etc) into websites, slideshows and so on.
 
