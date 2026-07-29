@@ -30,7 +30,7 @@ Scans a folder structure and runs transform scripts on matched files and sub-fol
 
 <table>
   <tr>
-    <td style="white-space:nowrap; font-family:monospace;">-h, --help</td>
+    <td><span style="white-space:nowrap; font-family:monospace;">-h, --help</span></td>
     <td>Show this help message and exit.</td>
   </tr>
   <tr>
