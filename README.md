@@ -4,7 +4,7 @@ A collection of Python scripts to transform folders of content in common Office 
 
 Output is generally in structured Markdown designed to be used as the input for the [Hugo](https://gohugo.io/) static site generation tool, letting users choose their own Hugo site templates.
 
-The "scanFolders.py" Python script acts as an overall starting point, triggering other scripts to run conversions on a folder tree containing various content. Each script should also be able to be used as a stand-alone application should you want.
+The "scanFolders.py" Python script acts as an overall starting point, triggering other sub-scripts to run conversions on a folder tree containing various content. Each sub-script should also be able to be used as a stand-alone application for those wanting more custom workflows.
 
 ## Quickstart
 Download / clone the Git repository. These scripts are written in Python 3 and, as such, should be cross-platform. On Linux, there's a Bash script that will set up and activate a Python venv to run the script:
