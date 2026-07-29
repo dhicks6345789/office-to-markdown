@@ -32,8 +32,8 @@ Scans a folder structure and runs transform scripts on matched files and sub-fol
 | `-h, --help`                   | Show this help message and exit.                                                                                      |
 | `--input INPUT`                | Input folder. Absolute path.                                                                                          |
 | `--output OUTPUT`              | Output folder.                                                                                                        |
-| --scriptRoot&nbsp;SCRIPTROOT | The root of the script folder. Defaults to the current working directory.                                             |
-| --dataRoot&nbsp;DATAROOT     | The root of the script folder. Defaults to the current working directory.                                             |
+| `--scriptRoot SCRIPTROOT`      | The root of the script folder. Defaults to the current working directory.                                             |
+| `--dataRoot DATAROOT`          | The root of the script folder. Defaults to the current working directory.                                             |
 | `--verbose`                    | Turn on verbose output.                                                                                               |
 | `--copyIn SRC DEST`            | Copy in the contents of the given folder (SRC) to the given output folder (DEST), relative to the root output folder. |
 | `--deleteExtraFiles`           | Remove any extra files from the output folder not egnerated by this script.                                           |
