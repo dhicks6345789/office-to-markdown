@@ -43,7 +43,7 @@ You are probably best off running the scanFolders.sh script, which sets up the P
 ## The Transform Sub-Scripts
 - [FAQ](FAQ/processFAQ.md): Turn a folder of documents (DOCX, Markdown) into a structured FAQ HTML page.
 - [Audio Cues](audioCues/processAudioCues.py): Turn a folder of resources (MP3, WAV, etc) into a single-page audio playing application.
-- [Start Screen]: Turn a folder of resources (XLSX files, images) into a single-page start page application.
+- [Start Screen](startScreen/processStartScreen.md): Turn a folder of resources (XLSX files, images) into a single-page start page application.
 - [Slideshow](slideshow/processSlideshow.md): Turn a folder of resources (PowerPoint presentations, images, videos, PDFs, HTML pages, links to websites) into a simple full-page timed or controllable slideshow presentation. Handy for digital signage displays, and when used with a cloud-based filesystem can allow for simple updating of content by end users using existing office software, no dedicated digital signage editor application needed.
 
 ## Extending
