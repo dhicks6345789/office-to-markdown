@@ -41,8 +41,8 @@ You are probably best off running the scanFolders.sh script, which sets up the P
 | `--dryRunExtraFiles`      | Does a dry-run of the deleteExtraFiles option, just displaying which files would be deleted by this action.           |
 
 ## The Transform Sub-Scripts
-- [FAQ](FAQ/processFAQ.md)
-- [Slideshow](slideshow/processSlideshow.md)
+- [FAQ](FAQ/processFAQ.md): Turn a folder of documents (DOCX, Markdown) into a structured FAQ HTML page.
+- [Slideshow](slideshow/processSlideshow.md): Turn a folder of resources (PowerPoint presentations, images, videos, PDFs, HTML pages, links to websites) into a simple full-page timed or controllable slideshow presentation. Handy for digital signage displays, and when used with a cloud-based filesystem can allow for simple updating of content by end users using existing office software, no dedicated digital signage editor application needed.
 
 ## Extending
 If you want to extend the functionality of this project, you'll need to write a command-line script / application that accepts a defined set of parameters at the command line and that reads in a set of data via STDIN and writes out modifications to STDOUT. There is a docsToMarkdownLib Python library that contains most of the functionality you'll need if you are writing a script in Python, but really you can write a command line application in any language you prefer. You can find more details, whether for yourself or for an AI agent, in the [AGENTS](AGENTS.md) file.
