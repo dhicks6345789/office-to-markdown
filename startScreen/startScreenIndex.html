@@ -32,6 +32,46 @@
                 }
             }
             
+            // A simple CSV parser that handles quoted fields (which may contain commas or newlines).
+            function parseCSV(csvText) {
+                var rows = [], row = [], field = "", inQuotes = false;
+                for (i = 0; i < csvText.length; i = i + 1) {
+                    var ch = csvText[i];
+                    if (inQuotes) {
+                        if (ch == '"') {
+                            if (i + 1 < csvText.length && csvText[i + 1] == '"') {
+                                field = field + '"';
+                                i = i + 1;
+                            } else {
+                                inQuotes = false;
+                            }
+                        } else {
+                            field = field + ch;
+                        }
+                    } else if (ch == '"') {
+                        inQuotes = true;
+                    } else if (ch == ',') {
+                        row.push(field);
+                        field = "";
+                    } else if (ch == '\r' || ch == '\n') {
+                        if (ch == '\r' && i + 1 < csvText.length && csvText[i + 1] == '\n') {
+                            i = i + 1;
+                        }
+                        row.push(field);
+                        field = "";
+                        rows.push(row);
+                        row = [];
+                    } else {
+                        field = field + ch;
+                    }
+                }
+                if (field != "" || row.length > 0) {
+                    row.push(field);
+                    rows.push(row);
+                }
+                return rows;
+            }
+            
             // Generate a simple "cyrb53" hash from a given string. Non-cryptographic, we're just using
             // this hash to generate a random icon image if there's no other site icon available.
             // See: https://stackoverflow.com/a/52171480/20530257
@@ -90,7 +130,15 @@
                 if (resources.length == 0) {
                     // Load resources.
                     if (doesFileExist("index.csv")) {
-                        resources = ["content.mp4"];
+                        // Load index.csv and build the resources array from it. The file has a header row
+                        // (URL,Title,Description,Icon) followed by one row per resource. We wrap the parsed
+                        // rows in a single section, using the CSV filename as the section heading.
+                        var csvRequest = new XMLHttpRequest();
+                        csvRequest.open('GET', 'index.csv', false);
+                        csvRequest.send();
+                        if (csvRequest.status == 200) {
+                            resources = [["index", parseCSV(csvRequest.responseText)]];
+                        }
                     }
                 }
                 
