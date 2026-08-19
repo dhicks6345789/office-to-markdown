@@ -17,3 +17,6 @@ pdf2image
 
 # Formatting & Output
 tabulate
+
+# Networking
+requests
