@@ -1,4 +1,5 @@
 ^.*/slideshow/$,python,slideshow/processSlideshow.py
+^.*/startScreen/$,python,startScreen/processStartScreen.py
 ^.*/faq/$,python,FAQ/processFAQ.py
 ^.*/mailmerge/$,python,mailmerge/processMailmerge.py
 ^.*\.docx$,python,processDOCFile.py
