@@ -20,3 +20,7 @@ tabulate
 
 # Networking
 requests
+
+# Get favicons from sites - used by startScreen.
+# https://github.com/AlexMili/extract_favicon/
+extract_favicon
