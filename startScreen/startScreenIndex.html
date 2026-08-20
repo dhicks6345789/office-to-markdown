@@ -128,16 +128,43 @@
             function startApp() {
                 // If we don't already have resources defined (which we might have, if this file is being used as a template from a server-side script), try and find some.
                 if (resources.length == 0) {
-                    // Load resources.
-                    if (doesFileExist("index.csv")) {
-                        // Load index.csv and build the resources array from it. The file has a header row
-                        // (URL,Title,Description,Icon) followed by one row per resource. We wrap the parsed
-                        // rows in a single section, using the CSV filename as the section heading.
-                        var csvRequest = new XMLHttpRequest();
-                        csvRequest.open('GET', 'index.csv', false);
-                        csvRequest.send();
-                        if (csvRequest.status == 200) {
-                            resources = [["index", parseCSV(csvRequest.responseText)]];
+                    // Load resources from the server-side "/startScreen" endpoint if it is available. It returns a
+                    // JSON array in the same format as the "resources" array above - a list of sections, each being
+                    // a [name, table] pair where "table" is a list of rows (URL,Title,Description,Icon).
+                    if (doesFileExist("/startScreen")) {
+                        var endpointRequest = new XMLHttpRequest();
+                        endpointRequest.open('GET', '/startScreen', false);
+                        endpointRequest.send();
+                        if (endpointRequest.status == 200) {
+                            try {
+                                resources = JSON.parse(endpointRequest.responseText);
+                                // Icon names returned by the endpoint are served from "/startScreen/<imageName>",
+                                // so prefix any that are plain relative filenames (not full URLs) accordingly.
+                                for (endpointSection = 0; endpointSection < resources.length; endpointSection = endpointSection + 1) {
+                                    for (endpointResource = 0; endpointResource < resources[endpointSection][1].length; endpointResource = endpointResource + 1) {
+                                        var endpointIcon = resources[endpointSection][1][endpointResource][3];
+                                        if (endpointIcon != "" && !(endpointIcon.indexOf("http://") == 0 || endpointIcon.indexOf("https://") == 0 || endpointIcon.indexOf("/") == 0)) {
+                                            resources[endpointSection][1][endpointResource][3] = "/startScreen/" + endpointIcon;
+                                        }
+                                    }
+                                }
+                            } catch (e) {
+                                resources = [];
+                            }
+                        }
+                    }
+                    if (resources.length == 0) {
+                        // Otherwise, fall back to loading resources from an "index.csv" file in the same folder as this page.
+                        if (doesFileExist("index.csv")) {
+                            // Load index.csv and build the resources array from it. The file has a header row
+                            // (URL,Title,Description,Icon) followed by one row per resource. We wrap the parsed
+                            // rows in a single section, using the CSV filename as the section heading.
+                            var csvRequest = new XMLHttpRequest();
+                            csvRequest.open('GET', 'index.csv', false);
+                            csvRequest.send();
+                            if (csvRequest.status == 200) {
+                                resources = [["index", parseCSV(csvRequest.responseText)]];
+                            }
                         }
                     }
                 }
