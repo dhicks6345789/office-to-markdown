@@ -177,6 +177,9 @@
                                 newTile.id = "itemTile-" + itemCount;
                                 newTileDIV = newTile.firstElementChild;
                                 newTileDIV.id = "itemTileDIV-" + itemCount;
+                                tileIconDIV = newTileDIV.firstElementChild;
+                                tileIconDIV.id = "itemTileIcon-" + itemCount;
+                                tileTitleDIV = newTileDIV.children[1];
 
                                 tileURL = resources[section][1][resource][0];
                                 tileTitle = resources[section][1][resource][1];
@@ -184,16 +187,16 @@
                                 tileIcon = resources[section][1][resource][3];
                                 
                                 newTile.setAttribute("href", tileURL);
-                                newTileDIV.firstElementChild.firstElementChild.innerHTML = tileTitle;
-                                document.getElementById("resource-" + itemCount).appendChild(newTile);
+                                tileTitleDIV.firstElementChild.innerHTML = tileTitle;
                                 if (tileIcon != "") {
-                                    newTileDIV.style.backgroundImage = "url(\'" + tileIcon + "\')";
+                                    tileIconDIV.style.backgroundImage = "url(\'" + tileIcon + "\')";
                                 } else {
-                                    newTileDIV.style.backgroundImage = "url(\'" + generateIcon(tileURL) + "\')";
+                                    tileIconDIV.style.backgroundImage = "url(\'" + generateIcon(tileURL) + "\')";
                                 }
-                                newTileDIV.style.backgroundPosition = "center center";
-                                newTileDIV.style.backgroundSize = "auto 100%";
-                                newTileDIV.style.backgroundRepeat = "no-repeat";
+                                if (tileDescription != "") {
+                                    tileIconDIV.title = tileDescription;
+                                }
+                                document.getElementById("resource-" + itemCount).appendChild(newTile);
                                 newTile.style.display = "";
                                 console.log(newTileDIV);
                             }
@@ -222,8 +225,11 @@
 
         <!-- A single item tile. -->
         <a id="itemTile-0" href="{{URL}}" target="_blank" style="display:none;">
-            <div class="bg text-center" style="margin:0; padding:0; height:100%; width:100%;">
-                <div style="height:5.8vw;"><h2 style="background-color:rgb(255 255 255 / 0.3); color:#000;">{{TITLE}}</h2></div>
+            <div class="bg text-center" style="margin:0; padding:0; height:100%; width:100%; display:flex; flex-direction:column;">
+                <!-- The icon, sized to fit within the space above the title. -->
+                <div id="itemTileIcon-0" class="tileIcon" style="flex:1; width:100%; background-repeat:no-repeat; background-position:center center; background-size:contain;"></div>
+                <!-- The title, shown underneath the icon. -->
+                <div class="tileTitle" style="flex:0 0 auto; height:3vw; display:flex; align-items:center; justify-content:center; overflow:hidden;"><h2 style="margin:0; font-size:1.3vw; background-color:rgb(255 255 255 / 0.3); color:#000;">{{TITLE}}</h2></div>
             </div>
         </a>
 
