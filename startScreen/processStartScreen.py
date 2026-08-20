@@ -11,7 +11,8 @@ import pathlib
 import argparse
 
 # The Pillow image-handling library.
-import PIL
+import PIL.Image
+from PIL import ImageOps
 
 # The Pandas data-handling library.
 import pandas
@@ -74,7 +75,7 @@ def itemOrBlank(theRow, theIndex):
 def resizeAndSavePILImage(theImage, theURLHash):
     IMAGESIZE = 1024
     originalWidth, originalHeight = theImage.size
-    resizedImage = PIL.ImageOps.contain(theImage, (IMAGESIZE, IMAGESIZE))
+    resizedImage = ImageOps.contain(theImage, (IMAGESIZE, IMAGESIZE))
     resizedWidth, resizedHeight = resizedImage.size
     resizedX = 0
     if resizedWidth != IMAGESIZE:
@@ -131,11 +132,18 @@ for inputItem in args["input"].iterdir():
         inputFileType = inputSplit[1].lower()
     inputFiles.append(inputItemPath)
     if inputFileType in ["xls", "xlsx"]:
-        dataFrameMap = pandas.read_excel(inputItemPath, sheet_name=None)
-        for dataFrameName in dataFrameMap:
-            dataTuples.append((dataFrameName, dataFrameMap[dataFrameName]))
+        try:
+            dataFrameMap = pandas.read_excel(inputItemPath, sheet_name=None)
+        except Exception as theError:
+            officeToMarkdownLib.printIfVerbose(args["verbose"], "Unable to read spreadsheet " + inputItemPath + " - " + str(theError))
+        else:
+            for dataFrameName in dataFrameMap:
+                dataTuples.append((dataFrameName, dataFrameMap[dataFrameName]))
     elif inputFileType == "csv":
-        dataTuples.append((inputTitle, pandas.read_csv(inputItemPath)))
+        try:
+            dataTuples.append((inputTitle, pandas.read_csv(inputItemPath)))
+        except Exception as theError:
+            officeToMarkdownLib.printIfVerbose(args["verbose"], "Unable to read CSV " + inputItemPath + " - " + str(theError))
     elif ("." + inputFileType) in officeToMarkdownLib.imageSuffixes:
         inputImages[inputTitle.lower()] = [inputItemPath, inputFileType]
 
@@ -203,32 +211,63 @@ for dataTuple in dataTuples:
                     else:
                         officeToMarkdownLib.printIfVerbose(args["verbose"], "No Favicon found for this URL.")
             else:
-                officeToMarkdownLib.printIfVerbose(args["verbose"], "Item " + title + " - trying to retrieve / refresh icon " + icon + "...")
-                iconResponse = requests.get(icon)
-                iconType = iconResponse.headers["Content-Type"].split("/")[1].lower()
-                if ("." + iconType) in officeToMarkdownLib.bitmapSuffixes:
-                    iconImage = PIL.Image.open(io.BytesIO(iconResponse.content))
-                    icon = resizeAndSavePILImage(iconImage, URLHash)
-                elif iconType in ["svg+xml"]:
-                    iconOutPath = outputDir / pathlib.Path(URLHash + ".svg")
-                    iconOut = open(iconOutPath, "wb")
-                    iconOut.write(iconResponse.content)
-                    iconOut.close()
-                    icon = URLHash + ".svg"
+                iconIsLocal = not (icon.startswith("http://") or icon.startswith("https://"))
+                if iconIsLocal:
+                    # A local icon may be a plain path or a "file://" URI (e.g. "file://desktop.png"). Relative paths are
+                    # resolved against the input folder (the folder that holds the spreadsheet).
+                    iconLocalPath = icon
+                    if iconLocalPath.startswith("file://"):
+                        iconLocalPath = iconLocalPath[len("file://"):]
+                    iconPath = pathlib.Path(iconLocalPath)
+                    if not iconPath.is_absolute():
+                        iconPath = args["input"] / iconPath
+                    officeToMarkdownLib.printIfVerbose(args["verbose"], "Item " + title + " - using local icon file " + str(iconPath) + "...")
+                    iconSplit = iconPath.name.rsplit(".", 1)
+                    iconType = ""
+                    if len(iconSplit) == 2:
+                        iconType = iconSplit[1].lower()
+                    if ("." + iconType) in officeToMarkdownLib.bitmapSuffixes:
+                        iconImage = PIL.Image.open(iconPath)
+                        icon = resizeAndSavePILImage(iconImage, URLHash)
+                    elif iconType in ["svg", "svg+xml"]:
+                        icon = URLHash + ".svg"
+                        shutil.copyfile(iconPath, outputDir / pathlib.Path(icon))
+                    else:
+                        icon = ""
+                        officeToMarkdownLib.printIfVerbose(args["verbose"], "Unsupported local icon file type: " + iconPath.name)
+                else:
+                    officeToMarkdownLib.printIfVerbose(args["verbose"], "Item " + title + " - trying to retrieve / refresh icon " + icon + "...")
+                    iconResponse = requests.get(icon)
+                    iconType = iconResponse.headers["Content-Type"].split("/")[1].lower()
+                    if ("." + iconType) in officeToMarkdownLib.bitmapSuffixes:
+                        iconImage = PIL.Image.open(io.BytesIO(iconResponse.content))
+                        icon = resizeAndSavePILImage(iconImage, URLHash)
+                    elif iconType in ["svg+xml"]:
+                        iconOutPath = outputDir / pathlib.Path(URLHash + ".svg")
+                        iconOut = open(iconOutPath, "wb")
+                        iconOut.write(iconResponse.content)
+                        iconOut.close()
+                        icon = URLHash + ".svg"
         resourceTable.append([URL, title, description, icon])
         if not icon == "":
             outputFilesList.append(str(outputDir / pathlib.Path(icon)))
     resources.append((dataTuple[0], resourceTable))
+
+# Work out if any input file (spreadsheet or icon image) has been updated since the last run, in which case we need to re-generate the index.html.
+inputUpdated = False
+for inputFile in inputFiles:
+    inputFileTimestamp = str(pathlib.Path(inputFile).stat().st_mtime)
+    if (not inputFile in previousInputFileTimestamps) or (not inputFileTimestamp == previousInputFileTimestamps[inputFile]):
+        inputUpdated = True
 
 # Write the index.html file, based on the single-page start-screen viewer template, embedding the resources list.
 indexFileInputPath = pathlib.Path(args["scriptRoot"]) / pathlib.Path("startScreen/startScreenIndex.html")
 indexFileInputPathStr = str(indexFileInputPath)
 indexFileInputPathStat = indexFileInputPath.stat()
 indexFileOutputPath = outputDir / pathlib.Path("index.html")
-if scriptUpdated or (not indexFileOutputPath.is_file()):
+if scriptUpdated or inputUpdated or (not indexFileOutputPath.is_file()):
     indexHTML = officeToMarkdownLib.getFile(indexFileInputPath)
     indexHTML = indexHTML.replace("var resources = [];", "var resources = " + json.dumps(resources) + ";")
-    indexHTML = indexHTML.replace("\'", "\"")
     officeToMarkdownLib.putFile(indexFileOutputPath, indexHTML)
 outputFilesList.append(str(indexFileOutputPath))
 

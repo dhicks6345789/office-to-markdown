@@ -187,3 +187,46 @@ def test_start_screen_uses_local_icon(tmp_path):
     assert len(iconFiles) == 1, "the local icon should have been normalised to a single PNG"
     assert iconFiles[0].name in html
     assert str(iconFiles[0]) in stdout
+
+
+def test_start_screen_uses_explicit_local_icon_path(tmp_path):
+    """A resource whose Icon column holds a local file path (not a URL) is loaded from the local file system."""
+    inputDir = tmp_path / "startScreen"
+    inputDir.mkdir(parents=True, exist_ok=True)
+    (inputDir / "index.csv").write_text("URL,Title,Description,Icon\n"
+                                        "https://example.com/dog,Dog,Local icon,local_icon.png\n")
+    import PIL.Image
+    PIL.Image.new("RGB", (64, 64), (255, 0, 0)).save(inputDir / "local_icon.png")
+
+    stdout = run_sub_script(START_SCREEN_SCRIPT, inputDir, tmp_path / "out", "startScreen", SCRIPT_ROOT)
+
+    outputDir = tmp_path / "out" / "static"
+    html = (outputDir / "index.html").read_text()
+    assert "https://example.com/dog" in html
+
+    # The explicit local icon should have been normalised to a PNG and referenced in the page.
+    iconFiles = [item for item in outputDir.iterdir() if item.suffix == ".png"]
+    assert len(iconFiles) == 1, "the explicit local icon should have been normalised to a single PNG"
+    assert iconFiles[0].name in html
+    assert str(iconFiles[0]) in stdout
+
+
+def test_start_screen_uses_file_uri_local_icon(tmp_path):
+    """A resource whose Icon column holds a file:// URI is loaded from the local file system."""
+    inputDir = tmp_path / "startScreen"
+    inputDir.mkdir(parents=True, exist_ok=True)
+    (inputDir / "index.csv").write_text("URL,Title,Description,Icon\n"
+                                        "https://example.com/bird,Bird,File URI icon,file://bird.png\n")
+    (inputDir / "bird.png").touch()
+
+    stdout = run_sub_script(START_SCREEN_SCRIPT, inputDir, tmp_path / "out", "startScreen", SCRIPT_ROOT)
+
+    outputDir = tmp_path / "out" / "static"
+    html = (outputDir / "index.html").read_text()
+    assert "https://example.com/bird" in html
+
+    # The file:// icon should have been normalised to a PNG and referenced in the page.
+    iconFiles = [item for item in outputDir.iterdir() if item.suffix == ".png"]
+    assert len(iconFiles) == 1, "the file:// icon should have been normalised to a single PNG"
+    assert iconFiles[0].name in html
+    assert str(iconFiles[0]) in stdout
